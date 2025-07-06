@@ -1,0 +1,1844 @@
+{"level":"info","message":"GET /api/master-admin/district-performance","timestamp":"2025-07-02T16:29:43.206Z"}
+{"level":"info","message":"GET /api/master-admin/stats","timestamp":"2025-07-02T16:29:43.207Z"}
+{"level":"info","message":"GET /api/master-admin/district-performance","timestamp":"2025-07-02T16:29:56.441Z"}
+{"level":"info","message":"GET /api/master-admin/stats","timestamp":"2025-07-02T16:29:56.441Z"}
+{"level":"info","message":"GET /api/master-admin/stats","timestamp":"2025-07-02T16:36:37.524Z"}
+{"level":"info","message":"GET /api/master-admin/district-performance","timestamp":"2025-07-02T16:36:37.524Z"}
+{"level":"info","message":"GET /api/master-admin/students?page=1&search=","timestamp":"2025-07-02T16:39:33.524Z"}
+{"level":"info","message":"GET /api/districts","timestamp":"2025-07-02T16:39:33.524Z"}
+{"level":"info","message":"GET /api/master-admin/district-admins","timestamp":"2025-07-02T16:39:34.940Z"}
+{"level":"info","message":"GET /api/districts","timestamp":"2025-07-02T16:39:36.187Z"}
+{"level":"info","message":"GET /api/districts","timestamp":"2025-07-02T16:39:36.524Z"}
+{"level":"info","message":"GET /api/master-admin/district-admins","timestamp":"2025-07-02T16:39:37.180Z"}
+{"level":"info","message":"GET /api/districts","timestamp":"2025-07-02T16:39:37.375Z"}
+{"level":"info","message":"GET /api/master-admin/students?page=1&search=","timestamp":"2025-07-02T16:39:38.384Z"}
+{"level":"info","message":"GET /api/master-admin/events","timestamp":"2025-07-02T16:39:38.921Z"}
+{"level":"info","message":"GET /api/master-admin/district-admins","timestamp":"2025-07-02T16:39:39.473Z"}
+{"level":"info","message":"GET /api/master-admin/events","timestamp":"2025-07-02T16:39:44.142Z"}
+{"level":"info","message":"GET /api/master-admin/district-admins","timestamp":"2025-07-02T16:39:45.151Z"}
+{"level":"info","message":"GET /api/master-admin/courses/passing-marks","timestamp":"2025-07-02T16:44:30.762Z"}
+{"level":"info","message":"GET /api/master-admin/courses/all","timestamp":"2025-07-02T16:44:30.762Z"}
+{"level":"info","message":"GET /api/master-admin/courses/passing-marks","timestamp":"2025-07-02T16:44:33.143Z"}
+{"level":"info","message":"GET /api/master-admin/courses/all","timestamp":"2025-07-02T16:44:33.143Z"}
+{"level":"info","message":"GET /api/districts","timestamp":"2025-07-02T16:44:35.600Z"}
+{"level":"info","message":"GET /api/districts","timestamp":"2025-07-02T16:44:37.454Z"}
+{"level":"info","message":"GET /api/master-admin/analytics","timestamp":"2025-07-02T16:44:39.419Z"}
+{"level":"info","message":"GET /api/master-admin/analytics","timestamp":"2025-07-02T16:44:43.067Z"}
+{"level":"info","message":"GET /api/master-admin/district-performance","timestamp":"2025-07-02T16:45:43.457Z"}
+{"level":"info","message":"GET /api/master-admin/stats","timestamp":"2025-07-02T16:45:43.461Z"}
+{"level":"info","message":"GET /api/master-admin/district-performance","timestamp":"2025-07-02T16:46:28.209Z"}
+{"level":"info","message":"GET /api/master-admin/stats","timestamp":"2025-07-02T16:46:28.210Z"}
+{"level":"info","message":"GET /api/master-admin/stats","timestamp":"2025-07-02T16:47:18.795Z"}
+{"level":"info","message":"GET /api/master-admin/district-performance","timestamp":"2025-07-02T16:47:18.797Z"}
+{"level":"info","message":"GET /api/master-admin/district-performance","timestamp":"2025-07-02T16:50:26.777Z"}
+{"level":"info","message":"GET /api/master-admin/stats","timestamp":"2025-07-02T16:50:26.778Z"}
+{"level":"info","message":"GET /api/master-admin/district-performance","timestamp":"2025-07-02T16:54:53.643Z"}
+{"level":"info","message":"GET /api/master-admin/stats","timestamp":"2025-07-02T16:54:53.644Z"}
+{"level":"info","message":"GET /api/master-admin/students?page=1&search=","timestamp":"2025-07-02T16:55:19.860Z"}
+{"level":"info","message":"GET /api/districts","timestamp":"2025-07-02T16:55:19.861Z"}
+{"level":"info","message":"GET /api/districts","timestamp":"2025-07-02T16:55:20.350Z"}
+{"level":"info","message":"GET /api/master-admin/district-admins","timestamp":"2025-07-02T16:55:21.188Z"}
+{"level":"info","message":"GET /api/master-admin/district-admins","timestamp":"2025-07-02T16:55:21.812Z"}
+{"level":"info","message":"GET /api/master-admin/events","timestamp":"2025-07-02T16:55:22.046Z"}
+{"level":"info","message":"GET /api/master-admin/students?page=1&search=","timestamp":"2025-07-02T16:55:23.013Z"}
+{"level":"info","message":"GET /api/master-admin/courses/passing-marks","timestamp":"2025-07-02T16:55:23.070Z"}
+{"level":"info","message":"GET /api/master-admin/courses/all","timestamp":"2025-07-02T16:55:23.074Z"}
+{"level":"info","message":"GET /api/master-admin/courses/passing-marks","timestamp":"2025-07-02T16:55:23.709Z"}
+{"level":"info","message":"GET /api/master-admin/events","timestamp":"2025-07-02T16:55:23.846Z"}
+{"level":"info","message":"GET /api/districts","timestamp":"2025-07-02T16:55:24.103Z"}
+{"level":"info","message":"GET /api/districts","timestamp":"2025-07-02T16:55:24.864Z"}
+{"level":"info","message":"GET /api/master-admin/analytics","timestamp":"2025-07-02T16:55:24.954Z"}
+{"level":"info","message":"GET /api/master-admin/courses/all","timestamp":"2025-07-02T16:55:25.308Z"}
+{"level":"info","message":"GET /api/master-admin/analytics","timestamp":"2025-07-02T16:55:27.851Z"}
+{"level":"info","message":"GET /api/master-admin/students?page=1&search=","timestamp":"2025-07-02T16:59:56.833Z"}
+{"level":"info","message":"GET /api/master-admin/district-admins","timestamp":"2025-07-02T16:59:57.829Z"}
+{"level":"info","message":"GET /api/master-admin/events","timestamp":"2025-07-02T17:00:00.033Z"}
+{"level":"info","message":"GET /api/master-admin/district-admins","timestamp":"2025-07-02T17:00:00.169Z"}
+{"level":"info","message":"GET /api/master-admin/students?page=1&search=","timestamp":"2025-07-02T17:00:00.843Z"}
+{"level":"info","message":"GET /api/master-admin/courses/all","timestamp":"2025-07-02T17:00:01.467Z"}
+{"level":"info","message":"GET /api/master-admin/courses/passing-marks","timestamp":"2025-07-02T17:00:01.473Z"}
+{"level":"info","message":"GET /api/master-admin/events","timestamp":"2025-07-02T17:00:02.369Z"}
+{"level":"info","message":"GET /api/master-admin/courses/passing-marks","timestamp":"2025-07-02T17:00:03.296Z"}
+{"level":"info","message":"GET /api/master-admin/courses/all","timestamp":"2025-07-02T17:00:03.387Z"}
+{"level":"info","message":"GET /api/master-admin/students?page=1&search=","timestamp":"2025-07-02T17:06:23.189Z"}
+{"level":"info","message":"GET /api/master-admin/district-admins","timestamp":"2025-07-02T17:06:23.832Z"}
+{"level":"info","message":"GET /api/master-admin/events","timestamp":"2025-07-02T17:06:24.460Z"}
+{"level":"info","message":"GET /api/master-admin/courses/all","timestamp":"2025-07-02T17:06:25.219Z"}
+{"level":"info","message":"GET /api/master-admin/courses/passing-marks","timestamp":"2025-07-02T17:06:25.219Z"}
+{"level":"info","message":"GET /api/master-admin/district-admins","timestamp":"2025-07-02T17:06:25.782Z"}
+{"level":"info","message":"GET /api/districts","timestamp":"2025-07-02T17:06:25.911Z"}
+{"level":"info","message":"GET /api/master-admin/courses/all","timestamp":"2025-07-02T17:06:26.070Z"}
+{"level":"info","message":"GET /api/master-admin/students?page=1&search=","timestamp":"2025-07-02T17:06:26.210Z"}
+{"level":"info","message":"GET /api/master-admin/events","timestamp":"2025-07-02T17:06:26.255Z"}
+{"level":"info","message":"GET /api/master-admin/analytics","timestamp":"2025-07-02T17:06:26.897Z"}
+{"level":"info","message":"GET /api/districts","timestamp":"2025-07-02T17:06:26.904Z"}
+{"level":"info","message":"GET /api/master-admin/courses/passing-marks","timestamp":"2025-07-02T17:06:27.123Z"}
+{"level":"info","message":"GET /api/master-admin/courses/all","timestamp":"2025-07-02T17:06:27.736Z"}
+{"level":"info","message":"GET /api/master-admin/district-admins","timestamp":"2025-07-02T17:06:27.960Z"}
+{"level":"info","message":"GET /api/master-admin/courses/passing-marks","timestamp":"2025-07-02T17:06:28.321Z"}
+{"level":"info","message":"GET /api/master-admin/courses/all","timestamp":"2025-07-02T17:06:28.453Z"}
+{"level":"info","message":"GET /api/master-admin/district-admins","timestamp":"2025-07-02T17:06:28.615Z"}
+{"level":"info","message":"GET /api/master-admin/courses/passing-marks","timestamp":"2025-07-02T17:06:29.047Z"}
+{"level":"info","message":"GET /api/master-admin/analytics","timestamp":"2025-07-02T17:06:30.136Z"}
+{"level":"info","message":"GET /api/master-admin/students?page=1&search=","timestamp":"2025-07-02T17:07:54.025Z"}
+{"level":"info","message":"GET /api/master-admin/district-admins","timestamp":"2025-07-02T17:07:55.192Z"}
+{"level":"info","message":"GET /api/master-admin/events","timestamp":"2025-07-02T17:07:56.498Z"}
+{"level":"info","message":"GET /api/master-admin/district-admins","timestamp":"2025-07-02T17:07:56.984Z"}
+{"level":"info","message":"GET /api/master-admin/students?page=1&search=","timestamp":"2025-07-02T17:07:57.520Z"}
+{"level":"info","message":"GET /api/master-admin/events","timestamp":"2025-07-02T17:07:57.841Z"}
+{"level":"info","message":"GET /api/master-admin/courses/all","timestamp":"2025-07-02T17:07:58.149Z"}
+{"level":"info","message":"GET /api/master-admin/courses/passing-marks","timestamp":"2025-07-02T17:07:58.153Z"}
+{"level":"info","message":"GET /api/master-admin/courses/passing-marks","timestamp":"2025-07-02T17:07:59.461Z"}
+{"level":"info","message":"GET /api/districts","timestamp":"2025-07-02T17:07:59.797Z"}
+{"level":"info","message":"GET /api/master-admin/courses/all","timestamp":"2025-07-02T17:08:00.124Z"}
+{"level":"info","message":"GET /api/districts","timestamp":"2025-07-02T17:08:00.660Z"}
+{"level":"info","message":"GET /api/master-admin/analytics","timestamp":"2025-07-02T17:08:00.788Z"}
+{"level":"info","message":"GET /api/districts","timestamp":"2025-07-02T17:08:01.508Z"}
+{"level":"info","message":"GET /api/districts","timestamp":"2025-07-02T17:08:02.343Z"}
+{"level":"info","message":"GET /api/master-admin/students?page=1&search=","timestamp":"2025-07-02T17:08:03.662Z"}
+{"level":"info","message":"GET /api/master-admin/analytics","timestamp":"2025-07-02T17:08:03.684Z"}
+{"level":"info","message":"GET /api/master-admin/analytics","timestamp":"2025-07-02T17:08:05.293Z"}
+{"level":"info","message":"GET /api/master-admin/students?page=1&search=","timestamp":"2025-07-02T17:08:06.180Z"}
+{"level":"info","message":"GET /api/master-admin/analytics","timestamp":"2025-07-02T17:08:07.289Z"}
+{"level":"info","message":"GET /api/master-admin/courses/passing-marks","timestamp":"2025-07-02T17:09:36.508Z"}
+{"level":"info","message":"GET /api/master-admin/courses/all","timestamp":"2025-07-02T17:09:36.508Z"}
+{"level":"info","message":"GET /api/master-admin/courses/all","timestamp":"2025-07-02T17:09:38.390Z"}
+{"level":"info","message":"GET /api/master-admin/courses/passing-marks","timestamp":"2025-07-02T17:09:38.615Z"}
+{"level":"info","message":"GET /api/master-admin/courses/all","timestamp":"2025-07-02T17:10:03.071Z"}
+{"level":"info","message":"GET /api/master-admin/courses/passing-marks","timestamp":"2025-07-02T17:10:03.072Z"}
+{"level":"info","message":"GET /api/master-admin/courses/passing-marks","timestamp":"2025-07-02T17:10:05.301Z"}
+{"level":"info","message":"GET /api/master-admin/courses/all","timestamp":"2025-07-02T17:10:05.347Z"}
+{"level":"info","message":"GET /api/master-admin/district-admins","timestamp":"2025-07-02T17:12:52.406Z"}
+{"level":"info","message":"GET /api/master-admin/district-admins","timestamp":"2025-07-02T17:12:54.940Z"}
+{"level":"info","message":"GET /api/master-admin/events","timestamp":"2025-07-02T17:15:24.672Z"}
+{"level":"info","message":"GET /api/master-admin/courses/passing-marks","timestamp":"2025-07-02T17:15:25.543Z"}
+{"level":"info","message":"GET /api/master-admin/courses/all","timestamp":"2025-07-02T17:15:25.545Z"}
+{"level":"info","message":"GET /api/districts","timestamp":"2025-07-02T17:15:26.408Z"}
+{"level":"info","message":"GET /api/master-admin/events","timestamp":"2025-07-02T17:15:26.665Z"}
+{"level":"info","message":"GET /api/master-admin/courses/all","timestamp":"2025-07-02T17:15:27.406Z"}
+{"level":"info","message":"GET /api/master-admin/analytics","timestamp":"2025-07-02T17:15:27.420Z"}
+{"level":"info","message":"GET /api/districts","timestamp":"2025-07-02T17:15:27.509Z"}
+{"level":"info","message":"GET /api/master-admin/courses/passing-marks","timestamp":"2025-07-02T17:15:27.550Z"}
+{"level":"info","message":"GET /api/master-admin/analytics","timestamp":"2025-07-02T17:15:30.988Z"}
+{"level":"info","message":"GET /api/master-admin/students?page=1&search=","timestamp":"2025-07-02T17:15:45.231Z"}
+{"level":"info","message":"GET /api/master-admin/district-admins","timestamp":"2025-07-02T17:15:45.910Z"}
+{"level":"info","message":"GET /api/master-admin/events","timestamp":"2025-07-02T17:15:46.691Z"}
+{"level":"info","message":"GET /api/master-admin/district-admins","timestamp":"2025-07-02T17:15:47.278Z"}
+{"level":"info","message":"GET /api/master-admin/analytics","timestamp":"2025-07-02T17:15:47.284Z"}
+{"level":"info","message":"GET /api/master-admin/students?page=1&search=","timestamp":"2025-07-02T17:15:47.746Z"}
+{"level":"info","message":"GET /api/districts","timestamp":"2025-07-02T17:15:47.824Z"}
+{"level":"info","message":"GET /api/master-admin/courses/passing-marks","timestamp":"2025-07-02T17:15:48.385Z"}
+{"level":"info","message":"GET /api/master-admin/courses/all","timestamp":"2025-07-02T17:15:48.472Z"}
+{"level":"info","message":"GET /api/master-admin/events","timestamp":"2025-07-02T17:15:48.846Z"}
+{"level":"info","message":"GET /api/districts","timestamp":"2025-07-02T17:15:51.714Z"}
+{"level":"info","message":"GET /api/master-admin/courses/all","timestamp":"2025-07-02T17:15:51.842Z"}
+{"level":"info","message":"GET /api/master-admin/courses/passing-marks","timestamp":"2025-07-02T17:15:55.171Z"}
+{"level":"info","message":"GET /api/master-admin/analytics","timestamp":"2025-07-02T17:15:55.453Z"}
+{"level":"info","message":"GET /api/master-admin/courses/passing-marks","timestamp":"2025-07-02T17:15:58.585Z"}
+{"level":"info","message":"GET /api/master-admin/courses/all","timestamp":"2025-07-02T17:15:58.585Z"}
+{"level":"info","message":"GET /api/master-admin/courses/all","timestamp":"2025-07-02T17:15:59.168Z"}
+{"level":"info","message":"GET /api/master-admin/courses/passing-marks","timestamp":"2025-07-02T17:15:59.169Z"}
+{"level":"info","message":"GET /api/master-admin/events","timestamp":"2025-07-02T17:19:10.455Z"}
+{"level":"info","message":"GET /api/master-admin/district-admins","timestamp":"2025-07-02T17:19:11.953Z"}
+{"level":"info","message":"GET /api/master-admin/events","timestamp":"2025-07-02T17:19:12.734Z"}
+{"level":"info","message":"GET /api/master-admin/students?page=1&search=","timestamp":"2025-07-02T17:19:14.116Z"}
+{"level":"info","message":"GET /api/master-admin/district-admins","timestamp":"2025-07-02T17:19:14.163Z"}
+{"level":"info","message":"GET /api/master-admin/events","timestamp":"2025-07-02T17:19:14.370Z"}
+{"level":"info","message":"GET /api/master-admin/events","timestamp":"2025-07-02T17:19:15.059Z"}
+{"level":"info","message":"GET /api/master-admin/district-admins","timestamp":"2025-07-02T17:19:16.089Z"}
+{"level":"info","message":"GET /api/master-admin/students?page=1&search=","timestamp":"2025-07-02T17:19:16.704Z"}
+{"level":"info","message":"GET /api/master-admin/district-admins","timestamp":"2025-07-02T17:19:16.781Z"}
+{"level":"info","message":"GET /api/master-admin/courses/passing-marks","timestamp":"2025-07-02T17:33:36.220Z"}
+{"level":"info","message":"GET /api/master-admin/courses/all","timestamp":"2025-07-02T17:33:36.222Z"}
+{"level":"info","message":"GET /api/master-admin/courses/all","timestamp":"2025-07-02T17:33:41.257Z"}
+{"level":"info","message":"GET /api/master-admin/courses/passing-marks","timestamp":"2025-07-02T17:33:42.168Z"}
+{"level":"info","message":"GET /api/master-admin/district-performance","timestamp":"2025-07-02T17:33:42.480Z"}
+{"level":"info","message":"GET /api/master-admin/stats","timestamp":"2025-07-02T17:33:42.481Z"}
+{"level":"info","message":"GET /api/master-admin/courses/passing-marks","timestamp":"2025-07-02T17:33:43.987Z"}
+{"level":"info","message":"GET /api/master-admin/courses/all","timestamp":"2025-07-02T17:33:43.988Z"}
+{"level":"info","message":"GET /api/master-admin/courses/passing-marks","timestamp":"2025-07-02T17:33:44.858Z"}
+{"level":"info","message":"GET /api/master-admin/courses/all","timestamp":"2025-07-02T17:33:45.304Z"}
+{"level":"info","message":"GET /api/master-admin/stats","timestamp":"2025-07-02T18:07:12.494Z"}
+{"level":"info","message":"GET /api/master-admin/district-performance","timestamp":"2025-07-02T18:07:12.494Z"}
+{"level":"info","message":"GET /api/master-admin/courses/passing-marks","timestamp":"2025-07-02T18:08:42.269Z"}
+{"level":"info","message":"GET /api/master-admin/courses/all","timestamp":"2025-07-02T18:08:42.274Z"}
+{"level":"info","message":"GET /api/master-admin/course-levels","timestamp":"2025-07-02T18:08:42.275Z"}
+{"level":"info","message":"GET /api/master-admin/course-levels","timestamp":"2025-07-02T18:08:44.857Z"}
+{"level":"info","message":"GET /api/master-admin/courses/all","timestamp":"2025-07-02T18:08:45.403Z"}
+{"level":"info","message":"GET /api/master-admin/courses/passing-marks","timestamp":"2025-07-02T18:08:45.890Z"}
+[2025-07-02 23:41:56] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-02 23:41:56] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-02 23:44:02] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-02 23:44:02] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-02 23:44:02] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-02 23:44:04] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-02 23:44:05] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-02 23:44:05] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-02 23:44:49] [32minfo[39m: GET /api/districts {}
+[2025-07-02 23:44:50] [32minfo[39m: GET /api/districts {}
+[2025-07-02 23:46:51] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-02 23:46:51] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-02 23:46:51] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-02 23:46:53] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-02 23:46:53] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-02 23:46:54] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-02 23:47:19] [32minfo[39m: POST /api/master-admin/course-levels {
+  "body": {
+    "classId": "1",
+    "levels": [
+      "Level 3"
+    ]
+  }
+}
+[2025-07-02 23:52:30] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-02 23:52:30] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-02 23:52:36] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-02 23:52:36] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-02 23:52:36] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-02 23:52:37] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-02 23:52:37] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-02 23:52:38] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-02 23:57:39] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-02 23:57:39] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-02 23:58:25] [32minfo[39m: GET /api/districts {}
+[2025-07-02 23:58:25] [32minfo[39m: GET /api/master-admin/students?page=1&search= {}
+[2025-07-02 23:58:25] [32minfo[39m: GET /api/districts {}
+[2025-07-02 23:58:26] [32minfo[39m: GET /api/master-admin/students?page=1&search= {}
+[2025-07-02 23:58:28] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-02 23:58:29] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-02 23:58:33] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-02 23:58:33] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-02 23:58:33] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-02 23:58:34] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-02 23:58:34] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-02 23:58:35] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-02 23:58:41] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-02 23:58:41] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-02 23:59:17] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-02 23:59:17] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-02 23:59:33] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-02 23:59:33] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-02 23:59:33] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-02 23:59:34] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-02 23:59:35] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-02 23:59:35] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-02 23:59:37] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-02 23:59:37] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-02 23:59:45] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-02 23:59:45] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-02 23:59:45] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-02 23:59:46] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-02 23:59:47] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-02 23:59:47] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 00:00:33] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 00:00:34] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 00:01:49] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 00:01:49] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 00:01:55] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 00:01:55] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 00:01:55] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 00:01:56] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 00:01:57] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 00:01:58] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 00:03:54] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 00:03:54] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 00:03:56] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 00:03:56] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 00:03:56] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 00:03:57] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 00:03:57] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 00:03:57] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 00:05:56] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 00:05:57] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 00:08:32] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 00:08:32] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 00:08:37] [32minfo[39m: GET /api/districts {}
+[2025-07-03 00:08:37] [32minfo[39m: GET /api/districts {}
+[2025-07-03 00:08:39] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 00:08:39] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 00:08:39] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 00:08:39] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 00:08:39] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 00:08:40] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 00:08:44] [32minfo[39m: POST /api/master-admin/course-levels {
+  "body": {
+    "classId": "6th",
+    "levels": [
+      "Level 1"
+    ]
+  }
+}
+[2025-07-03 00:08:50] [32minfo[39m: POST /api/master-admin/course-levels {
+  "body": {
+    "classId": "6th",
+    "levels": [
+      "Level 1",
+      "Level 2"
+    ]
+  }
+}
+[2025-07-03 00:08:58] [32minfo[39m: POST /api/master-admin/course-levels {
+  "body": {
+    "classId": "7th",
+    "levels": [
+      "Level 1"
+    ]
+  }
+}
+[2025-07-03 00:09:04] [32minfo[39m: POST /api/master-admin/course-levels {
+  "body": {
+    "classId": "8th",
+    "levels": [
+      "Level 1"
+    ]
+  }
+}
+[2025-07-03 00:09:35] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 00:09:35] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 07:17:29] [32minfo[39m: GET /api/districts {}
+[2025-07-03 07:17:29] [32minfo[39m: GET /api/master-admin/students?page=1&search= {}
+[2025-07-03 07:17:29] [32minfo[39m: GET /api/districts {}
+[2025-07-03 07:17:29] [32minfo[39m: GET /api/master-admin/students?page=1&search= {}
+[2025-07-03 07:17:33] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 07:17:33] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 07:21:17] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 07:21:17] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 07:21:36] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 07:21:36] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 07:21:36] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 07:21:37] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 07:21:38] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 07:21:38] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 07:38:12] [32minfo[39m: POST /api/master-admin/course-levels {
+  "body": {
+    "classId": "6th",
+    "levels": [
+      "Level 1"
+    ]
+  }
+}
+[2025-07-03 07:38:45] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 07:38:45] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 07:38:47] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 07:38:47] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 07:38:47] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 07:38:48] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 07:38:48] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 07:38:49] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 07:39:09] [32minfo[39m: GET /api/districts {}
+[2025-07-03 07:39:10] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 07:39:10] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 07:39:10] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 07:39:10] [32minfo[39m: GET /api/districts {}
+[2025-07-03 07:39:11] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 07:39:11] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 07:39:12] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 07:40:11] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 07:40:11] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 07:43:10] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 07:43:10] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 07:43:52] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 07:43:52] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 07:46:28] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 07:46:28] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 07:46:28] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 07:46:31] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 07:46:31] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 07:46:31] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 07:58:12] [32minfo[39m: POST /api/auth/login {
+  "body": {
+    "email": "aman@gmail.com",
+    "password": "12345",
+    "role": "master_admin"
+  }
+}
+[2025-07-03 07:58:18] [32minfo[39m: GET /api/district-admin/students?page=1 {}
+[2025-07-03 07:58:18] [32minfo[39m: GET /api/district-admin/stats {}
+[2025-07-03 07:58:30] [32minfo[39m: POST /api/auth/login {
+  "body": {
+    "email": "aman@gmail.com",
+    "password": "12345",
+    "role": "district_admin",
+    "district": "Anuppur"
+  }
+}
+[2025-07-03 07:58:33] [32minfo[39m: GET /api/district-admin/students?page=1 {}
+[2025-07-03 08:01:53] [32minfo[39m: POST /api/auth/login {
+  "body": {
+    "email": "indore@admin.com",
+    "password": "password123",
+    "role": "master_admin"
+  }
+}
+[2025-07-03 08:02:02] [32minfo[39m: POST /api/auth/login {
+  "body": {
+    "email": "indore@admin.com",
+    "password": "password123",
+    "role": "district_admin",
+    "district": "Agar Malwa"
+  }
+}
+[2025-07-03 08:02:04] [32minfo[39m: Admin login successful {
+  "email": "indore@admin.com",
+  "role": "district_admin",
+  "userId": "cmc64bwcw001k2e0wr4l95g4x"
+}
+[2025-07-03 08:02:04] [32minfo[39m: GET /api/district-admin/students?page=1 {}
+[2025-07-03 08:04:32] [32minfo[39m: POST /api/auth/login {
+  "body": {
+    "email": "indore@admin.com",
+    "password": "password123",
+    "role": "district_admin",
+    "district": "Alirajpur"
+  }
+}
+[2025-07-03 08:04:35] [32minfo[39m: District admin login attempt {
+  "email": "indore@admin.com",
+  "districtId": "cmc64bv4m000k2e0w5cst3bsf",
+  "districtName": "Indore"
+}
+[2025-07-03 08:04:35] [32minfo[39m: Admin login successful {
+  "email": "indore@admin.com",
+  "role": "district_admin",
+  "userId": "cmc64bwcw001k2e0wr4l95g4x",
+  "districtId": "cmc64bv4m000k2e0w5cst3bsf"
+}
+[2025-07-03 08:08:02] [32minfo[39m: GET /api/district-admin/stats {}
+[2025-07-03 08:08:02] [32minfo[39m: GET /api/district-admin/students?page=1 {}
+[2025-07-03 08:09:14] [32minfo[39m: GET /api/districts {}
+[2025-07-03 08:09:15] [32minfo[39m: GET /api/districts {}
+[2025-07-03 08:09:49] [32minfo[39m: GET /api/districts {}
+[2025-07-03 08:09:51] [32minfo[39m: GET /api/districts {}
+[2025-07-03 08:10:42] [32minfo[39m: GET /api/districts {}
+[2025-07-03 08:10:44] [32minfo[39m: GET /api/districts {}
+[2025-07-03 08:10:49] [32minfo[39m: POST /api/auth/login {
+  "body": {
+    "email": "indore@admin.com",
+    "password": "password123",
+    "role": "district_admin",
+    "district": "Agar Malwa"
+  }
+}
+[2025-07-03 08:10:51] [32minfo[39m: District admin login attempt {
+  "email": "indore@admin.com",
+  "districtId": "cmc64bv4m000k2e0w5cst3bsf",
+  "districtName": "Indore"
+}
+[2025-07-03 08:10:51] [32minfo[39m: Admin login successful {
+  "email": "indore@admin.com",
+  "role": "district_admin",
+  "userId": "cmc64bwcw001k2e0wr4l95g4x",
+  "districtId": "cmc64bv4m000k2e0w5cst3bsf"
+}
+[2025-07-03 08:10:51] [32minfo[39m: GET /api/district-admin/stats {}
+[2025-07-03 08:10:51] [32minfo[39m: GET /api/district-admin/students?page=1 {}
+[2025-07-03 08:12:20] [32minfo[39m: GET /api/district-admin/stats {}
+[2025-07-03 08:12:20] [32minfo[39m: GET /api/district-admin/students?page=1 {}
+[2025-07-03 08:12:34] [32minfo[39m: GET /api/districts {}
+[2025-07-03 08:12:34] [32minfo[39m: GET /api/districts {}
+[2025-07-03 08:12:40] [32minfo[39m: POST /api/auth/login {
+  "body": {
+    "email": "indore@admin.com",
+    "password": "password123",
+    "role": "district_admin",
+    "districtId": "cmc64bv4m00062e0wkm0c8f4i"
+  }
+}
+[2025-07-03 08:12:42] [32minfo[39m: District admin login attempt {
+  "email": "indore@admin.com",
+  "districtId": "cmc64bv4m000k2e0w5cst3bsf",
+  "districtName": "Indore"
+}
+[2025-07-03 08:12:42] [32minfo[39m: Admin login successful {
+  "email": "indore@admin.com",
+  "role": "district_admin",
+  "userId": "cmc64bwcw001k2e0wr4l95g4x",
+  "districtId": "cmc64bv4m000k2e0w5cst3bsf"
+}
+[2025-07-03 08:15:05] [32minfo[39m: GET /api/districts {}
+[2025-07-03 08:15:07] [32minfo[39m: GET /api/districts {}
+[2025-07-03 08:15:12] [32minfo[39m: POST /api/auth/login {
+  "body": {
+    "email": "indore@admin.com",
+    "password": "password123",
+    "role": "district_admin",
+    "districtId": "cmc64bv4m00022e0w7m9h717i"
+  }
+}
+[2025-07-03 08:15:20] [32minfo[39m: POST /api/auth/login {
+  "body": {
+    "email": "indore@admin.com",
+    "password": "password123",
+    "role": "district_admin",
+    "districtId": "cmc64bv4m000k2e0w5cst3bsf"
+  }
+}
+[2025-07-03 08:15:22] [32minfo[39m: District admin login attempt {
+  "email": "indore@admin.com",
+  "districtId": "cmc64bv4m000k2e0w5cst3bsf",
+  "districtName": "Indore"
+}
+[2025-07-03 08:15:22] [32minfo[39m: Admin login successful {
+  "email": "indore@admin.com",
+  "role": "district_admin",
+  "userId": "cmc64bwcw001k2e0wr4l95g4x",
+  "districtId": "cmc64bv4m000k2e0w5cst3bsf"
+}
+[2025-07-03 08:15:31] [32minfo[39m: GET /api/districts {}
+[2025-07-03 08:15:33] [32minfo[39m: GET /api/districts {}
+[2025-07-03 08:15:35] [32minfo[39m: POST /api/auth/login {
+  "body": {
+    "email": "master@admin.com",
+    "password": "password123",
+    "role": "master_admin"
+  }
+}
+[2025-07-03 08:15:36] [32minfo[39m: Master admin login attempt {
+  "email": "master@admin.com"
+}
+[2025-07-03 08:15:36] [32minfo[39m: Admin login successful {
+  "email": "master@admin.com",
+  "role": "master_admin",
+  "userId": "cmc64bw3i001i2e0w93ivahx9",
+  "districtId": null
+}
+[2025-07-03 08:15:36] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 08:15:36] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 08:15:44] [32minfo[39m: GET /api/districts {}
+[2025-07-03 08:15:44] [32minfo[39m: GET /api/master-admin/students?page=1&search= {}
+[2025-07-03 08:15:45] [32minfo[39m: GET /api/districts {}
+[2025-07-03 08:15:46] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 08:15:46] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 08:15:47] [32minfo[39m: GET /api/master-admin/students?page=1&search= {}
+[2025-07-03 08:17:31] [32minfo[39m: GET /api/master-admin/events {}
+[2025-07-03 08:17:33] [32minfo[39m: GET /api/master-admin/events {}
+[2025-07-03 08:17:45] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 08:17:45] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 08:17:45] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 08:17:46] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 08:17:46] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 08:17:49] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 08:18:36] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 08:18:37] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 08:19:49] [32minfo[39m: GET /api/districts {}
+[2025-07-03 08:19:52] [32minfo[39m: GET /api/districts {}
+[2025-07-03 08:20:01] [32minfo[39m: POST /api/auth/login {
+  "body": {
+    "email": "indore@admin.com",
+    "password": "password123",
+    "role": "district_admin",
+    "districtId": "cmc64bv4m000k2e0w5cst3bsf"
+  }
+}
+[2025-07-03 08:20:04] [32minfo[39m: District admin login attempt {
+  "email": "indore@admin.com",
+  "districtId": "cmc64bv4m000k2e0w5cst3bsf",
+  "districtName": "Indore"
+}
+[2025-07-03 08:20:05] [32minfo[39m: Admin login successful {
+  "email": "indore@admin.com",
+  "role": "district_admin",
+  "userId": "cmc64bwcw001k2e0wr4l95g4x",
+  "districtId": "cmc64bv4m000k2e0w5cst3bsf"
+}
+[2025-07-03 08:20:17] [32minfo[39m: GET /api/districts {}
+[2025-07-03 08:20:19] [32minfo[39m: GET /api/districts {}
+[2025-07-03 08:20:20] [32minfo[39m: POST /api/auth/login {
+  "body": {
+    "email": "indore@admin.com",
+    "password": "password123",
+    "role": "master_admin"
+  }
+}
+[2025-07-03 08:20:25] [32minfo[39m: POST /api/auth/login {
+  "body": {
+    "email": "master@admin.com",
+    "password": "password123",
+    "role": "master_admin"
+  }
+}
+[2025-07-03 08:20:26] [32minfo[39m: Master admin login attempt {
+  "email": "master@admin.com"
+}
+[2025-07-03 08:20:27] [32minfo[39m: Admin login successful {
+  "email": "master@admin.com",
+  "role": "master_admin",
+  "userId": "cmc64bw3i001i2e0w93ivahx9",
+  "districtId": null
+}
+[2025-07-03 08:20:33] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 08:20:36] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 08:23:42] [32minfo[39m: GET /api/districts {}
+[2025-07-03 08:23:45] [32minfo[39m: GET /api/districts {}
+[2025-07-03 08:23:52] [32minfo[39m: POST /api/auth/login {
+  "body": {
+    "email": "indore@admin.com",
+    "password": "password123",
+    "role": "district_admin",
+    "districtId": "cmc64bv4m000k2e0w5cst3bsf"
+  }
+}
+[2025-07-03 08:23:54] [32minfo[39m: District admin login attempt {
+  "email": "indore@admin.com",
+  "districtId": "cmc64bv4m000k2e0w5cst3bsf",
+  "districtName": "Indore"
+}
+[2025-07-03 08:23:55] [32minfo[39m: Admin login successful {
+  "email": "indore@admin.com",
+  "role": "district_admin",
+  "userId": "cmc64bwcw001k2e0wr4l95g4x",
+  "districtId": "cmc64bv4m000k2e0w5cst3bsf"
+}
+[2025-07-03 08:28:25] [32minfo[39m: GET /api/district-admin/stats {}
+[2025-07-03 08:28:25] [32minfo[39m: GET /api/district-admin/students?page=1 {}
+[2025-07-03 08:37:59] [32minfo[39m: GET /api/district-admin/students?page=1 {}
+[2025-07-03 08:38:10] [32minfo[39m: GET /api/district-admin/students?page=1 {}
+[2025-07-03 08:38:19] [32minfo[39m: GET /api/district-admin/students?page=1 {}
+[2025-07-03 08:38:22] [32minfo[39m: GET /api/districts {}
+[2025-07-03 08:38:25] [32minfo[39m: GET /api/districts {}
+[2025-07-03 08:38:32] [32minfo[39m: POST /api/auth/login {
+  "body": {
+    "email": "indore@admin.com",
+    "password": "password123",
+    "role": "district_admin",
+    "districtId": "cmc64bv4m000k2e0w5cst3bsf"
+  }
+}
+[2025-07-03 08:38:34] [32minfo[39m: District admin login attempt {
+  "email": "indore@admin.com",
+  "districtId": "cmc64bv4m000k2e0w5cst3bsf",
+  "districtName": "Indore"
+}
+[2025-07-03 08:38:35] [32minfo[39m: Admin login successful {
+  "email": "indore@admin.com",
+  "role": "district_admin",
+  "userId": "cmc64bwcw001k2e0wr4l95g4x",
+  "districtId": "cmc64bv4m000k2e0w5cst3bsf"
+}
+[2025-07-03 08:38:35] [32minfo[39m: GET /api/district-admin/students?page=1 {}
+[2025-07-03 08:39:35] [32minfo[39m: GET /api/district-admin/stats {}
+[2025-07-03 08:39:35] [32minfo[39m: GET /api/district-admin/students?page=1 {}
+[2025-07-03 08:43:52] [32minfo[39m: GET /api/districts {}
+[2025-07-03 08:43:54] [32minfo[39m: GET /api/districts {}
+[2025-07-03 08:45:47] [32minfo[39m: GET /api/districts {}
+[2025-07-03 08:45:49] [32minfo[39m: GET /api/districts {}
+[2025-07-03 08:45:56] [32minfo[39m: POST /api/auth/login {
+  "body": {
+    "email": "aman@gmail.com",
+    "password": "12345",
+    "role": "district_admin",
+    "districtId": "cmc64bv4m000k2e0w5cst3bsf"
+  }
+}
+[2025-07-03 08:46:02] [32minfo[39m: POST /api/auth/login {
+  "body": {
+    "email": "indore@admin.com",
+    "password": "password123",
+    "role": "master_admin"
+  }
+}
+[2025-07-03 08:46:09] [32minfo[39m: POST /api/auth/login {
+  "body": {
+    "email": "indore@admin.com",
+    "password": "password123",
+    "role": "district_admin",
+    "districtId": "cmc64bv4m000k2e0w5cst3bsf"
+  }
+}
+[2025-07-03 08:46:10] [32minfo[39m: District admin login attempt {
+  "email": "indore@admin.com",
+  "districtId": "cmc64bv4m000k2e0w5cst3bsf",
+  "districtName": "Indore"
+}
+[2025-07-03 08:46:11] [32minfo[39m: Admin login successful {
+  "email": "indore@admin.com",
+  "role": "district_admin",
+  "userId": "cmc64bwcw001k2e0wr4l95g4x",
+  "districtId": "cmc64bv4m000k2e0w5cst3bsf"
+}
+[2025-07-03 08:46:11] [32minfo[39m: GET /api/district-admin/stats {}
+[2025-07-03 08:46:11] [32minfo[39m: GET /api/district-admin/students?page=1 {}
+[2025-07-03 08:46:22] [32minfo[39m: GET /api/district-admin/stats {}
+[2025-07-03 08:46:22] [32minfo[39m: GET /api/district-admin/students?page=1 {}
+[2025-07-03 08:46:29] [32minfo[39m: GET /api/districts {}
+[2025-07-03 08:46:29] [32minfo[39m: GET /api/districts {}
+[2025-07-03 08:46:32] [32minfo[39m: POST /api/auth/login {
+  "body": {
+    "email": "master@admin.com",
+    "password": "password123",
+    "role": "master_admin"
+  }
+}
+[2025-07-03 08:46:33] [32minfo[39m: Master admin login attempt {
+  "email": "master@admin.com"
+}
+[2025-07-03 08:46:33] [32minfo[39m: Admin login successful {
+  "email": "master@admin.com",
+  "role": "master_admin",
+  "userId": "cmc64bw3i001i2e0w93ivahx9",
+  "districtId": null
+}
+[2025-07-03 08:46:33] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 08:46:33] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 08:46:48] [32minfo[39m: GET /api/districts {}
+[2025-07-03 08:46:48] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 08:46:49] [32minfo[39m: GET /api/districts {}
+[2025-07-03 08:46:51] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 08:47:57] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 08:48:31] [32minfo[39m: GET /api/master-admin/students?page=1&search= {}
+[2025-07-03 08:48:32] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 08:48:33] [32minfo[39m: GET /api/master-admin/students?page=1&search= {}
+[2025-07-03 08:48:34] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 08:51:40] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 08:55:56] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 08:56:38] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 08:56:38] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 08:56:42] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 08:56:42] [32minfo[39m: GET /api/districts {}
+[2025-07-03 08:56:43] [32minfo[39m: GET /api/districts {}
+[2025-07-03 08:56:44] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 08:58:07] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 08:59:04] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 09:01:01] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 09:01:01] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 09:02:13] [32minfo[39m: GET /api/districts {}
+[2025-07-03 09:02:13] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 09:02:15] [32minfo[39m: GET /api/districts {}
+[2025-07-03 09:02:16] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 09:02:55] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 09:02:57] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 09:04:32] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 03:45:01] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 03:45:01] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 03:46:29] [32minfo[39m: GET /health {}
+[2025-07-03 03:47:41] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 03:47:41] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 03:51:40] [32minfo[39m: GET /health {}
+[2025-07-03 04:10:02] [32minfo[39m: POST /api/auth/login {
+  "body": {
+    "email": "admin@example.com",
+    "password": "admin123",
+    "role": "master_admin"
+  }
+}
+[2025-07-03 04:10:02] [31merror[39m: Login failed: %o 
+[2025-07-03 04:10:59] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 04:10:59] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 04:11:14] [32minfo[39m: GET /api/districts {}
+[2025-07-03 04:11:14] [32minfo[39m: GET /api/districts {}
+[2025-07-03 04:11:18] [32minfo[39m: POST /api/auth/login {
+  "body": {
+    "email": "master@admin.com",
+    "password": "password123",
+    "role": "master_admin"
+  }
+}
+[2025-07-03 04:11:18] [32minfo[39m: Master admin login attempt {
+  "email": "master@admin.com"
+}
+[2025-07-03 04:11:18] [32minfo[39m: Admin login successful {
+  "email": "master@admin.com",
+  "role": "master_admin",
+  "userId": "cmcmvayw9001io1o1am41aabh",
+  "districtId": null
+}
+[2025-07-03 04:11:18] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 04:11:18] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 04:11:26] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 04:11:26] [32minfo[39m: GET /api/districts {}
+[2025-07-03 04:11:26] [32minfo[39m: GET /api/districts {}
+[2025-07-03 04:11:26] [32minfo[39m: GET /api/districts {}
+[2025-07-03 04:11:26] [32minfo[39m: GET /api/districts {}
+[2025-07-03 04:11:26] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 04:11:30] [32minfo[39m: GET /api/master-admin/events {}
+[2025-07-03 04:11:30] [32minfo[39m: GET /api/master-admin/events {}
+[2025-07-03 04:11:42] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 04:11:42] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 04:11:42] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 04:11:42] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 04:11:42] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 04:11:42] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 04:11:52] [32minfo[39m: GET /api/districts {}
+[2025-07-03 04:11:52] [32minfo[39m: GET /api/districts {}
+[2025-07-03 04:11:54] [32minfo[39m: GET /api/districts {}
+[2025-07-03 04:11:54] [32minfo[39m: GET /api/districts {}
+[2025-07-03 04:12:00] [32minfo[39m: GET /api/districts {}
+[2025-07-03 04:12:00] [32minfo[39m: GET /api/districts {}
+[2025-07-03 04:12:05] [32minfo[39m: POST /api/auth/login {
+  "body": {
+    "email": "master@admin.com",
+    "password": "password123",
+    "role": "master_admin"
+  }
+}
+[2025-07-03 04:12:05] [32minfo[39m: Master admin login attempt {
+  "email": "master@admin.com"
+}
+[2025-07-03 04:12:05] [32minfo[39m: Admin login successful {
+  "email": "master@admin.com",
+  "role": "master_admin",
+  "userId": "cmcmvayw9001io1o1am41aabh",
+  "districtId": null
+}
+[2025-07-03 04:12:05] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 04:12:05] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 04:12:10] [32minfo[39m: GET /api/districts {}
+[2025-07-03 04:12:10] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 04:12:10] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 04:12:10] [32minfo[39m: GET /api/districts {}
+[2025-07-03 04:12:10] [32minfo[39m: GET /api/districts {}
+[2025-07-03 04:12:10] [32minfo[39m: GET /api/districts {}
+[2025-07-03 04:12:17] [32minfo[39m: GET /api/master-admin/events {}
+[2025-07-03 04:12:17] [32minfo[39m: GET /api/master-admin/events {}
+[2025-07-03 04:12:18] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 04:12:18] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 04:12:58] [32minfo[39m: GET /api/master-admin/students?page=1&search= {}
+[2025-07-03 04:12:58] [32minfo[39m: GET /api/master-admin/students?page=1&search= {}
+[2025-07-03 04:13:02] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 04:13:02] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 04:13:30] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 04:13:30] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 04:13:30] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 04:13:30] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 04:13:30] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 04:13:30] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 04:13:33] [32minfo[39m: GET /api/districts {}
+[2025-07-03 04:13:33] [32minfo[39m: GET /api/districts {}
+[2025-07-03 04:15:01] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 04:15:01] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 04:15:26] [32minfo[39m: POST /api/master-admin/district-admins {
+  "body": {
+    "name": "Janardhan",
+    "email": "jp@admin.com",
+    "password": "jp@123",
+    "districtId": "cmcmvayuh000lo1o1yhimlmcs"
+  }
+}
+[2025-07-03 04:16:42] [32minfo[39m: PUT /api/master-admin/district-admins/cmcmvh8oj0001o1q8kquwtz2y {
+  "body": {
+    "name": "Janardhan",
+    "email": "jp@admin.com",
+    "districtId": "cmcmvayuh000lo1o1yhimlmcs"
+  }
+}
+[2025-07-03 04:17:02] [32minfo[39m: DELETE /api/master-admin/district-admins/cmcmvh8oj0001o1q8kquwtz2y {}
+[2025-07-03 04:19:28] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 04:19:28] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 04:19:30] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 04:19:30] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 04:19:30] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 04:19:30] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 04:19:30] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 04:19:30] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 04:19:34] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 04:19:34] [32minfo[39m: GET /api/districts {}
+[2025-07-03 04:19:34] [32minfo[39m: GET /api/districts {}
+[2025-07-03 04:19:34] [32minfo[39m: GET /api/districts {}
+[2025-07-03 04:19:34] [32minfo[39m: GET /api/districts {}
+[2025-07-03 04:19:34] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 04:19:40] [32minfo[39m: DELETE /api/master-admin/district-admins/cmcmvh8oj0001o1q8kquwtz2y {}
+[2025-07-03 04:19:44] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 04:19:44] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 04:19:47] [32minfo[39m: GET /api/districts {}
+[2025-07-03 04:19:47] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 04:19:47] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 04:19:47] [32minfo[39m: GET /api/districts {}
+[2025-07-03 04:19:47] [32minfo[39m: GET /api/districts {}
+[2025-07-03 04:19:47] [32minfo[39m: GET /api/districts {}
+[2025-07-03 04:19:55] [32minfo[39m: GET /api/master-admin/students?page=1&search= {}
+[2025-07-03 04:19:55] [32minfo[39m: GET /api/master-admin/students?page=1&search= {}
+[2025-07-03 04:19:57] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 04:19:57] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 04:20:00] [32minfo[39m: GET /api/master-admin/events {}
+[2025-07-03 04:20:00] [32minfo[39m: GET /api/master-admin/events {}
+[2025-07-03 04:20:01] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 04:20:01] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 04:20:01] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 04:20:01] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 04:20:01] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 04:20:01] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 04:20:02] [32minfo[39m: GET /api/districts {}
+[2025-07-03 04:20:02] [32minfo[39m: GET /api/districts {}
+[2025-07-03 04:20:03] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 04:20:03] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 04:20:03] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 04:20:03] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 04:20:03] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 04:20:03] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 04:20:03] [32minfo[39m: GET /api/master-admin/events {}
+[2025-07-03 04:20:03] [32minfo[39m: GET /api/master-admin/events {}
+[2025-07-03 04:20:04] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 04:20:04] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 04:20:04] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 04:20:04] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 04:20:04] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 04:20:04] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 04:20:05] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 04:20:05] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 04:20:06] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 04:20:06] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 04:20:06] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 04:20:06] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 04:20:06] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 04:20:06] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 04:20:07] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 04:20:07] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 04:20:07] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 04:20:07] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 04:20:07] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 04:20:07] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 04:20:07] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 04:20:07] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 04:20:08] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 04:20:08] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 04:20:09] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 04:20:09] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 04:20:09] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 04:20:09] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 04:20:09] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 04:20:09] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 04:20:09] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 04:20:09] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 04:20:13] [32minfo[39m: GET /api/master-admin/students?page=1&search= {}
+[2025-07-03 04:20:14] [32minfo[39m: GET /api/master-admin/students?page=1&search= {}
+[2025-07-03 04:20:19] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 04:20:19] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 04:20:35] [32minfo[39m: GET /api/districts {}
+[2025-07-03 04:20:35] [32minfo[39m: GET /api/districts {}
+[2025-07-03 04:20:42] [32minfo[39m: POST /api/auth/login {
+  "body": {
+    "email": "master@admin.com",
+    "password": "password123",
+    "role": "master_admin"
+  }
+}
+[2025-07-03 04:20:42] [32minfo[39m: Master admin login attempt {
+  "email": "master@admin.com"
+}
+[2025-07-03 04:20:42] [32minfo[39m: Admin login successful {
+  "email": "master@admin.com",
+  "role": "master_admin",
+  "userId": "cmcmvayw9001io1o1am41aabh",
+  "districtId": null
+}
+[2025-07-03 04:20:47] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 04:20:47] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 04:21:00] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 04:21:00] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 04:21:14] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 04:21:14] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 04:21:20] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 04:21:20] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 04:21:38] [32minfo[39m: GET /api/districts {}
+[2025-07-03 04:21:38] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 04:21:38] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 04:21:38] [32minfo[39m: GET /api/districts {}
+[2025-07-03 04:21:38] [32minfo[39m: GET /api/districts {}
+[2025-07-03 04:21:38] [32minfo[39m: GET /api/districts {}
+[2025-07-03 04:21:47] [32minfo[39m: GET /api/master-admin/events {}
+[2025-07-03 04:21:47] [32minfo[39m: GET /api/master-admin/events {}
+[2025-07-03 04:21:48] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 04:21:48] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 04:21:48] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 04:21:48] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 04:21:48] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 04:21:48] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 04:23:49] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 04:23:49] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 04:23:51] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 04:23:51] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 04:23:51] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 04:23:51] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 04:23:51] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 04:23:51] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 04:23:55] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 04:23:55] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 04:23:55] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 04:23:55] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 04:23:55] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 04:23:55] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 04:24:09] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 04:24:09] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 04:24:10] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 04:24:10] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 04:24:10] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 04:24:10] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 04:24:10] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 04:24:10] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 04:27:01] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 04:27:01] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 04:28:25] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 04:28:25] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 04:29:09] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 04:29:10] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 04:31:27] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 04:31:28] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 04:34:20] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 04:34:33] [32minfo[39m: POST /api/master-admin/course-levels {
+  "body": {
+    "classId": "6th",
+    "levels": [
+      "Level 1"
+    ]
+  }
+}
+[2025-07-03 04:34:39] [32minfo[39m: POST /api/master-admin/course-levels {
+  "body": {
+    "classId": "6th",
+    "levels": [
+      "Level 1",
+      "Level 2"
+    ]
+  }
+}
+[2025-07-03 04:34:44] [32minfo[39m: POST /api/master-admin/course-levels {
+  "body": {
+    "classId": "6th",
+    "levels": [
+      "Level 1",
+      "Level 2",
+      "Level 3"
+    ]
+  }
+}
+[2025-07-03 04:37:16] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 04:39:04] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 04:39:04] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 05:11:28] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 05:11:32] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 05:11:35] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 05:17:37] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 05:17:37] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 05:17:40] [32minfo[39m: GET /api/districts {}
+[2025-07-03 05:17:40] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 05:17:40] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 05:17:40] [32minfo[39m: GET /api/districts {}
+[2025-07-03 05:17:40] [32minfo[39m: GET /api/districts {}
+[2025-07-03 05:17:40] [32minfo[39m: GET /api/districts {}
+[2025-07-03 05:17:43] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 05:17:43] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 05:17:43] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 05:17:43] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 05:17:43] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 05:17:43] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 05:20:32] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 05:20:49] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 05:21:05] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 05:21:25] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 05:21:25] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 05:21:43] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 05:21:44] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 05:23:36] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 05:23:36] [32minfo[39m: GET /api/districts {}
+[2025-07-03 05:23:36] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 05:23:36] [32minfo[39m: GET /api/districts {}
+[2025-07-03 05:23:36] [32minfo[39m: GET /api/districts {}
+[2025-07-03 05:23:36] [32minfo[39m: GET /api/districts {}
+[2025-07-03 05:23:39] [32minfo[39m: GET /api/master-admin/events {}
+[2025-07-03 05:23:40] [32minfo[39m: GET /api/master-admin/events {}
+[2025-07-03 05:23:41] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 05:23:41] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 05:23:41] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 05:23:41] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 05:23:41] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 05:23:41] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 05:32:16] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 05:32:16] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 05:32:35] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 05:32:35] [32minfo[39m: GET /api/districts {}
+[2025-07-03 05:32:35] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 05:32:35] [32minfo[39m: GET /api/districts {}
+[2025-07-03 05:32:35] [32minfo[39m: GET /api/districts {}
+[2025-07-03 05:32:35] [32minfo[39m: GET /api/districts {}
+[2025-07-03 05:32:38] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 05:32:38] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 05:32:38] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 05:32:38] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 05:32:38] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 05:32:38] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 05:34:53] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 05:34:53] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 05:35:02] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 05:35:02] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 05:35:02] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 05:35:02] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 05:35:02] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 05:35:03] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 05:36:50] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 05:36:50] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 05:37:08] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 05:37:08] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 05:37:34] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 05:37:34] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 05:37:36] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 05:37:36] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 05:37:36] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 05:37:36] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 05:37:36] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 05:37:36] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 05:37:48] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 05:38:03] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 05:38:17] [32minfo[39m: POST /api/master-admin/course-levels {
+  "body": {
+    "classId": "7th",
+    "levels": [
+      "Level 1"
+    ]
+  }
+}
+[2025-07-03 05:38:22] [32minfo[39m: POST /api/master-admin/course-levels {
+  "body": {
+    "classId": "7th",
+    "levels": [
+      "Level 1",
+      "Level 2"
+    ]
+  }
+}
+[2025-07-03 05:38:32] [32minfo[39m: POST /api/master-admin/course-levels {
+  "body": {
+    "classId": "11th",
+    "levels": [
+      "Level 1"
+    ]
+  }
+}
+[2025-07-03 05:38:42] [32minfo[39m: POST /api/master-admin/course-levels {
+  "body": {
+    "classId": "Working",
+    "levels": [
+      "Level 1"
+    ]
+  }
+}
+[2025-07-03 05:38:44] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 05:38:44] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 05:38:45] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 05:38:45] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 05:38:48] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 05:38:48] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 05:38:48] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 05:38:48] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 05:38:48] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 05:38:48] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 05:42:26] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 05:42:26] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 05:42:26] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 05:42:26] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 05:43:25] [32minfo[39m: POST /api/master-admin/courses/passing-marks {
+  "body": {
+    "Working": {
+      "level1": 40
+    }
+  }
+}
+[2025-07-03 05:43:30] [32minfo[39m: POST /api/master-admin/courses/passing-marks {
+  "body": {
+    "Working": {
+      "level1": 45
+    }
+  }
+}
+[2025-07-03 05:43:33] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 05:43:33] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 05:43:35] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 05:43:35] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 05:43:35] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 05:43:35] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 05:43:35] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 05:43:35] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 05:43:35] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 05:43:35] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 05:47:12] [32minfo[39m: GET /api/districts {}
+[2025-07-03 05:47:13] [32minfo[39m: GET /api/districts {}
+[2025-07-03 05:47:14] [32minfo[39m: GET /api/master-admin/analytics {}
+[2025-07-03 05:47:15] [32minfo[39m: GET /api/master-admin/analytics {}
+[2025-07-03 05:47:15] [32minfo[39m: GET /api/districts {}
+[2025-07-03 05:47:15] [32minfo[39m: GET /api/districts {}
+[2025-07-03 05:48:53] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 05:48:53] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 05:48:53] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 05:48:53] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 05:48:53] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 05:48:53] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 05:48:53] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 05:48:53] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 05:49:36] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 05:49:36] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 05:51:53] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 05:52:04] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 05:52:04] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 05:52:19] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 05:52:30] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 05:53:02] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 05:53:15] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 05:53:26] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 05:53:26] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 10:10:03] [32minfo[39m: GET /api/master-admin/students?page=1&search= {}
+[2025-07-03 10:10:03] [32minfo[39m: GET /api/districts {}
+[2025-07-03 10:10:03] [32minfo[39m: GET /api/districts {}
+[2025-07-03 10:10:03] [32minfo[39m: GET /api/master-admin/students?page=1&search= {}
+[2025-07-03 10:10:04] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 10:10:04] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 10:10:05] [32minfo[39m: GET /api/master-admin/events {}
+[2025-07-03 10:10:05] [32minfo[39m: GET /api/master-admin/events {}
+[2025-07-03 10:10:07] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 10:10:07] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 10:10:07] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 10:10:07] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 10:10:07] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 10:10:07] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 10:10:07] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 10:10:07] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 10:10:08] [32minfo[39m: GET /api/districts {}
+[2025-07-03 10:10:08] [32minfo[39m: GET /api/districts {}
+[2025-07-03 10:10:09] [32minfo[39m: GET /api/master-admin/analytics {}
+[2025-07-03 10:10:09] [32minfo[39m: GET /api/master-admin/analytics {}
+[2025-07-03 10:10:11] [32minfo[39m: GET /api/master-admin/students?page=1&search= {}
+[2025-07-03 10:10:11] [32minfo[39m: GET /api/master-admin/students?page=1&search= {}
+[2025-07-03 10:10:12] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 10:10:12] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 10:10:15] [32minfo[39m: GET /api/master-admin/events {}
+[2025-07-03 10:10:15] [32minfo[39m: GET /api/master-admin/events {}
+[2025-07-03 10:10:17] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 10:10:17] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 10:10:18] [32minfo[39m: GET /api/master-admin/events {}
+[2025-07-03 10:10:18] [32minfo[39m: GET /api/master-admin/events {}
+[2025-07-03 10:10:20] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 10:10:20] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 10:10:20] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 10:10:20] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 10:10:20] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 10:10:20] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 10:10:20] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 10:10:20] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 10:21:22] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 10:21:22] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 10:22:58] [32minfo[39m: POST /api/master-admin/courses/quiz {}
+[2025-07-03 10:22:58] [32minfo[39m: POST /api/master-admin/courses/notes {
+  "body": {
+    "class": "UG",
+    "level": "",
+    "title": "BG - 1",
+    "url": "https://drive.google.com/drive/u/1/my-drive"
+  }
+}
+[2025-07-03 10:22:58] [32minfo[39m: POST /api/master-admin/courses/videos {
+  "body": {
+    "class": "UG",
+    "level": "",
+    "title": "HH BRSM",
+    "iframeSnippet": "<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/e47lfS4IOgs?si=GYvFETbjn5UlX8TX\" title=\"YouTube video player\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\" referrerpolicy=\"strict-origin-when-cross-origin\" allowfullscreen></iframe>"
+  }
+}
+[2025-07-03 10:24:11] [32minfo[39m: POST /api/master-admin/courses/quiz {}
+[2025-07-03 10:24:11] [32minfo[39m: POST /api/master-admin/courses/notes {
+  "body": {
+    "class": "6th",
+    "level": "Level 1",
+    "title": "BG 2 ",
+    "url": "https://drive.google.com/drive/u/1/my-drive"
+  }
+}
+[2025-07-03 10:24:11] [32minfo[39m: POST /api/master-admin/courses/videos {
+  "body": {
+    "class": "6th",
+    "level": "Level 1",
+    "title": "HH BRSM",
+    "iframeSnippet": "<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/e47lfS4IOgs?si=GYvFETbjn5UlX8TX\" title=\"YouTube video player\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\" referrerpolicy=\"strict-origin-when-cross-origin\" allowfullscreen></iframe>"
+  }
+}
+[2025-07-03 10:24:58] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 10:24:58] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 10:25:01] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 10:25:01] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 10:25:01] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 10:25:01] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 10:25:01] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 10:25:01] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 10:25:01] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 10:25:01] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 10:28:57] [32minfo[39m: POST /api/master-admin/courses/videos {
+  "body": {
+    "class": "6th",
+    "level": "Level 1",
+    "title": "HH BRSM",
+    "iframeSnippet": "<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/e47lfS4IOgs?si=GYvFETbjn5UlX8TX\" title=\"YouTube video player\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\" referrerpolicy=\"strict-origin-when-cross-origin\" allowfullscreen></iframe>"
+  }
+}
+[2025-07-03 17:14:25] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 17:14:25] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 17:14:27] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 17:14:27] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 17:14:31] [32minfo[39m: GET /api/districts {}
+[2025-07-03 17:14:31] [32minfo[39m: GET /api/master-admin/students?page=1&search= {}
+[2025-07-03 17:14:31] [32minfo[39m: GET /api/master-admin/students?page=1&search= {}
+[2025-07-03 17:14:32] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 17:14:32] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 17:14:33] [32minfo[39m: GET /api/master-admin/events {}
+[2025-07-03 17:14:33] [32minfo[39m: GET /api/master-admin/events {}
+[2025-07-03 17:14:34] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 17:14:38] [32minfo[39m: GET /api/districts {}
+[2025-07-03 17:14:39] [32minfo[39m: GET /api/districts {}
+[2025-07-03 17:14:39] [32minfo[39m: GET /api/districts {}
+[2025-07-03 17:14:39] [32minfo[39m: GET /api/districts {}
+[2025-07-03 17:14:40] [32minfo[39m: GET /api/districts {}
+[2025-07-03 17:14:43] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 17:14:43] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 12:13:33] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 12:13:33] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 12:13:35] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 12:13:35] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 12:13:35] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 12:13:35] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 12:13:35] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 12:13:35] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 12:13:35] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 12:13:35] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 12:14:10] [32minfo[39m: POST /api/master-admin/courses/videos {
+  "body": {
+    "class": "6th",
+    "level": "Level 1",
+    "title": "HH BRSM",
+    "iframeSnippet": "<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/e47lfS4IOgs?si=GYvFETbjn5UlX8TX\" title=\"YouTube video player\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\" referrerpolicy=\"strict-origin-when-cross-origin\" allowfullscreen></iframe>"
+  }
+}
+[2025-07-03 12:15:22] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 12:15:22] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 12:15:25] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 12:15:25] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 12:15:25] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 12:15:25] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 12:15:25] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 12:15:25] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 12:15:25] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 12:15:25] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 12:15:47] [32minfo[39m: POST /api/master-admin/courses/videos {
+  "body": {
+    "class": "6th",
+    "level": "Level 1",
+    "title": "HH BRSM",
+    "iframeSnippet": "<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/e47lfS4IOgs?si=GYvFETbjn5UlX8TX\" title=\"YouTube video player\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\" referrerpolicy=\"strict-origin-when-cross-origin\" allowfullscreen></iframe>"
+  }
+}
+[2025-07-03 12:15:59] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 12:15:59] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 12:16:03] [32minfo[39m: GET /api/districts {}
+[2025-07-03 12:16:03] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 12:16:03] [32minfo[39m: GET /api/districts {}
+[2025-07-03 12:16:03] [32minfo[39m: GET /api/districts {}
+[2025-07-03 12:16:03] [32minfo[39m: GET /api/districts {}
+[2025-07-03 12:16:03] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 12:16:04] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 12:16:04] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 12:16:04] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 12:16:04] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 12:16:04] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 12:16:04] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 12:16:04] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 12:16:04] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 12:20:05] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 12:20:05] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 12:20:07] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 12:20:07] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 12:20:07] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 12:20:07] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 12:20:07] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 12:20:07] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 12:20:07] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 12:20:07] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 12:31:16] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 12:31:16] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 12:37:29] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 12:37:29] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 12:38:37] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 12:38:37] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 12:38:45] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 12:38:45] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 12:40:02] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 12:40:02] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 12:40:03] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 12:40:03] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 12:40:03] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 12:40:03] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 12:40:03] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 12:40:03] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 12:40:03] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 12:40:03] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 12:41:09] [32minfo[39m: POST /api/master-admin/courses/notes {
+  "body": {
+    "class": "7th",
+    "level": "Level 1",
+    "title": "New Notes",
+    "url": "https://drive.google.com/drive/u/1/my-drive"
+  }
+}
+[2025-07-03 12:41:15] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 12:41:15] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 12:41:19] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 12:41:19] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 12:41:19] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 12:41:19] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 12:41:19] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 12:41:19] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 12:41:19] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 12:41:19] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 12:42:03] [32minfo[39m: POST /api/master-admin/courses/notes {
+  "body": {
+    "class": "6th",
+    "level": "Level 1",
+    "title": "Level 1 notes",
+    "url": "https://drive.google.com/drive/u/1/my-drive"
+  }
+}
+[2025-07-03 12:42:08] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 12:42:08] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 12:42:12] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 12:42:12] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 12:42:12] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 12:42:12] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 12:42:12] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 12:42:12] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 12:42:12] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 12:42:12] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 12:42:45] [32minfo[39m: POST /api/master-admin/courses/quiz {}
+[2025-07-03 12:42:49] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 12:42:49] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 12:42:52] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 12:42:52] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 12:42:52] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 12:42:52] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 12:42:52] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 12:42:52] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 12:42:52] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 12:42:52] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 13:07:45] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 13:07:47] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 13:07:47] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 13:07:51] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 13:07:51] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 13:09:14] [32minfo[39m: GET /api/districts {}
+[2025-07-03 13:09:14] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 13:09:14] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 13:09:14] [32minfo[39m: GET /api/districts {}
+[2025-07-03 13:09:14] [32minfo[39m: GET /api/districts {}
+[2025-07-03 13:09:14] [32minfo[39m: GET /api/districts {}
+[2025-07-03 13:09:16] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 13:09:16] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 13:09:16] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 13:09:16] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 13:09:16] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 13:09:16] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 13:09:16] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 13:09:16] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 13:09:17] [32minfo[39m: GET /api/master-admin/events {}
+[2025-07-03 13:09:17] [32minfo[39m: GET /api/master-admin/events {}
+[2025-07-03 13:09:18] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 13:09:18] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 13:09:24] [32minfo[39m: GET /api/master-admin/students?page=1&search= {}
+[2025-07-03 13:09:24] [32minfo[39m: GET /api/master-admin/students?page=1&search= {}
+[2025-07-03 13:09:27] [32minfo[39m: GET /api/master-admin/students?page=1&search= {}
+[2025-07-03 13:09:27] [32minfo[39m: GET /api/master-admin/students?page=1&search= {}
+[2025-07-03 13:09:28] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 13:09:28] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 13:09:28] [32minfo[39m: GET /api/master-admin/events {}
+[2025-07-03 13:09:28] [32minfo[39m: GET /api/master-admin/events {}
+[2025-07-03 13:09:29] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 13:09:29] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 13:09:29] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 13:09:29] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 13:09:29] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 13:09:29] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 13:09:29] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 13:09:29] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 13:09:32] [32minfo[39m: GET /api/districts {}
+[2025-07-03 13:09:32] [32minfo[39m: GET /api/districts {}
+[2025-07-03 13:09:42] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 13:09:42] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 13:09:42] [32minfo[39m: GET /api/master-admin/events {}
+[2025-07-03 13:09:42] [32minfo[39m: GET /api/master-admin/events {}
+[2025-07-03 13:09:43] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 13:09:43] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 13:09:43] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 13:09:43] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 13:09:43] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 13:09:43] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 13:09:43] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 13:09:44] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 13:09:44] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 13:09:44] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-03 13:09:51] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 13:09:51] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 13:09:51] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 13:09:51] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 13:09:51] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 13:09:51] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 13:09:51] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 13:09:51] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 13:10:11] [32minfo[39m: POST /api/master-admin/courses/videos {
+  "body": {
+    "class": "6th",
+    "level": "Level 1",
+    "title": "HG RSP",
+    "iframeSnippet": "<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/v7XYD-_qJz4?si=b2DZClOOaExWxrdb\" title=\"YouTube video player\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\" referrerpolicy=\"strict-origin-when-cross-origin\" allowfullscreen></iframe>"
+  }
+}
+[2025-07-03 13:10:11] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 13:13:31] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 13:13:31] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 13:13:33] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 13:13:33] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 13:13:33] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 13:13:33] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 13:13:33] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 13:13:33] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 13:13:33] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 13:13:34] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 13:14:55] [32minfo[39m: POST /api/master-admin/courses/quiz {}
+[2025-07-03 13:14:56] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 13:42:09] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 13:42:09] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 13:42:12] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 13:42:12] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 13:42:12] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 13:42:12] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 13:42:12] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 13:42:12] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 13:42:12] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 13:42:12] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 13:42:47] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 14:39:25] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 14:39:25] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 14:39:26] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 14:39:26] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 14:39:26] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 14:39:26] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 14:39:26] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 14:39:26] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 14:39:26] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 14:39:26] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 17:07:32] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 17:07:32] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 17:07:35] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 17:07:35] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 17:07:35] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 17:07:35] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 17:07:35] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 17:07:35] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 17:07:35] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 17:07:35] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 17:13:08] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 17:13:08] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 17:13:11] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 17:13:11] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 17:13:11] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 17:13:11] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 17:13:11] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 17:13:11] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 17:13:11] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 17:13:11] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 17:14:01] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 17:14:01] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 17:14:06] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 17:14:06] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 17:14:17] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 17:14:17] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 17:14:24] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 17:14:24] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 17:14:24] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 17:14:24] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 17:14:24] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 17:14:24] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 17:14:24] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 17:14:24] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 17:19:25] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 17:19:25] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 17:19:28] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 17:19:28] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 17:19:28] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 17:19:28] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 17:19:28] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 17:19:28] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 17:19:28] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 17:19:28] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 17:21:33] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 17:21:33] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 17:25:14] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 17:25:14] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 17:25:21] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 17:25:21] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 17:25:21] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 17:25:21] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 17:25:21] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 17:25:21] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 17:25:21] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 17:25:21] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 17:27:44] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 17:27:44] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 17:27:46] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 17:27:46] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 17:27:46] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 17:27:46] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 17:27:46] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 17:27:46] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 17:27:46] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 17:27:47] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 17:32:39] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 17:32:39] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 17:34:05] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 17:34:05] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 17:34:12] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 17:34:12] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 17:34:12] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 17:34:12] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 17:34:12] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 17:34:12] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 17:34:12] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 17:34:12] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 17:37:07] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 17:37:07] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 17:37:10] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 17:37:10] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 17:37:10] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 17:37:10] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 17:37:10] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 17:37:10] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 17:37:10] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 17:37:10] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 17:37:36] [32minfo[39m: PUT /api/master-admin/courses/videos/cmcncmz510002qq5ulwvr7vww {
+  "body": {
+    "title": "HH BRSM",
+    "url": "https://www.youtube.com/embed/e47lfS4IOgs?si=GYvFETbjn5UlX8TX"
+  }
+}
+[2025-07-03 17:39:47] [32minfo[39m: PUT /api/master-admin/courses/videos/cmcncmz510002qq5ulwvr7vww {
+  "body": {
+    "title": "HH BRSM",
+    "url": "https://www.youtube.com/embed/e47lfS4IOgs?si=GYvFETbjn5UlX8TX"
+  }
+}
+[2025-07-03 17:39:47] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 17:41:23] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 17:41:23] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 17:41:26] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 17:41:26] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 17:41:26] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 17:41:26] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 17:41:26] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 17:41:26] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 17:41:26] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 17:41:26] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 17:42:12] [32minfo[39m: PUT /api/master-admin/courses/videos/cmcncmz510002qq5ulwvr7vww {
+  "body": {
+    "title": "HH BRSM",
+    "url": "<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/e47lfS4IOgs?si=GYvFETbjn5UlX8TX\" title=\"YouTube video player\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\" referrerpolicy=\"strict-origin-when-cross-origin\" allowfullscreen></iframe>"
+  }
+}
+[2025-07-03 17:42:13] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 17:42:50] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 17:42:50] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 17:42:53] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 17:42:53] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 17:42:53] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 17:42:53] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 17:42:53] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 17:42:53] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 17:42:53] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 17:42:53] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 17:43:36] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 17:45:09] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 17:45:09] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 17:45:16] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 17:45:16] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 17:45:16] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 17:45:16] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 17:45:16] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 17:45:16] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 17:45:16] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 17:45:16] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 17:46:51] [32minfo[39m: DELETE /api/master-admin/courses/videos/cmcnekxx30001qqiuumtr1xah {}
+[2025-07-03 17:46:51] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 17:48:48] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-03 17:48:48] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 17:48:50] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 17:48:50] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 17:48:50] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 17:48:50] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-03 17:48:51] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 17:48:51] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 17:48:51] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-03 17:48:51] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-03 18:00:07] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-03 18:00:07] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-04 07:36:17] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-04 07:36:17] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-04 09:42:23] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-04 09:42:23] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-04 10:38:17] [32minfo[39m: GET /api/master-admin/events {}
+[2025-07-04 10:38:17] [32minfo[39m: GET /api/master-admin/events {}
+[2025-07-04 10:38:17] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-04 10:38:18] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-04 10:38:18] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-04 10:38:18] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-04 10:38:18] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-04 10:38:18] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-04 10:38:18] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-04 10:38:18] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-04 10:38:52] [32minfo[39m: PUT /api/master-admin/courses/notes/cmcndkr3n0001qqzi8vn9ryb4 {}
+[2025-07-04 11:10:01] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-04 11:10:01] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-04 11:10:29] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-04 11:10:29] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-04 11:27:54] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-04 11:27:54] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-04 11:27:59] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-04 11:27:59] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-04 11:33:21] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-04 11:33:21] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-04 11:33:21] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-04 11:33:21] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-04 11:33:21] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-04 11:33:21] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-04 11:33:21] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-04 11:33:21] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-04 11:43:58] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-04 11:43:58] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-04 11:46:46] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-04 11:46:46] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-04 11:46:46] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-04 11:46:46] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-04 11:46:46] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-04 11:46:46] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-04 11:46:46] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-04 11:46:46] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-04 11:58:46] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-04 11:58:46] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-04 11:58:48] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-04 11:58:48] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-04 11:58:48] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-04 11:58:48] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-04 11:58:48] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-04 11:58:48] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-04 11:58:48] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-04 11:58:48] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-04 12:01:33] [32minfo[39m: PUT /api/master-admin/courses/quiz/cmcner17b0003qqi5017s86ys {}
+[2025-07-04 12:07:46] [32minfo[39m: PUT /api/master-admin/courses/quiz/cmcner17b0003qqi5017s86ys {}
+[2025-07-04 12:07:47] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-04 12:07:58] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-04 12:07:59] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-04 12:08:01] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-04 12:08:01] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-04 12:08:01] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-04 12:08:01] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-04 12:08:01] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-04 12:08:01] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-04 12:08:01] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-04 12:08:01] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-04 12:19:31] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-04 12:19:31] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-04 12:19:34] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-04 12:19:34] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-04 12:19:34] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-04 12:19:34] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-04 12:19:34] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-04 12:19:34] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-04 12:19:34] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-04 12:19:34] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-04 12:20:03] [32minfo[39m: PUT /api/master-admin/courses/quiz/cmcner17b0003qqi5017s86ys {}
+[2025-07-04 12:20:03] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-04 12:20:10] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-04 12:20:10] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-04 12:20:15] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-04 12:20:15] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-04 12:20:15] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-04 12:20:15] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-04 12:20:15] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-04 12:20:15] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-04 12:20:15] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-04 12:20:15] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-04 12:34:21] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-04 12:34:21] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-04 12:34:25] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-04 12:34:25] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-04 12:34:25] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-04 12:34:25] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-04 12:34:25] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-04 12:34:25] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-04 12:34:25] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-04 12:34:25] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-04 14:09:30] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-04 14:09:30] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-04 14:09:49] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-04 14:09:49] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-04 14:09:49] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-04 14:09:49] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-04 14:09:50] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-04 14:09:50] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-04 14:09:50] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-04 14:09:50] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-04 14:26:04] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-04 14:26:04] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-04 16:39:58] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-04 16:39:58] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-05 05:24:40] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-05 05:24:40] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-05 09:51:18] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-05 09:51:18] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-05 09:51:19] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-05 09:51:19] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-05 09:51:19] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-05 09:51:19] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-05 09:51:19] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-05 09:51:19] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-05 09:51:46] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-05 09:53:09] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-05 09:53:22] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-05 09:53:22] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-05 10:02:14] [32minfo[39m: GET /api/districts {}
+[2025-07-05 10:02:15] [32minfo[39m: GET /api/districts {}
+[2025-07-05 10:55:29] [32minfo[39m: GET /api/districts {}
+[2025-07-05 10:55:29] [32minfo[39m: GET /api/districts {}
+[2025-07-05 16:00:25] [32minfo[39m: GET /api/districts {}
+[2025-07-05 16:00:25] [32minfo[39m: GET /api/districts {}
+[2025-07-05 23:56:32] [32minfo[39m: GET /api/districts {}
+[2025-07-05 23:56:32] [32minfo[39m: GET /api/districts {}
+[2025-07-06 04:22:50] [32minfo[39m: GET /api/districts {}
+[2025-07-06 04:22:50] [32minfo[39m: GET /api/districts {}
+[2025-07-06 04:23:11] [32minfo[39m: POST /api/auth/login {
+  "body": {
+    "email": "master@haddi.com",
+    "password": "admin123",
+    "role": "master_admin"
+  }
+}
+[2025-07-06 04:23:11] [32minfo[39m: Master admin login attempt {
+  "email": "master@haddi.com"
+}
+[2025-07-06 04:23:12] [32minfo[39m: Admin login successful {
+  "email": "master@haddi.com",
+  "role": "master_admin",
+  "userId": "cmcr62407001iqquwjnsyve32",
+  "districtId": null
+}
+[2025-07-06 04:23:12] [32minfo[39m: GET /api/master-admin/district-performance {}
+[2025-07-06 04:23:12] [32minfo[39m: GET /api/master-admin/stats {}
+[2025-07-06 04:23:18] [32minfo[39m: GET /api/districts {}
+[2025-07-06 04:23:18] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-06 04:23:18] [32minfo[39m: GET /api/master-admin/district-admins {}
+[2025-07-06 04:23:18] [32minfo[39m: GET /api/districts {}
+[2025-07-06 04:23:18] [32minfo[39m: GET /api/districts {}
+[2025-07-06 04:23:18] [32minfo[39m: GET /api/districts {}
+[2025-07-06 04:23:20] [32minfo[39m: GET /api/master-admin/events {}
+[2025-07-06 04:23:20] [32minfo[39m: GET /api/master-admin/events {}
+[2025-07-06 04:23:21] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-06 04:23:21] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-06 04:23:21] [32minfo[39m: GET /api/master-admin/courses/passing-marks {}
+[2025-07-06 04:23:21] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-06 04:23:21] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-06 04:23:21] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-06 04:23:21] [32minfo[39m: GET /api/master-admin/course-levels {}
+[2025-07-06 04:23:21] [32minfo[39m: GET /api/master-admin/courses/all {}
+[2025-07-06 04:23:28] [32minfo[39m: GET /api/districts {}
+[2025-07-06 04:23:28] [32minfo[39m: GET /api/districts {}
+[2025-07-06 04:23:29] [32minfo[39m: GET /api/master-admin/analytics {}
+[2025-07-06 04:23:29] [32minfo[39m: GET /api/master-admin/analytics {}

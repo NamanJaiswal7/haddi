@@ -1,0 +1,16 @@
+# AWS Configuration
+aws_region = "us-east-1"
+
+# Database Configuration
+db_username = "haddi_user"
+db_password = "YourSecurePassword123!"
+
+# JWT Configuration
+jwt_secret = "your-super-secure-jwt-secret-here"
+
+# Load Balancer Configuration
+create_alb = false
+
+# Environment Configuration
+environment = "dev"
+app_name    = "haddi" 
