@@ -1,0 +1,15 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const authMiddleware_1 = require("../middleware/authMiddleware");
+const asyncHandler_1 = require("../utils/asyncHandler");
+const studentController_1 = require("../controllers/studentController");
+const router = (0, express_1.Router)();
+router.get('/dashboard', (0, asyncHandler_1.asyncHandler)(authMiddleware_1.authenticateToken), (0, asyncHandler_1.asyncHandler)(studentController_1.getStudentDashboard));
+router.get('/profile', (0, asyncHandler_1.asyncHandler)(authMiddleware_1.authenticateToken), (0, asyncHandler_1.asyncHandler)(studentController_1.getStudentProfile));
+router.get('/learning-path', (0, asyncHandler_1.asyncHandler)(authMiddleware_1.authenticateToken), (0, asyncHandler_1.asyncHandler)(studentController_1.getStudentLearningPath));
+router.get('/notifications', (0, asyncHandler_1.asyncHandler)(authMiddleware_1.authenticateToken), (0, asyncHandler_1.asyncHandler)(studentController_1.getStudentNotifications));
+router.get('/level-content', (0, asyncHandler_1.asyncHandler)(authMiddleware_1.authenticateToken), (0, asyncHandler_1.asyncHandler)(studentController_1.getStudentLevelContent));
+router.post('/mark-watched', (0, asyncHandler_1.asyncHandler)(authMiddleware_1.authenticateToken), (0, asyncHandler_1.asyncHandler)(studentController_1.markVideoWatched));
+router.post('/mark-pdf-read', (0, asyncHandler_1.asyncHandler)(authMiddleware_1.authenticateToken), (0, asyncHandler_1.asyncHandler)(studentController_1.markPdfRead));
+exports.default = router;

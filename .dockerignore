@@ -65,7 +65,6 @@ jspm_packages/
 
 # Nuxt.js build / generate output
 .nuxt
-dist
 
 # Gatsby files
 .cache/
@@ -121,7 +120,7 @@ __tests__/
 .eslintrc*
 .prettierrc*
 jest.config.*
-tsconfig.json
+# tsconfig.json
 
 # Scripts
 scripts/
@@ -222,7 +221,6 @@ __tests__/
 *.spec.ts
 
 # Build artifacts
-dist/
 build/
 
 # Database
