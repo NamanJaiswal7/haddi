@@ -27,7 +27,10 @@ const corsOptions = {
       'http://127.0.0.1:3000',
       'http://127.0.0.1:5173',
       'http://127.0.0.1:4173',
-      'http://127.0.0.1:8080'
+      'http://127.0.0.1:8080',
+      'https://facevalue-rej5-namanjaiswal7s-projects.vercel.app/',
+      'https://facevalue-rej5-git-main-namanjaiswal7s-projects.vercel.app/',
+      'https://facevalue-rej5.vercel.app/'
     ];
     
     if (allowedOrigins.indexOf(origin) !== -1) {
