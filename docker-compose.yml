@@ -1,29 +1,47 @@
 version: '3.8'
 
 services:
-  # PostgreSQL Database (temporarily using PostgreSQL until YugabyteDB issues are resolved)
-  postgres:
-    image: postgres:15-alpine
-    container_name: haddi_postgres
+  yugabytedb:
+    image: yugabytedb/yugabyte:2.25.2.0-b359
+    container_name: haddi_yugabytedb
     restart: unless-stopped
-    environment:
-      POSTGRES_DB: haddi_db
-      POSTGRES_USER: haddi_user
-      POSTGRES_PASSWORD: haddi_password
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
     ports:
-      - "5432:5432"
+      - "5433:5433"
+      - "7005:7000"
+      - "9000:9000"
+    command:
+      [
+        "/home/yugabyte/bin/yugabyted",
+        "start",
+        "--daemon=false",
+        "--tserver_flags=ysql_yb_enable_advisory_locks=true,allowed_preview_flags_csv=ysql_yb_enable_advisory_locks"
+      ]
+    volumes:
+      - yb_data:/home/yugabyte/var
     networks:
       - haddi_network
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U haddi_user -d haddi_db"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
-  # Redis (for caching and session storage if needed)
+  yugabytedb-init:
+    image: yugabytedb/yugabyte:2.25.2.0-b359
+    container_name: haddi_yugabytedb_init
+    depends_on:
+      - yugabytedb
+    entrypoint: ["/bin/sh", "-c"]
+    command: >
+      "sleep 10 &&
+      ysqlsh -h yugabytedb -p 5433 -U yugabyte -d yugabyte -c \"\
+        DO $$\
+        BEGIN\
+          IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'haddi_user') THEN\
+            CREATE USER haddi_user WITH PASSWORD 'haddi_password';\
+          END IF;\
+        END$$;\
+        CREATE DATABASE haddi_db OWNER haddi_user;\
+        GRANT ALL PRIVILEGES ON DATABASE haddi_db TO haddi_user;\
+      \" || true"
+    networks:
+      - haddi_network
+
   redis:
     image: redis:7-alpine
     container_name: haddi_redis
@@ -40,26 +58,18 @@ services:
       timeout: 5s
       retries: 5
 
-  # Application (Development)
-  app_dev:
+  app:
     build:
       context: .
-      dockerfile: Dockerfile.dev
-    container_name: haddi_app_dev
+      dockerfile: Dockerfile
+    container_name: haddi_app
     restart: unless-stopped
     environment:
       NODE_ENV: development
       PORT: 4545
-      DATABASE_URL: postgresql://haddi_user:haddi_password@postgres:5432/haddi_db
+      DATABASE_URL: postgresql://yugabyte:yugabyte@yugabytedb:5433/yugabyte
       REDIS_URL: redis://redis:6379
       JWT_SECRET: your_jwt_secret_here_change_in_production
-      # Add other environment variables as needed
-      # AWS_ACCESS_KEY_ID: your_aws_access_key
-      # AWS_SECRET_ACCESS_KEY: your_aws_secret_key
-      # AWS_REGION: your_aws_region
-      # AWS_S3_BUCKET: your_s3_bucket
-      # GMAIL_USER: your_gmail_user
-      # GMAIL_PASS: your_gmail_app_password
     ports:
       - "4545:4545"
     volumes:
@@ -67,63 +77,16 @@ services:
       - /app/node_modules
       - ./logs:/app/logs
     depends_on:
-      postgres:
-        condition: service_healthy
+      yugabytedb-init:
+        condition: service_completed_successfully
       redis:
         condition: service_healthy
     networks:
       - haddi_network
     command: npm start
 
-  # Application (Production)
-  app_prod:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: production
-    container_name: haddi_app_prod
-    restart: unless-stopped
-    environment:
-      NODE_ENV: production
-      PORT: 4545
-      DATABASE_URL: postgresql://haddi_user:haddi_password@postgres:5432/haddi_db
-      REDIS_URL: redis://redis:6379
-      JWT_SECRET: your_jwt_secret_here_change_in_production
-      # Add other environment variables as needed
-    ports:
-      - "4546:4545"  # Different port for production
-    volumes:
-      - ./logs:/app/logs
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    networks:
-      - haddi_network
-    profiles:
-      - production
-
-  # Nginx reverse proxy (optional, for production)
-  nginx:
-    image: nginx:alpine
-    container_name: haddi_nginx
-    restart: unless-stopped
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./ssl:/etc/nginx/ssl:ro
-    depends_on:
-      - app_prod
-    networks:
-      - haddi_network
-    profiles:
-      - production
-
 volumes:
-  postgres_data:
+  yb_data:
     driver: local
   redis_data:
     driver: local
