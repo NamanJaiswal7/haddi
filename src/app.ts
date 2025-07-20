@@ -18,7 +18,7 @@ const corsOptions = {
   origin: function (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) {
     // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
-    
+
     const allowedOrigins = [
       'http://localhost:3000',
       'http://localhost:5173',
@@ -28,9 +28,9 @@ const corsOptions = {
       'http://127.0.0.1:5173',
       'http://127.0.0.1:4173',
       'http://127.0.0.1:8080',
-      'https://facevalue-rej5-namanjaiswal7s-projects.vercel.app/',
-      'https://facevalue-rej5-git-main-namanjaiswal7s-projects.vercel.app/',
-      'https://facevalue-rej5.vercel.app/'
+      'https://facevalue-rej5-namanjaiswal7s-projects.vercel.app',
+      'https://facevalue-rej5-git-main-namanjaiswal7s-projects.vercel.app',
+      'https://facevalue-rej5.vercel.app'
     ];
     
     if (allowedOrigins.indexOf(origin) !== -1) {

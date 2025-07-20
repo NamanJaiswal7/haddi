@@ -271,3 +271,328 @@ export const studentSignIn = async (req: Request, res: Response) => {
     res.status(500).json({ message: 'Login failed', error });
   }
 };
+
+export const studentGoogleSignIn = async (req: Request, res: Response) => {
+  const { email, name, googleId, picture } = req.body;
+
+  try {
+    // Validate required fields
+    if (!email || !googleId) {
+      return res.status(400).json({ message: 'Email and googleId are required' });
+    }
+
+    // Find user by email or googleId
+    const user = await prisma.user.findFirst({
+      where: {
+        OR: [
+          { email },
+          { googleId }
+        ]
+      }
+    });
+
+    if (!user) {
+      return res.status(401).json({ message: 'User not found. Please sign up first.' });
+    }
+
+    // Verify this is a student
+    if (user.role !== 'student') {
+      return res.status(403).json({ message: 'Access denied. Only students can use Google sign-in.' });
+    }
+
+    // Update user's Google information if it has changed
+    if (user.googleId !== googleId || user.picture !== picture || user.name !== name) {
+      await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          googleId,
+          picture,
+          name: name || user.name,
+          lastActiveAt: new Date()
+        }
+      });
+    } else {
+      // Just update lastActiveAt
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { lastActiveAt: new Date() }
+      });
+    }
+
+    // Fetch the updated user from database to ensure we have the latest data
+    const updatedUser = await prisma.user.findUnique({
+      where: { id: user.id }
+    });
+
+    if (!updatedUser) {
+      return res.status(500).json({ message: 'Failed to fetch updated user data' });
+    }
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { id: updatedUser.id, role: updatedUser.role },
+      process.env.JWT_SECRET!,
+      { expiresIn: '7d' }
+    );
+
+    logger.info('Google sign-in successful', { email, userId: updatedUser.id });
+
+    res.json({
+      token,
+      user: {
+        id: updatedUser.id,
+        email: updatedUser.email,
+        name: updatedUser.name,
+        role: updatedUser.role,
+        googleId: updatedUser.googleId,
+        picture: updatedUser.picture,
+        dob: updatedUser.dob,
+        gender: updatedUser.gender,
+        education: updatedUser.institution,
+        classLevel: updatedUser.classLevel,
+        districtId: updatedUser.districtId,
+        pincode: updatedUser.pincode
+      }
+    });
+  } catch (error) {
+    logger.error('Google sign-in failed: %o', error);
+    res.status(500).json({ message: 'Google sign-in failed', error });
+  }
+};
+
+export const studentGoogleSignUp = async (req: Request, res: Response) => {
+  const { email, name, googleId, picture } = req.body;
+
+  try {
+    // Validate required fields
+    if (!email || !name || !googleId) {
+      return res.status(400).json({ message: 'Email, name, and googleId are required' });
+    }
+
+    // Check if user already exists
+    const existingUser = await prisma.user.findFirst({
+      where: {
+        OR: [
+          { email },
+          { googleId }
+        ]
+      }
+    });
+
+    if (existingUser) {
+      return res.status(409).json({ message: 'A user with this email or Google ID already exists' });
+    }
+
+    // Create new student user
+    const newUser = await prisma.user.create({
+      data: {
+        email,
+        name,
+        googleId,
+        picture,
+        passwordHash: '', // Empty password hash for Google users
+        mobile: `temp_${Date.now()}@student.com`, // Placeholder mobile number
+        role: 'student',
+        lastActiveAt: new Date()
+      }
+    });
+
+    // After creating the user, robustly unlock all level 1 courses for the user
+    const level1Courses = await prisma.course.findMany({
+      where: {
+        classLevel: newUser.classLevel,
+        OR: [
+          { level: "1" },
+          { level: { equals: "Level 1" } },
+          { level: { contains: "1" } },
+          { level: { startsWith: "Level 1" } }
+        ]
+      }
+    });
+    for (const course of level1Courses) {
+      await prisma.studentProgress.upsert({
+        where: {
+          studentId_courseId: {
+            studentId: newUser.id,
+            courseId: course.id
+          }
+        },
+        update: {},
+        create: {
+          studentId: newUser.id,
+          courseId: course.id,
+          status: "in_progress"
+        }
+      });
+    }
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { id: newUser.id, role: newUser.role },
+      process.env.JWT_SECRET!,
+      { expiresIn: '7d' }
+    );
+
+    logger.info('Google sign-up successful', { email, userId: newUser.id });
+
+    res.status(201).json({
+      token,
+      user: {
+        id: newUser.id,
+        email: newUser.email,
+        name: newUser.name,
+        role: newUser.role,
+        googleId: newUser.googleId,
+        picture: newUser.picture,
+        districtId: newUser.districtId
+      }
+    });
+  } catch (error) {
+    logger.error('Google sign-up failed: %o', error);
+    res.status(500).json({ message: 'Google sign-up failed', error });
+  }
+};
+
+export const studentGoogleSignUpComplete = async (req: Request, res: Response) => {
+  const { 
+    email, 
+    name, 
+    googleId, 
+    picture, 
+    dob, 
+    gender, 
+    education, 
+    classLevel, 
+    districtId, 
+    pincode 
+  } = req.body;
+
+  try {
+    // Validate required fields
+    if (!email || !name || !googleId) {
+      return res.status(400).json({ message: 'Email, name, and googleId are required' });
+    }
+
+    // Check if user already exists
+    const existingUser = await prisma.user.findFirst({
+      where: {
+        OR: [
+          { email },
+          { googleId }
+        ]
+      }
+    });
+
+    if (existingUser) {
+      return res.status(409).json({ message: 'A user with this email or Google ID already exists' });
+    }
+
+    // Validate district if provided
+    if (districtId) {
+      const district = await prisma.district.findUnique({
+        where: { id: districtId }
+      });
+      if (!district) {
+        return res.status(400).json({ message: 'Invalid district ID' });
+      }
+    }
+
+    // Validate gender enum
+    if (gender && !['male', 'female', 'other'].includes(gender)) {
+      return res.status(400).json({ message: 'Invalid gender value' });
+    }
+
+    // Validate education enum
+    if (education && !['high_school', 'senior_secondary', 'college', 'working', 'other'].includes(education)) {
+      return res.status(400).json({ message: 'Invalid education value' });
+    }
+
+    // Create new student user with complete information
+    const newUser = await prisma.user.create({
+      data: {
+        email,
+        name,
+        googleId,
+        picture,
+        passwordHash: '', // Empty password hash for Google users
+        mobile: `temp_${Date.now()}@student.com`, // Placeholder mobile number
+        dob: dob ? new Date(dob) : undefined,
+        gender: gender as any, // Cast to enum type
+        institution: education as any, // Cast to enum type
+        classLevel,
+        districtId,
+        pincode,
+        role: 'student',
+        lastActiveAt: new Date()
+      }
+    });
+
+    // Fetch the user from database to ensure we have the latest data
+    const userFromDb = await prisma.user.findUnique({
+      where: { id: newUser.id }
+    });
+
+    if (!userFromDb) {
+      return res.status(500).json({ message: 'Failed to fetch created user data' });
+    }
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { id: userFromDb.id, role: userFromDb.role },
+      process.env.JWT_SECRET!,
+      { expiresIn: '7d' }
+    );
+
+    logger.info('Google sign-up complete successful', { email, userId: userFromDb.id });
+
+    res.status(201).json({
+      token,
+      user: {
+        id: userFromDb.id,
+        email: userFromDb.email,
+        name: userFromDb.name,
+        role: userFromDb.role,
+        googleId: userFromDb.googleId,
+        picture: userFromDb.picture,
+        dob: userFromDb.dob,
+        gender: userFromDb.gender,
+        education: userFromDb.institution,
+        classLevel: userFromDb.classLevel,
+        districtId: userFromDb.districtId,
+        pincode: userFromDb.pincode
+      }
+    });
+
+    // After creating the user, robustly unlock all level 1 courses for the user
+    const level1Courses = await prisma.course.findMany({
+      where: {
+        classLevel: userFromDb.classLevel,
+        OR: [
+          { level: "1" },
+          { level: { equals: "Level 1" } },
+          { level: { contains: "1" } },
+          { level: { startsWith: "Level 1" } }
+        ]
+      }
+    });
+    for (const course of level1Courses) {
+      await prisma.studentProgress.upsert({
+        where: {
+          studentId_courseId: {
+            studentId: userFromDb.id,
+            courseId: course.id
+          }
+        },
+        update: {},
+        create: {
+          studentId: userFromDb.id,
+          courseId: course.id,
+          status: "in_progress"
+        }
+      });
+    }
+  } catch (error) {
+    logger.error('Google sign-up complete failed: %o', error);
+    res.status(500).json({ message: 'Google sign-up complete failed', error });
+  }
+};

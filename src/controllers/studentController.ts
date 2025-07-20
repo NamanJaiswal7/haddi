@@ -142,14 +142,18 @@ export const getStudentLearningPath = async (req: Request, res: Response) => {
       if (prog?.status === 'completed' && prog.qualified) status = 'completed';
       else if (prog?.status === 'in_progress') status = 'in_progress';
       else if (course.level === maxUnlockedLevel) status = 'in_progress';
-      // Compare as numbers if possible, else as strings
+      // Enable completed, in_progress, and next unlocked level
       let enabled = false;
-      const courseLevelNum = Number(course.level);
-      const maxUnlockedLevelNum = Number(maxUnlockedLevel);
-      if (!isNaN(courseLevelNum) && !isNaN(maxUnlockedLevelNum)) {
-        enabled = courseLevelNum <= maxUnlockedLevelNum;
+      if (status === 'completed' || status === 'in_progress') {
+        enabled = true;
       } else {
-        enabled = course.level <= maxUnlockedLevel;
+        const courseLevelNum = Number(course.level);
+        const maxUnlockedLevelNum = Number(maxUnlockedLevel);
+        if (!isNaN(courseLevelNum) && !isNaN(maxUnlockedLevelNum)) {
+          enabled = courseLevelNum === maxUnlockedLevelNum;
+        } else {
+          enabled = course.level === maxUnlockedLevel;
+        }
       }
       return {
         id: course.id,
@@ -251,6 +255,26 @@ export const getStudentLevelContent = async (req: Request, res: Response) => {
     }) : [];
     const examAttemptMap = Object.fromEntries(examAttempts.map(ea => [ea.quizId, ea]));
 
+    // Find the student's max unlocked/in-progress level for their classLevel
+    const progress = await prisma.studentProgress.findMany({
+      where: { studentId: user.id },
+      include: { course: { select: { level: true, classLevel: true } } }
+    });
+    const unlockedLevels = progress
+      .filter(p => p.course.classLevel === classLevel && (p.status === 'in_progress' || (p.status === 'completed' && p.qualified)))
+      .map(p => p.course.level);
+
+    let maxUnlockedLevel = "1";
+    if (unlockedLevels.length > 0) {
+      const unlockedLevelsNum = unlockedLevels.map(l => Number(l.replace(/\D/g, ""))).filter(l => !isNaN(l));
+      if (unlockedLevelsNum.length > 0) {
+        maxUnlockedLevel = Math.max(...unlockedLevelsNum).toString();
+      }
+    }
+
+    const requestedLevelNum = Number(level.replace(/\D/g, ""));
+    const isPreviousLevel = requestedLevelNum < Number(maxUnlockedLevel);
+
     // Compose response
     const videos = allVideos.map(video => ({
       id: video.id,
@@ -268,7 +292,7 @@ export const getStudentLevelContent = async (req: Request, res: Response) => {
       read: !!pdfProgressMap[pdf.id]?.read,
       readAt: pdfProgressMap[pdf.id]?.readAt || null,
     }));
-    const quizzes = allQuizzes.map(quiz => {
+    const quizzes = isPreviousLevel ? [] : allQuizzes.map(quiz => {
       const attempt = examAttemptMap[quiz.id];
       return {
         id: quiz.id,
