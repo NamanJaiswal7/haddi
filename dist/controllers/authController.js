@@ -84,8 +84,8 @@ const loginAdmin = async (req, res) => {
         });
     }
     catch (error) {
-        logger_1.default.error('Login failed: %o', error);
-        res.status(500).json({ message: 'Login failed', error });
+        logger_1.default.error('Login failed:', { error: error instanceof Error ? error.message : String(error), stack: error instanceof Error ? error.stack : undefined });
+        res.status(500).json({ message: 'Login failed', error: error instanceof Error ? error.message : String(error) });
     }
 };
 exports.loginAdmin = loginAdmin;
@@ -337,8 +337,8 @@ const studentGoogleSignIn = async (req, res) => {
         });
     }
     catch (error) {
-        logger_1.default.error('Google sign-in failed: %o', error);
-        res.status(500).json({ message: 'Google sign-in failed', error });
+        logger_1.default.error('Google sign-in failed:', { error: error instanceof Error ? error.message : String(error), stack: error instanceof Error ? error.stack : undefined });
+        res.status(500).json({ message: 'Google sign-in failed', error: error instanceof Error ? error.message : String(error) });
     }
 };
 exports.studentGoogleSignIn = studentGoogleSignIn;
@@ -377,7 +377,7 @@ const studentGoogleSignUp = async (req, res) => {
         // After creating the user, robustly unlock all level 1 courses for the user
         const level1Courses = await client_1.prisma.course.findMany({
             where: {
-                classLevel: newUser.classLevel,
+                classLevel: newUser.classLevel || undefined,
                 OR: [
                     { level: "1" },
                     { level: { equals: "Level 1" } },
@@ -509,7 +509,7 @@ const studentGoogleSignUpComplete = async (req, res) => {
         // After creating the user, robustly unlock all level 1 courses for the user
         const level1Courses = await client_1.prisma.course.findMany({
             where: {
-                classLevel: userFromDb.classLevel,
+                classLevel: userFromDb.classLevel || undefined,
                 OR: [
                     { level: "1" },
                     { level: { equals: "Level 1" } },

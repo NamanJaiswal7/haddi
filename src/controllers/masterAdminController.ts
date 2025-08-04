@@ -80,7 +80,32 @@ export const getDashboardStats = async (req: Request, res: Response) => {
 
 export const getDistrictPerformance = async (req: Request, res: Response) => {
     try {
-        const totalCourseCount = await prisma.course.count();
+        // Get all courses grouped by class level to determine completion requirements per class
+        const courses = await prisma.course.findMany({
+            select: {
+                id: true,
+                classLevel: true,
+                level: true
+            },
+            orderBy: {
+                level: 'asc'
+            }
+        });
+
+        // Group courses by class level to determine how many courses each class needs to complete
+        const coursesByClass: Record<string, string[]> = {};
+        courses.forEach(course => {
+            // Only process courses with a valid classLevel
+            if (course.classLevel) {
+                const classLevel = course.classLevel; // Store in a local variable to satisfy TypeScript
+                // Initialize the array for this class level if it doesn't exist
+                if (!coursesByClass[classLevel]) {
+                    coursesByClass[classLevel] = [];
+                }
+                // Now we can safely push to the array
+                coursesByClass[classLevel].push(course.id);
+            }
+        });
 
         // 1. Get all districts with their students and exam attempts
         const districts = await prisma.district.findMany({
@@ -94,7 +119,16 @@ export const getDistrictPerformance = async (req: Request, res: Response) => {
                         },
                         studentProgress: {
                             where: { status: 'completed', qualified: true },
-                        },
+                            include: {
+                                course: {
+                                    select: {
+                                        id: true,
+                                        classLevel: true,
+                                        level: true
+                                    }
+                                }
+                            }
+                        }
                     },
                 },
             },
@@ -102,7 +136,8 @@ export const getDistrictPerformance = async (req: Request, res: Response) => {
 
         // 2. Process the data for each district
         const performanceData = districts.map(district => {
-            const studentCount = district.users.length;
+            const districtUsers = district.users || [];
+            const studentCount = districtUsers.length;
             if (studentCount === 0) {
                 return {
                     id: district.id,
@@ -111,32 +146,52 @@ export const getDistrictPerformance = async (req: Request, res: Response) => {
                     completionPercentage: 0,
                     avgScore: 0,
                     completedCount: 0,
+                    enrolledCount: 0
                 };
             }
 
             let totalScore = 0;
             let attemptCount = 0;
             let completedCount = 0;
+            let enrolledCount = 0;
 
-            district.users.forEach(student => {
+            // Track students who have completed all courses for their class level
+            districtUsers.forEach(student => {
                 // Calculate avg score
                 const studentTotalScore = student.examAttempts.reduce((sum, attempt) => sum + (attempt.score || 0), 0);
                 totalScore += studentTotalScore;
                 attemptCount += student.examAttempts.length;
 
-                // Check for full course completion
-                if (totalCourseCount > 0 && student.studentProgress.length === totalCourseCount) {
-                    completedCount++;
+                // Count as enrolled if they have any exam attempts or progress
+                if (student.examAttempts.length > 0 || student.studentProgress.length > 0) {
+                    enrolledCount++;
+                }
+
+                // Check for full course completion based on student's class level
+                const classLevel = student.classLevel;
+                if (classLevel && coursesByClass[classLevel]) {
+                    const requiredCourseIds = coursesByClass[classLevel];
+                    const completedCourseIds = student.studentProgress.map(progress => progress.course.id);
+                    
+                    // Check if student has completed all courses for their class level
+                    const hasCompletedAllRequired = requiredCourseIds.every(courseId => 
+                        completedCourseIds.includes(courseId)
+                    );
+                    
+                    if (hasCompletedAllRequired) {
+                        completedCount++;
+                    }
                 }
             });
 
             const avgScore = attemptCount > 0 ? Math.round(totalScore / attemptCount) : 0;
-            const completionPercentage = (completedCount / studentCount) * 100;
+            const completionPercentage = enrolledCount > 0 ? (completedCount / enrolledCount) * 100 : 0;
 
             return {
                 id: district.id,
                 name: district.name,
                 studentCount,
+                enrolledCount,
                 completionPercentage: Math.round(completionPercentage),
                 avgScore,
                 completedCount,
@@ -1323,4 +1378,95 @@ export const updateQuiz = async (req: Request, res: Response) => {
     } catch (error) {
         res.status(500).json({ message: 'Failed to update quiz', error });
     }
-}; 
+};
+
+/**
+ * Deletes all courses for a specific class and level, and updates course levels.
+ * This is used when restructuring the curriculum.
+ */
+export const deleteCourseLevel = async (req: Request, res: Response) => {
+    const { classLevel, level } = req.body;
+
+    if (!classLevel || !level) {
+        return res.status(400).json({ message: 'Class level and level are required.' });
+    }
+
+    try {
+        // Find all courses matching the class and level
+        const coursesToDelete = await prisma.course.findMany({
+            where: {
+                classLevel,
+                level
+            },
+            include: {
+                videos: true,
+                pdfs: true,
+                quizzes: true,
+                studentProgress: true
+            }
+        });
+
+        if (coursesToDelete.length === 0) {
+            return res.status(404).json({ message: 'No courses found for the specified class and level.' });
+        }
+
+        // Begin a transaction to ensure all related data is deleted properly
+        const result = await prisma.$transaction(async (prismaClient) => {
+            // For each course, delete related content
+            for (const course of coursesToDelete) {
+                // Delete student progress records
+                if (course.studentProgress.length > 0) {
+                    await prismaClient.studentProgress.deleteMany({
+                        where: { courseId: course.id }
+                    });
+                }
+
+                // Delete videos
+                if (course.videos.length > 0) {
+                    await prismaClient.courseVideo.deleteMany({
+                        where: { courseId: course.id }
+                    });
+                }
+
+                // Delete PDFs
+                if (course.pdfs.length > 0) {
+                    await prismaClient.coursePDF.deleteMany({
+                        where: { courseId: course.id }
+                    });
+                }
+
+                // Delete quizzes and related questions
+                if (course.quizzes.length > 0) {
+                    for (const quiz of course.quizzes) {
+                        // Delete exam attempts related to this quiz
+                        await prismaClient.examAttempt.deleteMany({
+                            where: { quizId: quiz.id }
+                        });
+                        
+                        // Delete the quiz
+                        await prismaClient.quiz.delete({
+                            where: { id: quiz.id }
+                        });
+                    }
+                }
+
+                // Delete the course
+                await prismaClient.course.delete({
+                    where: { id: course.id }
+                });
+            }
+
+            // Return the number of courses deleted
+            return coursesToDelete.length;
+        });
+
+        res.status(200).json({
+            message: `Successfully deleted ${result} courses for class ${classLevel}, level ${level}`,
+            deletedCount: result
+        });
+
+    } catch (error) {
+        console.error("Error deleting course level:", error);
+        res.status(500).json({ message: 'Internal server error while deleting course level' });
+    }
+};

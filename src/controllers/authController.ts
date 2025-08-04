@@ -86,8 +86,8 @@ export const loginAdmin = async (req: Request, res: Response): Promise<void> => 
       } 
     });
   } catch (error) {
-    logger.error('Login failed: %o', error);
-    res.status(500).json({ message: 'Login failed', error });
+    logger.error('Login failed:', { error: error instanceof Error ? error.message : String(error), stack: error instanceof Error ? error.stack : undefined });
+    res.status(500).json({ message: 'Login failed', error: error instanceof Error ? error.message : String(error) });
   }
 };
 
@@ -355,8 +355,8 @@ export const studentGoogleSignIn = async (req: Request, res: Response) => {
       }
     });
   } catch (error) {
-    logger.error('Google sign-in failed: %o', error);
-    res.status(500).json({ message: 'Google sign-in failed', error });
+    logger.error('Google sign-in failed:', { error: error instanceof Error ? error.message : String(error), stack: error instanceof Error ? error.stack : undefined });
+    res.status(500).json({ message: 'Google sign-in failed', error: error instanceof Error ? error.message : String(error) });
   }
 };
 
@@ -400,7 +400,7 @@ export const studentGoogleSignUp = async (req: Request, res: Response) => {
     // After creating the user, robustly unlock all level 1 courses for the user
     const level1Courses = await prisma.course.findMany({
       where: {
-        classLevel: newUser.classLevel,
+        classLevel: newUser.classLevel || undefined,
         OR: [
           { level: "1" },
           { level: { equals: "Level 1" } },
@@ -566,7 +566,7 @@ export const studentGoogleSignUpComplete = async (req: Request, res: Response) =
     // After creating the user, robustly unlock all level 1 courses for the user
     const level1Courses = await prisma.course.findMany({
       where: {
-        classLevel: userFromDb.classLevel,
+        classLevel: userFromDb.classLevel || undefined,
         OR: [
           { level: "1" },
           { level: { equals: "Level 1" } },

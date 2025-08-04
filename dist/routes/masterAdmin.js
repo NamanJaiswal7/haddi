@@ -152,4 +152,10 @@ router.put('/courses/notes/:id', uploadMiddleware_1.upload.single('file'), (0, a
  * @access Private (Master Admin)
  */
 router.put('/courses/quiz/:id', uploadMiddleware_1.upload.single('file'), (0, asyncHandler_1.asyncHandler)(masterAdminController_1.updateQuiz));
+/**
+ * @route DELETE /api/master-admin/course-levels
+ * @description Delete all courses for a class and level, and update course levels
+ * @access Private (Master Admin)
+ */
+router.delete('/course-levels', (0, asyncHandler_1.asyncHandler)(masterAdminController_1.deleteCourseLevel));
 exports.default = router;

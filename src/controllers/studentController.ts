@@ -205,6 +205,29 @@ export const getStudentNotifications = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * Get the count of unread notifications for the authenticated student
+ * @route GET /api/student/notifications/count
+ * @returns {Object} Object containing unreadCount
+ */
+export const getStudentNotificationCount = async (req: Request, res: Response) => {
+  const user = req.user;
+  if (!user || user.role !== 'student') {
+    return res.status(403).json({ message: 'Forbidden: Not a student.' });
+  }
+  try {
+    const unreadCount = await prisma.notificationRecipient.count({
+      where: { 
+        userId: user.id,
+        isRead: false 
+      }
+    });
+    res.json({ unreadCount });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to fetch notification count', error });
+  }
+};
+
 export const getStudentLevelContent = async (req: Request, res: Response) => {
   const user = req.user;
   if (!user || user.role !== 'student') {
@@ -416,4 +439,109 @@ export const markPdfRead = async (req: Request, res: Response) => {
   } catch (error) {
     res.status(500).json({ message: 'Failed to mark PDF as read', error });
   }
-}; 
+};
+
+/**
+ * Get upcoming events for the student's district (next 45 days)
+ * Returns events in ascending order by date
+ */
+export const getStudentUpcomingEvents = async (req: Request, res: Response) => {
+  const user = req.user;
+  if (!user || user.role !== 'student' || !user.districtId) {
+    return res.status(403).json({ message: 'Access denied. Only students with a district can view events.' });
+  }
+  try {
+    const now = new Date();
+    const futureDate = new Date();
+    futureDate.setDate(now.getDate() + 45);
+
+    // Get events within the next 45 days, ordered by date (ascending)
+    // Include both district-specific events and global events (where districtId is null)
+    const events = await prisma.event.findMany({
+      where: {
+        OR: [
+          { districtId: user.districtId },  // District-specific events
+          { districtId: null }              // Global events (created by master admin)
+        ],
+        date: {
+          gte: now,                     // Events from now
+          lte: futureDate              // Up to 45 days from now
+        }
+      },
+      include: {
+        participants: true,
+        district: true
+      },
+      orderBy: { 
+        date: 'asc'  // Ascending order (earliest first)
+      }
+    });
+console.log(events);
+    const formattedEvents = events.map(event => ({
+      id: event.id,
+      title: event.title,
+      type: event.type,
+      date: event.date.toISOString(),
+      participants: event.participants?.length || 0,
+      description: event.description,
+      location: event.location,
+      district: event.district?.name || 'Unknown',
+      isUpcoming: event.date > now  // Indicates if event is in the future
+    }));
+
+    res.status(200).json(formattedEvents);
+  } catch (error) {
+    console.error("Error fetching upcoming events:", error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+/**
+ * Get all events for the student's district
+ * Includes both upcoming and past events, ordered by date (newest first)
+ */
+export const getStudentAllEvents = async (req: Request, res: Response) => {
+  const user = req.user;
+  if (!user || user.role !== 'student' || !user.districtId) {
+    return res.status(403).json({ message: 'Access denied. Only students with a district can view events.' });
+  }
+
+  try {
+    const now = new Date();
+    
+    // Get all events, including both district-specific and global events, ordered by date (newest first)
+    const events = await prisma.event.findMany({
+      where: {
+        OR: [
+          { districtId: user.districtId },  // District-specific events
+          { districtId: null }              // Global events (created by master admin)
+        ]
+      },
+      include: {
+        participants: true,
+        district: true
+      },
+      orderBy: { 
+        date: 'desc'  // Most recent first
+      }
+    });
+
+    const formattedEvents = events.map(event => ({
+      id: event.id,
+      title: event.title,
+      type: event.type,
+      date: event.date.toISOString(),
+      participants: event.participants?.length || 0,
+      district: event.district?.name || 'Unknown',
+      description: event.description,
+      location: event.location,
+      isUpcoming: event.date > now,  // Indicates if event is in the future
+      isCompleted: event.date < now  // Indicates if event is in the past
+    }));
+
+    res.status(200).json(formattedEvents);
+  } catch (error) {
+    console.error("Error fetching all events:", error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};

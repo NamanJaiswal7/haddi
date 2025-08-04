@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.markPdfRead = exports.markVideoWatched = exports.getStudentLevelContent = exports.getStudentNotifications = exports.getStudentLearningPath = exports.getStudentProfile = exports.getStudentDashboard = void 0;
+exports.getStudentAllEvents = exports.getStudentUpcomingEvents = exports.markPdfRead = exports.markVideoWatched = exports.getStudentLevelContent = exports.getStudentNotificationCount = exports.getStudentNotifications = exports.getStudentLearningPath = exports.getStudentProfile = exports.getStudentDashboard = void 0;
 const client_1 = require("../prisma/client");
 const getStudentDashboard = async (req, res) => {
     const user = req.user;
@@ -142,15 +142,20 @@ const getStudentLearningPath = async (req, res) => {
                 status = 'in_progress';
             else if (course.level === maxUnlockedLevel)
                 status = 'in_progress';
-            // Compare as numbers if possible, else as strings
+            // Enable completed, in_progress, and next unlocked level
             let enabled = false;
-            const courseLevelNum = Number(course.level);
-            const maxUnlockedLevelNum = Number(maxUnlockedLevel);
-            if (!isNaN(courseLevelNum) && !isNaN(maxUnlockedLevelNum)) {
-                enabled = courseLevelNum <= maxUnlockedLevelNum;
+            if (status === 'completed' || status === 'in_progress') {
+                enabled = true;
             }
             else {
-                enabled = course.level <= maxUnlockedLevel;
+                const courseLevelNum = Number(course.level);
+                const maxUnlockedLevelNum = Number(maxUnlockedLevel);
+                if (!isNaN(courseLevelNum) && !isNaN(maxUnlockedLevelNum)) {
+                    enabled = courseLevelNum === maxUnlockedLevelNum;
+                }
+                else {
+                    enabled = course.level === maxUnlockedLevel;
+                }
             }
             return {
                 id: course.id,
@@ -204,6 +209,30 @@ const getStudentNotifications = async (req, res) => {
     }
 };
 exports.getStudentNotifications = getStudentNotifications;
+/**
+ * Get the count of unread notifications for the authenticated student
+ * @route GET /api/student/notifications/count
+ * @returns {Object} Object containing unreadCount
+ */
+const getStudentNotificationCount = async (req, res) => {
+    const user = req.user;
+    if (!user || user.role !== 'student') {
+        return res.status(403).json({ message: 'Forbidden: Not a student.' });
+    }
+    try {
+        const unreadCount = await client_1.prisma.notificationRecipient.count({
+            where: {
+                userId: user.id,
+                isRead: false
+            }
+        });
+        res.json({ unreadCount });
+    }
+    catch (error) {
+        res.status(500).json({ message: 'Failed to fetch notification count', error });
+    }
+};
+exports.getStudentNotificationCount = getStudentNotificationCount;
 const getStudentLevelContent = async (req, res) => {
     const user = req.user;
     if (!user || user.role !== 'student') {
@@ -247,6 +276,23 @@ const getStudentLevelContent = async (req, res) => {
             orderBy: { completedAt: 'desc' },
         }) : [];
         const examAttemptMap = Object.fromEntries(examAttempts.map(ea => [ea.quizId, ea]));
+        // Find the student's max unlocked/in-progress level for their classLevel
+        const progress = await client_1.prisma.studentProgress.findMany({
+            where: { studentId: user.id },
+            include: { course: { select: { level: true, classLevel: true } } }
+        });
+        const unlockedLevels = progress
+            .filter(p => p.course.classLevel === classLevel && (p.status === 'in_progress' || (p.status === 'completed' && p.qualified)))
+            .map(p => p.course.level);
+        let maxUnlockedLevel = "1";
+        if (unlockedLevels.length > 0) {
+            const unlockedLevelsNum = unlockedLevels.map(l => Number(l.replace(/\D/g, ""))).filter(l => !isNaN(l));
+            if (unlockedLevelsNum.length > 0) {
+                maxUnlockedLevel = Math.max(...unlockedLevelsNum).toString();
+            }
+        }
+        const requestedLevelNum = Number(level.replace(/\D/g, ""));
+        const isPreviousLevel = requestedLevelNum < Number(maxUnlockedLevel);
         // Compose response
         const videos = allVideos.map(video => ({
             id: video.id,
@@ -264,7 +310,7 @@ const getStudentLevelContent = async (req, res) => {
             read: !!pdfProgressMap[pdf.id]?.read,
             readAt: pdfProgressMap[pdf.id]?.readAt || null,
         }));
-        const quizzes = allQuizzes.map(quiz => {
+        const quizzes = isPreviousLevel ? [] : allQuizzes.map(quiz => {
             const attempt = examAttemptMap[quiz.id];
             return {
                 id: quiz.id,
@@ -387,3 +433,104 @@ const markPdfRead = async (req, res) => {
     }
 };
 exports.markPdfRead = markPdfRead;
+/**
+ * Get upcoming events for the student's district (next 45 days)
+ * Returns events in ascending order by date
+ */
+const getStudentUpcomingEvents = async (req, res) => {
+    const user = req.user;
+    if (!user || user.role !== 'student' || !user.districtId) {
+        return res.status(403).json({ message: 'Access denied. Only students with a district can view events.' });
+    }
+    try {
+        const now = new Date();
+        const futureDate = new Date();
+        futureDate.setDate(now.getDate() + 45);
+        // Get events within the next 45 days, ordered by date (ascending)
+        // Include both district-specific events and global events (where districtId is null)
+        const events = await client_1.prisma.event.findMany({
+            where: {
+                OR: [
+                    { districtId: user.districtId }, // District-specific events
+                    { districtId: null } // Global events (created by master admin)
+                ],
+                date: {
+                    gte: now, // Events from now
+                    lte: futureDate // Up to 45 days from now
+                }
+            },
+            include: {
+                participants: true,
+                district: true
+            },
+            orderBy: {
+                date: 'asc' // Ascending order (earliest first)
+            }
+        });
+        console.log(events);
+        const formattedEvents = events.map(event => ({
+            id: event.id,
+            title: event.title,
+            type: event.type,
+            date: event.date.toISOString(),
+            participants: event.participants?.length || 0,
+            description: event.description,
+            location: event.location,
+            district: event.district?.name || 'Unknown',
+            isUpcoming: event.date > now // Indicates if event is in the future
+        }));
+        res.status(200).json(formattedEvents);
+    }
+    catch (error) {
+        console.error("Error fetching upcoming events:", error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+exports.getStudentUpcomingEvents = getStudentUpcomingEvents;
+/**
+ * Get all events for the student's district
+ * Includes both upcoming and past events, ordered by date (newest first)
+ */
+const getStudentAllEvents = async (req, res) => {
+    const user = req.user;
+    if (!user || user.role !== 'student' || !user.districtId) {
+        return res.status(403).json({ message: 'Access denied. Only students with a district can view events.' });
+    }
+    try {
+        const now = new Date();
+        // Get all events, including both district-specific and global events, ordered by date (newest first)
+        const events = await client_1.prisma.event.findMany({
+            where: {
+                OR: [
+                    { districtId: user.districtId }, // District-specific events
+                    { districtId: null } // Global events (created by master admin)
+                ]
+            },
+            include: {
+                participants: true,
+                district: true
+            },
+            orderBy: {
+                date: 'desc' // Most recent first
+            }
+        });
+        const formattedEvents = events.map(event => ({
+            id: event.id,
+            title: event.title,
+            type: event.type,
+            date: event.date.toISOString(),
+            participants: event.participants?.length || 0,
+            district: event.district?.name || 'Unknown',
+            description: event.description,
+            location: event.location,
+            isUpcoming: event.date > now, // Indicates if event is in the future
+            isCompleted: event.date < now // Indicates if event is in the past
+        }));
+        res.status(200).json(formattedEvents);
+    }
+    catch (error) {
+        console.error("Error fetching all events:", error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+exports.getStudentAllEvents = getStudentAllEvents;

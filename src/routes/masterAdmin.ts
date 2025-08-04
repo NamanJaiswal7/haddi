@@ -22,7 +22,8 @@ import {
     setCourseLevels,
     updateVideo,
     updateNote,
-    updateQuiz
+    updateQuiz,
+    deleteCourseLevel
 } from '../controllers/masterAdminController';
 import { authenticateToken, isMasterAdmin } from '../middleware/authMiddleware';
 import { asyncHandler } from '../utils/asyncHandler';
@@ -200,5 +201,12 @@ router.put('/courses/notes/:id', upload.single('file'), asyncHandler(updateNote)
  * @access Private (Master Admin)
  */
 router.put('/courses/quiz/:id', upload.single('file'), asyncHandler(updateQuiz));
+
+/**
+ * @route DELETE /api/master-admin/course-levels
+ * @description Delete all courses for a class and level, and update course levels
+ * @access Private (Master Admin)
+ */
+router.delete('/course-levels', asyncHandler(deleteCourseLevel));
 
 export default router; 
