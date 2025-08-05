@@ -5,6 +5,7 @@ import * as xlsx from 'xlsx';
 import { uploadToS3 } from '../utils/s3Uploader';
 import logger from '../utils/logger';
 import { upload } from '../middleware/uploadMiddleware';
+import { validateEventType } from '../utils/eventValidation';
 
 // Static education options (these don't change)
 const educationOptions = [
@@ -546,7 +547,7 @@ export const deleteDistrictAdmin = async (req: Request, res: Response) => {
  * Creates a new global event.
  */
 export const createGlobalEvent = async (req: Request, res: Response) => {
-    const { title, type, description, location, date, time } = req.body;
+    const { title, type, description, location, date, time, ctaName, ctaLink } = req.body;
     const adminUser = req.user;
 
     if (!adminUser) {
@@ -555,6 +556,12 @@ export const createGlobalEvent = async (req: Request, res: Response) => {
 
     if (!title || !type || !description || !location || !date || !time) {
         return res.status(400).json({ message: 'All event fields are required.' });
+    }
+
+    // Validate event type
+    const typeValidationError = validateEventType(type);
+    if (typeValidationError) {
+        return res.status(400).json({ message: typeValidationError });
     }
 
     try {
@@ -570,6 +577,8 @@ export const createGlobalEvent = async (req: Request, res: Response) => {
                 description,
                 location,
                 date: eventDateTime,
+                ctaName,
+                ctaLink,
                 creatorId: adminUser!.id,
                 // districtId is omitted to mark it as a global event
             },
@@ -631,6 +640,8 @@ export const getAllEvents = async (req: Request, res: Response) => {
                 type: event.type,
                 date: event.date,
                 participantCount,
+                ctaName: event.ctaName,
+                ctaLink: event.ctaLink,
                 ...districtInfo,
             };
         });
@@ -647,7 +658,7 @@ export const getAllEvents = async (req: Request, res: Response) => {
  */
 export const updateEvent = async (req: Request, res: Response) => {
     const { id } = req.params;
-    const { title, type, description, location, date, time } = req.body;
+    const { title, type, description, location, date, time, ctaName, ctaLink } = req.body;
 
     if (!id) {
         return res.status(400).json({ message: 'Event ID is required in the URL.' });
@@ -667,9 +678,18 @@ export const updateEvent = async (req: Request, res: Response) => {
 
         const dataToUpdate: any = {};
         if (title) dataToUpdate.title = title;
-        if (type) dataToUpdate.type = type;
+        if (type) {
+            // Validate event type
+            const typeValidationError = validateEventType(type);
+            if (typeValidationError) {
+                return res.status(400).json({ message: typeValidationError });
+            }
+            dataToUpdate.type = type;
+        }
         if (description) dataToUpdate.description = description;
         if (location) dataToUpdate.location = location;
+        if (ctaName !== undefined) dataToUpdate.ctaName = ctaName;
+        if (ctaLink !== undefined) dataToUpdate.ctaLink = ctaLink;
         if (date && time) {
             const eventDateTime = new Date(`${date}T${time}`);
             if (isNaN(eventDateTime.getTime())) {

@@ -230,6 +230,8 @@ model Event {
   description  String   @db.Text
   location     String
   date         DateTime
+  ctaName      String?
+  ctaLink      String?
   creatorId    String
   districtId   String?
   createdAt    DateTime @default(now())
