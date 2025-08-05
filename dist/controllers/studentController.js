@@ -476,6 +476,8 @@ const getStudentUpcomingEvents = async (req, res) => {
             participants: event.participants?.length || 0,
             description: event.description,
             location: event.location,
+            ctaName: event.ctaName,
+            ctaLink: event.ctaLink,
             district: event.district?.name || 'Unknown',
             isUpcoming: event.date > now // Indicates if event is in the future
         }));
@@ -523,6 +525,8 @@ const getStudentAllEvents = async (req, res) => {
             district: event.district?.name || 'Unknown',
             description: event.description,
             location: event.location,
+            ctaName: event.ctaName,
+            ctaLink: event.ctaLink,
             isUpcoming: event.date > now, // Indicates if event is in the future
             isCompleted: event.date < now // Indicates if event is in the past
         }));

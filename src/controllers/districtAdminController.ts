@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
+import { validateEventType } from '../utils/eventValidation';
 
 const prisma = new PrismaClient();
 
@@ -496,7 +497,7 @@ export const getDistrictSchools = async (req: Request, res: Response) => {
  * Creates a new event for the district.
  */
 export const createEvent = async (req: Request, res: Response) => {
-    const { title, type, description, location, date, time } = req.body;
+    const { title, type, description, location, date, time, ctaName, ctaLink } = req.body;
     const adminUser = req.user;
 
     if (!adminUser || !adminUser.districtId) {
@@ -505,6 +506,12 @@ export const createEvent = async (req: Request, res: Response) => {
 
     if (!title || !type || !description || !location || !date || !time) {
         return res.status(400).json({ message: 'All event fields are required.' });
+    }
+
+    // Validate event type
+    const typeValidationError = validateEventType(type);
+    if (typeValidationError) {
+        return res.status(400).json({ message: typeValidationError });
     }
 
     try {
@@ -520,6 +527,8 @@ export const createEvent = async (req: Request, res: Response) => {
                 description,
                 location,
                 date: eventDateTime,
+                ctaName,
+                ctaLink,
                 creatorId: adminUser.id,
                 districtId: adminUser.districtId,
             },
@@ -576,6 +585,8 @@ export const getUpcomingEvents = async (req: Request, res: Response) => {
             type: event.type,
             date: event.date.toISOString().split('T')[0],
             participants: event._count.participants,
+            ctaName: event.ctaName,
+            ctaLink: event.ctaLink,
             status: event.date > new Date() ? 'Active' : 'Past',
         }));
 
@@ -592,7 +603,7 @@ export const getUpcomingEvents = async (req: Request, res: Response) => {
  */
 export const updateDistrictEvent = async (req: Request, res: Response) => {
     const { id } = req.params;
-    const { title, type, description, location, date, time } = req.body;
+    const { title, type, description, location, date, time, ctaName, ctaLink } = req.body;
     const adminUser = req.user;
 
     if (!id) {
@@ -620,9 +631,18 @@ export const updateDistrictEvent = async (req: Request, res: Response) => {
 
         const dataToUpdate: any = {};
         if (title) dataToUpdate.title = title;
-        if (type) dataToUpdate.type = type;
+        if (type) {
+            // Validate event type
+            const typeValidationError = validateEventType(type);
+            if (typeValidationError) {
+                return res.status(400).json({ message: typeValidationError });
+            }
+            dataToUpdate.type = type;
+        }
         if (description) dataToUpdate.description = description;
         if (location) dataToUpdate.location = location;
+        if (ctaName !== undefined) dataToUpdate.ctaName = ctaName;
+        if (ctaLink !== undefined) dataToUpdate.ctaLink = ctaLink;
         if (date && time) {
             const eventDateTime = new Date(`${date}T${time}`);
             if (isNaN(eventDateTime.getTime())) {

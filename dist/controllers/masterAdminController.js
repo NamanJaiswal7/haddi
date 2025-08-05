@@ -41,6 +41,7 @@ const client_1 = require("../prisma/client");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const xlsx = __importStar(require("xlsx"));
 const logger_1 = __importDefault(require("../utils/logger"));
+const eventValidation_1 = require("../utils/eventValidation");
 // Static education options (these don't change)
 const educationOptions = [
     { label: 'High School', value: 'high_school', classes: ['6th', '7th', '8th'] },
@@ -519,13 +520,18 @@ exports.deleteDistrictAdmin = deleteDistrictAdmin;
  * Creates a new global event.
  */
 const createGlobalEvent = async (req, res) => {
-    const { title, type, description, location, date, time } = req.body;
+    const { title, type, description, location, date, time, ctaName, ctaLink } = req.body;
     const adminUser = req.user;
     if (!adminUser) {
         return res.status(403).json({ message: 'Authentication error: User not found.' });
     }
     if (!title || !type || !description || !location || !date || !time) {
         return res.status(400).json({ message: 'All event fields are required.' });
+    }
+    // Validate event type
+    const typeValidationError = (0, eventValidation_1.validateEventType)(type);
+    if (typeValidationError) {
+        return res.status(400).json({ message: typeValidationError });
     }
     try {
         const eventDateTime = new Date(`${date}T${time}`);
@@ -539,6 +545,8 @@ const createGlobalEvent = async (req, res) => {
                 description,
                 location,
                 date: eventDateTime,
+                ctaName,
+                ctaLink,
                 creatorId: adminUser.id,
                 // districtId is omitted to mark it as a global event
             },
@@ -598,6 +606,8 @@ const getAllEvents = async (req, res) => {
                 type: event.type,
                 date: event.date,
                 participantCount,
+                ctaName: event.ctaName,
+                ctaLink: event.ctaLink,
                 ...districtInfo,
             };
         });
@@ -614,7 +624,7 @@ exports.getAllEvents = getAllEvents;
  */
 const updateEvent = async (req, res) => {
     const { id } = req.params;
-    const { title, type, description, location, date, time } = req.body;
+    const { title, type, description, location, date, time, ctaName, ctaLink } = req.body;
     if (!id) {
         return res.status(400).json({ message: 'Event ID is required in the URL.' });
     }
@@ -631,12 +641,22 @@ const updateEvent = async (req, res) => {
         const dataToUpdate = {};
         if (title)
             dataToUpdate.title = title;
-        if (type)
+        if (type) {
+            // Validate event type
+            const typeValidationError = (0, eventValidation_1.validateEventType)(type);
+            if (typeValidationError) {
+                return res.status(400).json({ message: typeValidationError });
+            }
             dataToUpdate.type = type;
+        }
         if (description)
             dataToUpdate.description = description;
         if (location)
             dataToUpdate.location = location;
+        if (ctaName !== undefined)
+            dataToUpdate.ctaName = ctaName;
+        if (ctaLink !== undefined)
+            dataToUpdate.ctaLink = ctaLink;
         if (date && time) {
             const eventDateTime = new Date(`${date}T${time}`);
             if (isNaN(eventDateTime.getTime())) {

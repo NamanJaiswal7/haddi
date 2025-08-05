@@ -1,0 +1,31 @@
+# Development Dockerfile for Node.js/TypeScript application with hot reloading
+FROM node:18-alpine
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files and tsconfig
+COPY package*.json ./
+COPY tsconfig.json ./
+
+# Install dependencies
+RUN npm install
+
+# Copy Prisma schema (needed for client generation)
+COPY prisma/ ./prisma/
+
+# Generate Prisma client
+RUN npx prisma generate
+
+# Create logs directory
+RUN mkdir -p logs
+
+# Expose port
+EXPOSE 4545
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD node -e "require('http').get('http://localhost:4545/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })" || exit 1
+
+# Development command with hot reloading
+CMD ["sh", "-c", "npx prisma generate && npm run dev"] 

@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.updateDistrictEvent = exports.getUpcomingEvents = exports.createEvent = exports.getDistrictSchools = exports.sendNotification = exports.getSchoolPerformance = exports.getAnalyticsData = exports.getStudentList = exports.getDashboardStats = void 0;
 const client_1 = require("@prisma/client");
+const eventValidation_1 = require("../utils/eventValidation");
 const prisma = new client_1.PrismaClient();
 /**
  * Gets the key performance indicators for the district admin dashboard.
@@ -438,13 +439,18 @@ exports.getDistrictSchools = getDistrictSchools;
  * Creates a new event for the district.
  */
 const createEvent = async (req, res) => {
-    const { title, type, description, location, date, time } = req.body;
+    const { title, type, description, location, date, time, ctaName, ctaLink } = req.body;
     const adminUser = req.user;
     if (!adminUser || !adminUser.districtId) {
         return res.status(403).json({ message: 'Admin user is not associated with a district.' });
     }
     if (!title || !type || !description || !location || !date || !time) {
         return res.status(400).json({ message: 'All event fields are required.' });
+    }
+    // Validate event type
+    const typeValidationError = (0, eventValidation_1.validateEventType)(type);
+    if (typeValidationError) {
+        return res.status(400).json({ message: typeValidationError });
     }
     try {
         const eventDateTime = new Date(`${date}T${time}`);
@@ -458,6 +464,8 @@ const createEvent = async (req, res) => {
                 description,
                 location,
                 date: eventDateTime,
+                ctaName,
+                ctaLink,
                 creatorId: adminUser.id,
                 districtId: adminUser.districtId,
             },
@@ -509,6 +517,8 @@ const getUpcomingEvents = async (req, res) => {
             type: event.type,
             date: event.date.toISOString().split('T')[0],
             participants: event._count.participants,
+            ctaName: event.ctaName,
+            ctaLink: event.ctaLink,
             status: event.date > new Date() ? 'Active' : 'Past',
         }));
         res.status(200).json(formattedEvents);
@@ -525,7 +535,7 @@ exports.getUpcomingEvents = getUpcomingEvents;
  */
 const updateDistrictEvent = async (req, res) => {
     const { id } = req.params;
-    const { title, type, description, location, date, time } = req.body;
+    const { title, type, description, location, date, time, ctaName, ctaLink } = req.body;
     const adminUser = req.user;
     if (!id) {
         return res.status(400).json({ message: 'Event ID is required in the URL.' });
@@ -548,12 +558,22 @@ const updateDistrictEvent = async (req, res) => {
         const dataToUpdate = {};
         if (title)
             dataToUpdate.title = title;
-        if (type)
+        if (type) {
+            // Validate event type
+            const typeValidationError = (0, eventValidation_1.validateEventType)(type);
+            if (typeValidationError) {
+                return res.status(400).json({ message: typeValidationError });
+            }
             dataToUpdate.type = type;
+        }
         if (description)
             dataToUpdate.description = description;
         if (location)
             dataToUpdate.location = location;
+        if (ctaName !== undefined)
+            dataToUpdate.ctaName = ctaName;
+        if (ctaLink !== undefined)
+            dataToUpdate.ctaLink = ctaLink;
         if (date && time) {
             const eventDateTime = new Date(`${date}T${time}`);
             if (isNaN(eventDateTime.getTime())) {
