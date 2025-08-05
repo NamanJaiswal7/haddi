@@ -1,4 +1,4 @@
-// Hot reloading development server
+// Hot reloading development server - Detached Mode
 import app from './app';
 import cluster from 'cluster';
 import os from 'os';
