@@ -6,11 +6,17 @@ This guide explains how to set up and use the hot reloading development environm
 
 ### 1. Start Development Environment
 ```bash
-# Start all services (database, redis, app) with hot reloading
+# Start app only (database and redis must be running)
 npm run docker:dev
 
-# Or build and start (first time or after Dockerfile changes)
+# Start all services (database, redis, app) with hot reloading
+npm run docker:dev:all
+
+# Build and start app (first time or after Dockerfile changes)
 npm run docker:dev:build
+
+# Build and start all services
+npm run docker:dev:all:build
 ```
 
 ### 2. Stop Development Environment
@@ -48,11 +54,17 @@ haddi/
 
 ### Development Commands
 ```bash
-# Start development environment
+# Start app only (database and redis must be running)
 npm run docker:dev
 
-# Build and start (after Dockerfile changes)
+# Start all services (database, redis, app)
+npm run docker:dev:all
+
+# Build and start app (after Dockerfile changes)
 npm run docker:dev:build
+
+# Build and start all services
+npm run docker:dev:all:build
 
 # Stop development environment
 npm run docker:dev:down
@@ -140,7 +152,11 @@ lsof -i :4545
 
 1. **Start Development Environment**:
    ```bash
-   npm run docker:dev:build
+   # First time or after Dockerfile changes
+   npm run docker:dev:all:build
+   
+   # Subsequent starts (if database and redis are already running)
+   npm run docker:dev:all
    ```
 
 2. **Seed Database** (first time only):
