@@ -36,7 +36,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteCourseLevel = exports.updateQuiz = exports.updateNote = exports.updateVideo = exports.setCourseLevels = exports.getCourseLevels = exports.getPassingMarks = exports.setPassingMarks = exports.getAllCourses = exports.addQuiz = exports.addNote = exports.addVideo = exports.getAnalyticsData = exports.sendGlobalNotification = exports.updateEvent = exports.getAllEvents = exports.createGlobalEvent = exports.deleteDistrictAdmin = exports.updateDistrictAdmin = exports.createDistrictAdmin = exports.getDistrictAdmins = exports.getAllStudents = exports.getDistrictPerformance = exports.getDashboardStats = void 0;
+exports.deleteCourseLevel = exports.updateCourseTitle = exports.deleteQuiz = exports.updateQuiz = exports.deleteNote = exports.updateNote = exports.deleteVideo = exports.updateVideo = exports.setCourseLevels = exports.getCourseLevels = exports.getPassingMarks = exports.setPassingMarks = exports.getAllCourses = exports.addQuiz = exports.addNote = exports.addVideo = exports.getAnalyticsData = exports.sendGlobalNotification = exports.updateEvent = exports.getAllEvents = exports.createGlobalEvent = exports.deleteDistrictAdmin = exports.updateDistrictAdmin = exports.createDistrictAdmin = exports.getDistrictAdmins = exports.getAllStudents = exports.getDistrictPerformance = exports.getDashboardStats = void 0;
 const client_1 = require("../prisma/client");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const xlsx = __importStar(require("xlsx"));
@@ -888,20 +888,32 @@ const findOrCreateCourse = async (classLevel, level) => {
     if (!level || typeof level !== 'string') {
         throw new Error('Level must be a non-empty string');
     }
-    const course = await client_1.prisma.course.findFirst({
-        where: { classLevel, level: level },
-    });
-    if (course) {
-        return course;
+    if (!classLevel || typeof classLevel !== 'string') {
+        throw new Error('Class level must be a non-empty string');
     }
-    return client_1.prisma.course.create({
-        data: {
-            classLevel,
-            level: level,
-            title: `Class ${classLevel} - Level ${level}`,
-            description: `Course materials for Class ${classLevel}, Level ${level}.`,
-        },
-    });
+    try {
+        const course = await client_1.prisma.course.findFirst({
+            where: {
+                classLevel,
+                level
+            },
+        });
+        if (course) {
+            return course;
+        }
+        return await client_1.prisma.course.create({
+            data: {
+                classLevel,
+                level,
+                title: `Class ${classLevel} - ${level}`,
+                description: `Course materials for Class ${classLevel}, Level ${level}.`,
+            },
+        });
+    }
+    catch (error) {
+        console.error('Error in findOrCreateCourse:', error);
+        throw new Error(`Failed to find or create course: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
 };
 /**
  * Adds a video to a course.
@@ -1064,27 +1076,22 @@ const getAllCourses = async (req, res) => {
                 { level: 'asc' },
             ],
         });
-        // Group by classLevel and level (treat every classLevel as separate, including 9th-12th)
+        // Group by classLevel and level
         const grouped = {};
         for (const course of courses) {
             // Defensive: skip if classLevel or level is missing
             if (!course.classLevel || !course.level)
                 continue;
-            // Treat every classLevel as its own group, including 9th, 10th, 11th, 12th
             const classKey = course.classLevel;
             const classGroup = grouped[classKey] ?? (grouped[classKey] = {});
             classGroup[course.level] = {
-                id: course.id,
                 title: course.title,
-                description: course.description,
-                isPublished: course.isPublished,
-                createdAt: course.createdAt,
                 videos: course.videos.map(v => ({
                     id: v.id,
                     title: v.title,
                     youtubeId: v.youtubeId,
                     thumbnail: v.thumbnail,
-                    iframeSnippet: v.iframeSnippet // fallback for type error
+                    iframeSnippet: v.iframeSnippet
                 })),
                 pdfs: course.pdfs.map(p => ({
                     id: p.id,
@@ -1093,6 +1100,7 @@ const getAllCourses = async (req, res) => {
                 })),
                 quizzes: course.quizzes.map(q => ({
                     id: q.id,
+                    classLevel: q.classLevel,
                     numQuestions: q.numQuestions,
                     passPercentage: q.passPercentage,
                     questions: q.questionBank?.questions?.map(qq => ({
@@ -1117,7 +1125,7 @@ const getAllCourses = async (req, res) => {
 exports.getAllCourses = getAllCourses;
 // Passing Marks Endpoints
 const setPassingMarks = async (req, res) => {
-    const data = req.body; // expects { "6": { "level1": 80, ... }, ... }
+    const data = req.body; // expects { "6th": { "level1": 80, ... }, ... }
     if (!data || typeof data !== 'object') {
         return res.status(400).json({ message: 'Invalid payload format.' });
     }
@@ -1130,18 +1138,25 @@ const setPassingMarks = async (req, res) => {
             for (const levelIdRaw of Object.keys(data[classIdRaw])) {
                 const levelId = String(levelIdRaw);
                 const passingMarks = data[classIdRaw][levelIdRaw];
+                // Normalize level ID to match course format (e.g., "level1" -> "Level 1")
+                let normalizedLevelId = levelId;
+                if (levelId.startsWith('level')) {
+                    const levelNum = levelId.replace('level', '');
+                    normalizedLevelId = `Level ${levelNum}`;
+                }
                 upserts.push(client_1.prisma.passingMark.upsert({
-                    where: { classId_levelId: { classId, levelId } },
+                    where: { classId_levelId: { classId, levelId: normalizedLevelId } },
                     update: { passingMarks },
-                    create: { classId, levelId, passingMarks }
+                    create: { classId, levelId: normalizedLevelId, passingMarks }
                 }));
             }
         }
         await Promise.all(upserts);
-        res.status(200).json({ message: 'Passing marks saved.' });
+        res.status(200).json({ message: 'Passing marks saved successfully.' });
     }
     catch (error) {
-        res.status(500).json({ message: 'Failed to save passing marks', error });
+        console.error('Error setting passing marks:', error);
+        res.status(500).json({ message: 'Failed to save passing marks', error: 'Internal server error' });
     }
 };
 exports.setPassingMarks = setPassingMarks;
@@ -1246,17 +1261,65 @@ const updateVideo = async (req, res) => {
         res.status(200).json(updated);
     }
     catch (error) {
-        res.status(500).json({ message: 'Failed to update video', error });
+        console.error("Error updating video:", error);
+        res.status(500).json({ message: 'Failed to update video' });
     }
 };
 exports.updateVideo = updateVideo;
+/**
+ * Deletes a specific video from a course.
+ */
+const deleteVideo = async (req, res) => {
+    const { id } = req.params;
+    if (!id) {
+        return res.status(400).json({ message: 'Video ID is required.' });
+    }
+    try {
+        // Check if video exists
+        const video = await client_1.prisma.courseVideo.findUnique({
+            where: { id },
+            include: {
+                videoProgresses: true
+            }
+        });
+        if (!video) {
+            return res.status(404).json({ message: 'Video not found.' });
+        }
+        // Begin a transaction to ensure all related data is deleted properly
+        await client_1.prisma.$transaction(async (prismaClient) => {
+            // Delete video progress records if they exist
+            if (video.videoProgresses.length > 0) {
+                await prismaClient.videoProgress.deleteMany({
+                    where: { videoId: id }
+                });
+            }
+            // Delete the video
+            await prismaClient.courseVideo.delete({
+                where: { id }
+            });
+        });
+        res.status(200).json({
+            message: 'Video deleted successfully.',
+            deletedVideo: {
+                id: video.id,
+                title: video.title,
+                courseId: video.courseId
+            }
+        });
+    }
+    catch (error) {
+        console.error("Error deleting video:", error);
+        res.status(500).json({ message: 'Internal server error while deleting video' });
+    }
+};
+exports.deleteVideo = deleteVideo;
 const updateNote = async (req, res) => {
     const { id } = req.params;
     // Accept title and url (from file upload or direct url)
     const title = req.body.title;
     let url = req.body.url;
     // If a file is uploaded, use its location (assuming upload middleware sets req.file)
-    if (req.file && req.file.location) {
+    if (req.file && 'location' in req.file && req.file.location) {
         url = req.file.location;
     }
     if (!id) {
@@ -1278,10 +1341,58 @@ const updateNote = async (req, res) => {
         res.status(200).json(updated);
     }
     catch (error) {
-        res.status(500).json({ message: 'Failed to update note', error });
+        console.error("Error updating note:", error);
+        res.status(500).json({ message: 'Failed to update note' });
     }
 };
 exports.updateNote = updateNote;
+/**
+ * Deletes a specific note (PDF) from a course.
+ */
+const deleteNote = async (req, res) => {
+    const { id } = req.params;
+    if (!id) {
+        return res.status(400).json({ message: 'Note ID is required.' });
+    }
+    try {
+        // Check if note exists
+        const note = await client_1.prisma.coursePDF.findUnique({
+            where: { id },
+            include: {
+                pdfProgresses: true
+            }
+        });
+        if (!note) {
+            return res.status(404).json({ message: 'Note not found.' });
+        }
+        // Begin a transaction to ensure all related data is deleted properly
+        await client_1.prisma.$transaction(async (prismaClient) => {
+            // Delete PDF progress records if they exist
+            if (note.pdfProgresses.length > 0) {
+                await prismaClient.pdfProgress.deleteMany({
+                    where: { pdfId: id }
+                });
+            }
+            // Delete the note
+            await prismaClient.coursePDF.delete({
+                where: { id }
+            });
+        });
+        res.status(200).json({
+            message: 'Note deleted successfully.',
+            deletedNote: {
+                id: note.id,
+                title: note.title,
+                courseId: note.courseId
+            }
+        });
+    }
+    catch (error) {
+        console.error("Error deleting note:", error);
+        res.status(500).json({ message: 'Internal server error while deleting note' });
+    }
+};
+exports.deleteNote = deleteNote;
 const updateQuiz = async (req, res) => {
     const { id } = req.params;
     // Accept numQuestions and passingMarks (passPercentage)
@@ -1306,16 +1417,130 @@ const updateQuiz = async (req, res) => {
         res.status(200).json(updated);
     }
     catch (error) {
-        res.status(500).json({ message: 'Failed to update quiz', error });
+        console.error("Error updating quiz:", error);
+        res.status(500).json({ message: 'Failed to update quiz' });
     }
 };
 exports.updateQuiz = updateQuiz;
+/**
+ * Deletes quizzes for a specific class and level.
+ */
+const deleteQuiz = async (req, res) => {
+    const { class: classLevel, level } = req.query;
+    if (!classLevel || !level) {
+        return res.status(400).json({ message: 'Class and level are required.' });
+    }
+    try {
+        // Find the course for the specified class and level
+        const course = await client_1.prisma.course.findFirst({
+            where: {
+                classLevel: classLevel,
+                level: level
+            },
+            include: {
+                quizzes: {
+                    include: {
+                        questionBank: {
+                            include: {
+                                questions: true
+                            }
+                        },
+                        examAttempts: true
+                    }
+                }
+            }
+        });
+        if (!course) {
+            return res.status(404).json({ message: 'Course not found for the specified class and level.' });
+        }
+        if (course.quizzes.length === 0) {
+            return res.status(404).json({ message: 'No quizzes found for the specified class and level.' });
+        }
+        // Begin a transaction to ensure all related data is deleted properly
+        const result = await client_1.prisma.$transaction(async (prismaClient) => {
+            let deletedCount = 0;
+            for (const quiz of course.quizzes) {
+                // Delete exam attempts related to this quiz
+                if (quiz.examAttempts.length > 0) {
+                    await prismaClient.examAttempt.deleteMany({
+                        where: { quizId: quiz.id }
+                    });
+                }
+                // Delete questions in the question bank
+                if (quiz.questionBank.questions.length > 0) {
+                    await prismaClient.question.deleteMany({
+                        where: { questionBankId: quiz.questionBankId }
+                    });
+                }
+                // Delete the quiz first (to remove foreign key constraint)
+                await prismaClient.quiz.delete({
+                    where: { id: quiz.id }
+                });
+                // Then delete the question bank
+                await prismaClient.questionBank.delete({
+                    where: { id: quiz.questionBankId }
+                });
+                deletedCount++;
+            }
+            return deletedCount;
+        });
+        res.status(200).json({
+            message: `Successfully deleted ${result} quizzes for class ${classLevel}, level ${level}`,
+            deletedQuizzes: result
+        });
+    }
+    catch (error) {
+        console.error("Error deleting quizzes:", error);
+        res.status(500).json({ message: 'Internal server error while deleting quizzes' });
+    }
+};
+exports.deleteQuiz = deleteQuiz;
+/**
+ * Updates the title of a course for a specific class and level.
+ */
+const updateCourseTitle = async (req, res) => {
+    const { class: classId, level: levelId, title: newTitle } = req.body;
+    if (!classId || !levelId || !newTitle) {
+        return res.status(400).json({ message: 'Class, level, and title are required.' });
+    }
+    try {
+        // Find the course for the specified class and level
+        const course = await client_1.prisma.course.findFirst({
+            where: {
+                classLevel: classId,
+                level: levelId
+            }
+        });
+        if (!course) {
+            return res.status(404).json({ message: 'Course not found for the specified class and level.' });
+        }
+        // Update the course title
+        const updatedCourse = await client_1.prisma.course.update({
+            where: { id: course.id },
+            data: { title: newTitle }
+        });
+        res.status(200).json({
+            message: 'Course title updated successfully.',
+            course: {
+                id: updatedCourse.id,
+                classLevel: updatedCourse.classLevel,
+                level: updatedCourse.level,
+                title: updatedCourse.title
+            }
+        });
+    }
+    catch (error) {
+        console.error("Error updating course title:", error);
+        res.status(500).json({ message: 'Internal server error while updating course title' });
+    }
+};
+exports.updateCourseTitle = updateCourseTitle;
 /**
  * Deletes all courses for a specific class and level, and updates course levels.
  * This is used when restructuring the curriculum.
  */
 const deleteCourseLevel = async (req, res) => {
-    const { classLevel, level } = req.body;
+    const { classLevel, level } = req.params;
     if (!classLevel || !level) {
         return res.status(400).json({ message: 'Class level and level are required.' });
     }
@@ -1333,55 +1558,83 @@ const deleteCourseLevel = async (req, res) => {
                 studentProgress: true
             }
         });
-        if (coursesToDelete.length === 0) {
-            return res.status(404).json({ message: 'No courses found for the specified class and level.' });
+        // Also check if there's a course level configuration to delete
+        const courseLevelConfig = await client_1.prisma.courseLevel.findUnique({
+            where: { classId: classLevel }
+        });
+        // If no courses exist and no configuration exists, return 404
+        if (coursesToDelete.length === 0 && !courseLevelConfig) {
+            return res.status(404).json({ message: 'No courses or course level configuration found for the specified class and level.' });
         }
         // Begin a transaction to ensure all related data is deleted properly
         const result = await client_1.prisma.$transaction(async (prismaClient) => {
-            // For each course, delete related content
-            for (const course of coursesToDelete) {
-                // Delete student progress records
-                if (course.studentProgress.length > 0) {
-                    await prismaClient.studentProgress.deleteMany({
-                        where: { courseId: course.id }
-                    });
-                }
-                // Delete videos
-                if (course.videos.length > 0) {
-                    await prismaClient.courseVideo.deleteMany({
-                        where: { courseId: course.id }
-                    });
-                }
-                // Delete PDFs
-                if (course.pdfs.length > 0) {
-                    await prismaClient.coursePDF.deleteMany({
-                        where: { courseId: course.id }
-                    });
-                }
-                // Delete quizzes and related questions
-                if (course.quizzes.length > 0) {
-                    for (const quiz of course.quizzes) {
-                        // Delete exam attempts related to this quiz
-                        await prismaClient.examAttempt.deleteMany({
-                            where: { quizId: quiz.id }
-                        });
-                        // Delete the quiz
-                        await prismaClient.quiz.delete({
-                            where: { id: quiz.id }
+            let deletedCount = 0;
+            // Delete actual courses if they exist
+            if (coursesToDelete.length > 0) {
+                // For each course, delete related content
+                for (const course of coursesToDelete) {
+                    // Delete student progress records
+                    if (course.studentProgress.length > 0) {
+                        await prismaClient.studentProgress.deleteMany({
+                            where: { courseId: course.id }
                         });
                     }
+                    // Delete videos
+                    if (course.videos.length > 0) {
+                        await prismaClient.courseVideo.deleteMany({
+                            where: { courseId: course.id }
+                        });
+                    }
+                    // Delete PDFs
+                    if (course.pdfs.length > 0) {
+                        await prismaClient.coursePDF.deleteMany({
+                            where: { courseId: course.id }
+                        });
+                    }
+                    // Delete quizzes and related questions
+                    if (course.quizzes.length > 0) {
+                        for (const quiz of course.quizzes) {
+                            // Delete exam attempts related to this quiz
+                            await prismaClient.examAttempt.deleteMany({
+                                where: { quizId: quiz.id }
+                            });
+                            // Delete the quiz
+                            await prismaClient.quiz.delete({
+                                where: { id: quiz.id }
+                            });
+                        }
+                    }
+                    // Delete the course
+                    await prismaClient.course.delete({
+                        where: { id: course.id }
+                    });
                 }
-                // Delete the course
-                await prismaClient.course.delete({
-                    where: { id: course.id }
-                });
+                deletedCount = coursesToDelete.length;
             }
-            // Return the number of courses deleted
-            return coursesToDelete.length;
+            // Delete course level configuration if it exists
+            if (courseLevelConfig) {
+                // Remove the specific level from the levels array
+                const updatedLevels = courseLevelConfig.levels.filter(l => l !== level);
+                if (updatedLevels.length === 0) {
+                    // If no levels left, delete the entire course level configuration
+                    await prismaClient.courseLevel.delete({
+                        where: { classId: classLevel }
+                    });
+                }
+                else {
+                    // Update the course level configuration with remaining levels
+                    await prismaClient.courseLevel.update({
+                        where: { classId: classLevel },
+                        data: { levels: updatedLevels }
+                    });
+                }
+            }
+            return { deletedCourses: deletedCount, configUpdated: !!courseLevelConfig };
         });
         res.status(200).json({
-            message: `Successfully deleted ${result} courses for class ${classLevel}, level ${level}`,
-            deletedCount: result
+            message: `Successfully deleted ${result.deletedCourses} courses and updated course level configuration for class ${classLevel}, level ${level}`,
+            deletedCourses: result.deletedCourses,
+            configUpdated: result.configUpdated
         });
     }
     catch (error) {

@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.isMasterAdmin = exports.isDistrictAdmin = exports.authenticateToken = void 0;
+exports.isStudent = exports.isMasterAdmin = exports.isDistrictAdmin = exports.authenticateToken = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
@@ -43,3 +43,10 @@ const isMasterAdmin = async (req, res, next) => {
     next();
 };
 exports.isMasterAdmin = isMasterAdmin;
+const isStudent = async (req, res, next) => {
+    if (req.user?.role !== 'student') {
+        return res.status(403).json({ message: 'Forbidden: Access is restricted to students.' });
+    }
+    next();
+};
+exports.isStudent = isStudent;

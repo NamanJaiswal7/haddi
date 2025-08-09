@@ -106,17 +106,32 @@ export const studentSignUp = async (req: Request, res: Response) => {
   if (!email) {
     return res.status(400).json({ message: 'Email is required.' });
   }
-  const existingUser = await prisma.user.findUnique({ where: { email } });
-  if (existingUser) {
-    return res.status(409).json({ message: 'A user with this email already exists.' });
-  }
-  const otp = crypto.randomInt(100000, 999999).toString();
-  setOtp(email, otp);
+  
   try {
-    await sendEmail(email, 'Your OTP for Student Signup', `Your OTP is: ${otp}`);
-    res.status(200).json({ message: 'OTP sent to email.' });
-  } catch (err) {
-    res.status(500).json({ message: 'Failed to send OTP email.', error: err });
+    const existingUser = await prisma.user.findUnique({ where: { email } });
+    if (existingUser) {
+      return res.status(409).json({ message: 'A user with this email already exists.' });
+    }
+    
+    const otp = crypto.randomInt(100000, 999999).toString();
+    setOtp(email, otp);
+    
+    try {
+      await sendEmail(email, 'Your OTP for Student Signup', `Your OTP is: ${otp}`);
+      res.status(200).json({ message: 'OTP sent to email successfully.' });
+    } catch (emailError: any) {
+      // Email failed - log error and return appropriate response
+      logger.error('Failed to send OTP email: %o', emailError);
+      
+      if (emailError.message && emailError.message.includes('Email service not configured')) {
+        res.status(500).json({ message: 'Email service not configured.', error: 'Missing email credentials' });
+      } else {
+        res.status(500).json({ message: 'Failed to send OTP email.', error: 'Email service error' });
+      }
+    }
+  } catch (error) {
+    logger.error('Error in studentSignUp: %o', error);
+    res.status(500).json({ message: 'Internal server error during signup.' });
   }
 };
 
@@ -160,7 +175,49 @@ export const studentRegister = async (req: Request, res: Response) => {
         role: 'student',
       },
     });
-    res.status(201).json({ message: 'Student account created successfully.', userId: newUser.id });
+
+    // Get district information
+    const district = districtId ? await prisma.district.findUnique({ where: { id: districtId } }) : null;
+
+    // For new users, all levels start as locked
+    const courses = await prisma.course.findMany({ 
+      orderBy: { level: 'asc' }, 
+      include: { videos: true, notes: true, quizzes: true } 
+    });
+    
+    const learningPath = courses.map(course => ({
+      id: course.id,
+      title: course.title,
+      level: course.level,
+      description: course.description,
+      videosCount: course.videos.length,
+      notesCount: course.notes.length,
+      questionsCount: course.quizzes.reduce((sum, q) => sum + q.numQuestions, 0),
+      status: 'locked', // New users start with all levels locked
+    }));
+
+    // New users have no progress, notifications, or exam attempts initially
+    const profile = {
+      name: newUser.name,
+      district: district?.name || null,
+      role: newUser.role,
+      currentLevel: 1,
+      spiritualProgress: 0,
+      levelsCompleted: 0,
+      knowledgePoints: 0,
+    };
+
+    // Generate JWT token for automatic login
+    const token = jwt.sign({ id: newUser.id, role: newUser.role }, process.env.JWT_SECRET!, { expiresIn: '7d' });
+
+    res.status(201).json({
+      message: 'Student account created successfully.',
+      userId: newUser.id,
+      token,
+      profile,
+      learningPath,
+      messages: [], // New users have no messages initially
+    });
   } catch (err) {
     res.status(500).json({ message: 'Failed to create student account.', error: err });
   }
@@ -955,18 +1012,36 @@ export const completeRegistration = async (req: Request, res: Response) => {
       return res.status(400).json({ message: 'Email, googleId, and name are required' });
     }
 
+    // Validate mobile number format if provided
+    if (mobileNumber) {
+      const mobileRegex = /^[6-9]\d{9}$/;
+      if (!mobileRegex.test(mobileNumber)) {
+        return res.status(400).json({ message: 'Invalid mobile number format. Must be a 10-digit Indian mobile number starting with 6, 7, 8, or 9' });
+      }
+    }
+
     // Check if user already exists
     const existingUser = await prisma.user.findFirst({
       where: {
         OR: [
           { email },
-          { googleId }
+          { googleId },
+          ...(mobileNumber ? [{ mobile: mobileNumber }] : [])
         ]
       }
     });
 
     if (existingUser) {
-      return res.status(409).json({ message: 'A user with this email or Google ID already exists' });
+      if (existingUser.email === email) {
+        return res.status(409).json({ message: 'A user with this email already exists' });
+      }
+      if (existingUser.googleId === googleId) {
+        return res.status(409).json({ message: 'A user with this Google ID already exists' });
+      }
+      if (mobileNumber && existingUser.mobile === mobileNumber) {
+        return res.status(409).json({ message: 'A user with this mobile number already exists' });
+      }
+      return res.status(409).json({ message: 'A user with this information already exists' });
     }
 
     // Find district by name
@@ -976,7 +1051,10 @@ export const completeRegistration = async (req: Request, res: Response) => {
         where: { name: { equals: district, mode: 'insensitive' } }
       });
       if (!districtRecord) {
-        return res.status(400).json({ message: 'Invalid district name' });
+        return res.status(400).json({ 
+          message: 'Invalid district name', 
+          suggestion: 'Please check the district name or contact support for available districts' 
+        });
       }
       districtId = districtRecord.id;
     }
@@ -986,6 +1064,19 @@ export const completeRegistration = async (req: Request, res: Response) => {
     const normalizedGender = gender?.toLowerCase();
     if (normalizedGender && !validGenders.includes(normalizedGender)) {
       return res.status(400).json({ message: 'Invalid gender value. Must be one of: male, female, other' });
+    }
+
+    // Validate date of birth
+    if (dateOfBirth) {
+      const dob = new Date(dateOfBirth);
+      if (isNaN(dob.getTime())) {
+        return res.status(400).json({ message: 'Invalid date of birth format' });
+      }
+      const today = new Date();
+      const age = today.getFullYear() - dob.getFullYear();
+      if (age < 5 || age > 100) {
+        return res.status(400).json({ message: 'Invalid date of birth. Age must be between 5 and 100 years' });
+      }
     }
 
     // Map education level to enum
@@ -999,25 +1090,64 @@ export const completeRegistration = async (req: Request, res: Response) => {
     const normalizedEducation = educationLevel?.toLowerCase();
     const education = educationMap[normalizedEducation || ''] || 'high_school';
 
-    // Create new student user with complete information
-    const newUser = await prisma.user.create({
-      data: {
-        email,
-        name,
-        googleId,
-        picture,
-        passwordHash: '', // Empty password hash for Google users
-        mobile: mobileNumber || null,
-        dob: dateOfBirth ? new Date(dateOfBirth) : undefined,
-        gender: normalizedGender as any,
-        institution: education as any,
-        classLevel,
-        districtId,
-        pincode,
-        role: 'student',
-        lastActiveAt: new Date()
+    // Validate class level
+    if (classLevel) {
+      const validClassLevels = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'];
+      if (!validClassLevels.includes(classLevel)) {
+        return res.status(400).json({ 
+          message: 'Invalid class level. Must be between 1 and 12', 
+          suggestion: 'Please provide a valid class level from 1 to 12' 
+        });
       }
-    });
+    }
+
+    // Validate pincode if provided
+    if (pincode) {
+      const pincodeRegex = /^[1-9][0-9]{5}$/;
+      if (!pincodeRegex.test(pincode)) {
+        return res.status(400).json({ 
+          message: 'Invalid pincode format. Must be a 6-digit number starting with 1-9' 
+        });
+      }
+    }
+
+    // Create new student user with complete information
+    let newUser;
+    try {
+      newUser = await prisma.user.create({
+        data: {
+          email,
+          name,
+          googleId,
+          picture,
+          passwordHash: '', // Empty password hash for Google users
+          mobile: mobileNumber || null,
+          dob: dateOfBirth ? new Date(dateOfBirth) : undefined,
+          gender: normalizedGender as any,
+          institution: education as any,
+          classLevel,
+          districtId,
+          pincode,
+          role: 'student',
+          lastActiveAt: new Date()
+        }
+      });
+    } catch (dbError: any) {
+      if (dbError.code === 'P2002') {
+        // Unique constraint violation
+        if (dbError.meta?.target?.includes('email')) {
+          return res.status(409).json({ message: 'A user with this email already exists' });
+        }
+        if (dbError.meta?.target?.includes('googleId')) {
+          return res.status(409).json({ message: 'A user with this Google ID already exists' });
+        }
+        if (dbError.meta?.target?.includes('mobile')) {
+          return res.status(409).json({ message: 'A user with this mobile number already exists' });
+        }
+        return res.status(409).json({ message: 'A user with this information already exists' });
+      }
+      throw dbError;
+    }
 
     // Fetch the user from database to ensure we have the latest data
     const userFromDb = await prisma.user.findUnique({
@@ -1178,7 +1308,13 @@ export const completeRegistration = async (req: Request, res: Response) => {
       isUpcoming: event.date > now
     }));
 
-    logger.info('Mobile registration complete successful', { email, userId: userFromDb.id });
+    logger.info('Mobile registration complete successful', { 
+      email, 
+      userId: userFromDb.id,
+      mobileNumber: userFromDb.mobile,
+      district: userFromDb.district?.name,
+      classLevel: userFromDb.classLevel
+    });
 
     res.status(201).json({
       success: true,
@@ -1215,7 +1351,8 @@ export const completeRegistration = async (req: Request, res: Response) => {
   } catch (error) {
     logger.error('Mobile registration complete failed:', { 
       error: error instanceof Error ? error.message : String(error), 
-      stack: error instanceof Error ? error.stack : undefined 
+      stack: error instanceof Error ? error.stack : undefined,
+      requestData: { email, googleId, name, mobileNumber, district, classLevel }
     });
     res.status(500).json({ 
       success: false,
