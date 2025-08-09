@@ -15,22 +15,31 @@ const mpDistricts = [
 async function main() {
     console.log("🌱 Starting database seeding...");
 
-    // Clear existing data
+    // Clear existing data in correct order (respecting foreign key constraints)
     console.log("🧹 Clearing existing data...");
     await prisma.$transaction([
+        // Delete dependent records first (child tables)
         prisma.notificationRecipient.deleteMany(),
         prisma.notification.deleteMany(),
         prisma.eventParticipant.deleteMany(),
         prisma.event.deleteMany(),
         prisma.studentProgress.deleteMany(),
         prisma.examAttempt.deleteMany(),
+        prisma.videoProgress.deleteMany(),
+        prisma.pdfProgress.deleteMany(),
+        
+        // Delete quiz-related records
         prisma.quiz.deleteMany(),
         prisma.question.deleteMany(),
         prisma.questionBank.deleteMany(),
+        
+        // Delete course content
         prisma.courseVideo.deleteMany(),
         prisma.courseNote.deleteMany(),
         prisma.coursePDF.deleteMany(),
         prisma.course.deleteMany(),
+        
+        // Delete user and district records last
         prisma.user.deleteMany(),
         prisma.district.deleteMany(),
     ]);
