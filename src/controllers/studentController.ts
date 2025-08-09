@@ -258,15 +258,19 @@ export const getStudentLevelContent = async (req: Request, res: Response) => {
     );
     const allQuizzes = courses.flatMap(course => course.quizzes);
 
+    // Sort videos and PDFs by creation date in ascending order (using id since CUIDs are time-ordered)
+    const sortedVideos = allVideos.sort((a, b) => a.id.localeCompare(b.id));
+    const sortedPdfs = allPdfs.sort((a, b) => a.id.localeCompare(b.id));
+
     // Fetch video progress for this student
-    const videoProgress = allVideos.length > 0 ? await prisma.videoProgress.findMany({
-      where: { studentId: user.id, videoId: { in: allVideos.map(v => v.id) } },
+    const videoProgress = sortedVideos.length > 0 ? await prisma.videoProgress.findMany({
+      where: { studentId: user.id, videoId: { in: sortedVideos.map(v => v.id) } },
     }) : [];
     const videoProgressMap = Object.fromEntries(videoProgress.map(vp => [vp.videoId, vp]));
 
     // Fetch pdf progress for this student
-    const pdfProgress = allPdfs.length > 0 ? await prisma.pdfProgress.findMany({
-      where: { studentId: user.id, pdfId: { in: allPdfs.map(p => p.id) } },
+    const pdfProgress = sortedPdfs.length > 0 ? await prisma.pdfProgress.findMany({
+      where: { studentId: user.id, pdfId: { in: sortedPdfs.map(p => p.id) } },
     }) : [];
     const pdfProgressMap = Object.fromEntries(pdfProgress.map(pp => [pp.pdfId, pp]));
 
@@ -299,7 +303,7 @@ export const getStudentLevelContent = async (req: Request, res: Response) => {
     const isPreviousLevel = requestedLevelNum < Number(maxUnlockedLevel);
 
     // Compose response
-    const videos = allVideos.map(video => ({
+    const videos = sortedVideos.map(video => ({
       id: video.id,
       title: video.title,
       iframeSnippet: video.iframeSnippet,
@@ -308,21 +312,52 @@ export const getStudentLevelContent = async (req: Request, res: Response) => {
       watched: !!videoProgressMap[video.id]?.watched,
       watchedAt: videoProgressMap[video.id]?.watchedAt || null,
     }));
-    const pdfs = allPdfs.map(pdf => ({
+    const pdfs = sortedPdfs.map(pdf => ({
       id: pdf.id,
       title: pdf.title,
       url: pdf.url,
       read: !!pdfProgressMap[pdf.id]?.read,
       readAt: pdfProgressMap[pdf.id]?.readAt || null,
     }));
-    const quizzes = isPreviousLevel ? [] : allQuizzes.map(quiz => {
+    
+    // Always show quizzes with attempt status, regardless of level
+    const quizzes = allQuizzes.map(quiz => {
       const attempt = examAttemptMap[quiz.id];
+      const isAttempted = !!attempt;
+      
+      // Calculate percentage if attempt exists
+      let percentage: number | null = null;
+      if (attempt && attempt.score !== null && quiz.numQuestions > 0) {
+        percentage = Math.round((attempt.score / quiz.numQuestions) * 100);
+      }
+      
+      // Calculate time spent if attempt exists
+      let timeSpent: number | null = null;
+      if (attempt && attempt.startedAt && attempt.completedAt) {
+        timeSpent = Math.round((attempt.completedAt.getTime() - attempt.startedAt.getTime()) / 1000); // in seconds
+      }
+      
       return {
         id: quiz.id,
         numQuestions: quiz.numQuestions,
-        attempted: !!attempt,
+        passPercentage: quiz.passPercentage,
+        attempted: isAttempted,
+        isAttempted: isAttempted, // Additional clear field for attempt status
+        
+        // Attempt details (if attempted)
         score: attempt?.score ?? null,
         passed: attempt?.passed ?? null,
+        percentage: percentage,
+        timeSpent: timeSpent, // in seconds
+        startedAt: attempt?.startedAt ?? null,
+        completedAt: attempt?.completedAt ?? null,
+        lastAttemptAt: attempt?.completedAt ?? null,
+        
+        // Quiz metadata
+        totalQuestions: quiz.numQuestions,
+        requiredPassPercentage: quiz.passPercentage,
+        
+        // Questions (always included)
         questions: quiz.questionBank?.questions?.map(q => ({
           id: q.id,
           question: q.question,
@@ -333,10 +368,12 @@ export const getStudentLevelContent = async (req: Request, res: Response) => {
         })) || [],
       };
     });
+    
     // Section completion status
     const allVideosWatched = videos.length > 0 && videos.every(v => v.watched);
     const allPdfsRead = pdfs.length > 0 && pdfs.every(p => p.read);
     const allQuizzesPassed = quizzes.length > 0 && quizzes.every(q => q.passed);
+    
     res.json({
       courses: courses.map(c => ({ id: c.id, title: c.title, level: c.level, description: c.description })),
       videos,
@@ -547,5 +584,160 @@ export const getStudentAllEvents = async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Error fetching all events:", error);
     res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+/**
+ * Submit quiz answers and get results
+ */
+export const submitQuiz = async (req: Request, res: Response) => {
+  const user = req.user;
+  if (!user || user.role !== 'student') {
+    return res.status(403).json({ message: 'Forbidden: Not a student.' });
+  }
+
+  const { levelId, classId, totalQuestions, answers, timeSpent } = req.body;
+
+  if (!levelId || !classId || !totalQuestions || !answers || !Array.isArray(answers)) {
+    return res.status(400).json({ message: 'Missing required fields: levelId, classId, totalQuestions, answers' });
+  }
+
+  try {
+    // Find the course for the specified class and level
+    const course = await prisma.course.findFirst({
+      where: {
+        classLevel: classId,
+        level: levelId
+      },
+      include: {
+        quizzes: {
+          include: {
+            questionBank: {
+              include: {
+                questions: true
+              }
+            }
+          }
+        }
+      }
+    });
+
+    if (!course) {
+      return res.status(404).json({ message: 'Course not found for the specified class and level.' });
+    }
+
+    if (course.quizzes.length === 0) {
+      return res.status(404).json({ message: 'No quiz found for this course.' });
+    }
+
+    // Use the first quiz (assuming one quiz per course)
+    const quiz = course.quizzes[0];
+    if (!quiz) {
+      return res.status(404).json({ message: 'Quiz not found for this course.' });
+    }
+
+    // Validate that answers array length matches totalQuestions
+    if (answers.length !== totalQuestions) {
+      return res.status(400).json({ message: 'Number of answers does not match total questions.' });
+    }
+
+    // Calculate score by comparing selected options with correct answers
+    let correctAnswersCount = 0;
+    const questions = quiz.questionBank.questions;
+    
+    for (const answer of answers) {
+      const question = questions.find(q => q.id === answer.questionId);
+      if (question && question.correctOption === answer.selectedOption) {
+        correctAnswersCount++;
+      }
+    }
+
+    const score = correctAnswersCount;
+    
+    // Get passing marks set by master admin for this class and level
+    const passingMarkRecord = await prisma.passingMark.findUnique({
+      where: {
+        classId_levelId: {
+          classId: classId,
+          levelId: levelId
+        }
+      }
+    });
+
+    if (!passingMarkRecord) {
+      return res.status(404).json({ message: 'Passing marks not configured for this class and level.' });
+    }
+
+    const requiredPassingMarks = passingMarkRecord.passingMarks;
+    
+    // Calculate percentage
+    const percentage = (score / totalQuestions) * 100;
+    
+    // Determine if passed based on master admin's passing marks
+    const isPassed = percentage >= requiredPassingMarks;
+    
+    // Calculate XP earned (10 XP for passing, 5 for attempting)
+    const xpEarned = isPassed ? 10 : 5;
+    
+    // Check if certificate eligible (passing with 80% or higher)
+    const certificateEligible = percentage >= 80;
+
+    // Create exam attempt record
+    const examAttempt = await prisma.examAttempt.create({
+      data: {
+        studentId: user.id,
+        quizId: quiz.id,
+        startedAt: new Date(),
+        completedAt: new Date(),
+        passed: isPassed,
+        score: score
+      }
+    });
+
+    // Update student progress if passed
+    if (isPassed) {
+      await prisma.studentProgress.upsert({
+        where: {
+          studentId_courseId: {
+            studentId: user.id,
+            courseId: course.id
+          }
+        },
+        update: {
+          status: 'completed',
+          qualified: true,
+          attemptId: examAttempt.id
+        },
+        create: {
+          studentId: user.id,
+          courseId: course.id,
+          status: 'completed',
+          qualified: true,
+          attemptId: examAttempt.id
+        }
+      });
+    }
+
+    res.json({
+      success: true,
+      message: "Quiz submitted successfully",
+      data: {
+        quizId: quiz.id,
+        levelId,
+        classId,
+        score,
+        totalQuestions,
+        percentage,
+        passed: isPassed,
+        timeSpent,
+        certificateEligible,
+        xpEarned,
+        submittedAt: examAttempt.completedAt
+      }
+    });
+
+  } catch (error) {
+    console.error('Error submitting quiz:', error);
+    res.status(500).json({ message: 'Failed to submit quiz', error: 'Internal server error' });
   }
 };

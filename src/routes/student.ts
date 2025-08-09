@@ -11,7 +11,8 @@ import {
   markVideoWatched, 
   markPdfRead,
   getStudentUpcomingEvents,
-  getStudentAllEvents
+  getStudentAllEvents,
+  submitQuiz
 } from '../controllers/studentController';
 
 const router = Router();
@@ -32,5 +33,8 @@ router.post('/mark-pdf-read', asyncHandler(markPdfRead));
 // Event routes
 router.get('/events/upcoming', asyncHandler(getStudentUpcomingEvents));
 router.get('/events/all', asyncHandler(getStudentAllEvents));
+
+// Quiz submission route
+router.post('/submit-quiz', asyncHandler(submitQuiz));
 
 export default router; 

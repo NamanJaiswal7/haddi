@@ -60,7 +60,7 @@ app.get('/health', (req, res) => {
 // Define API routes here
 app.use('/api/auth', authRoutes);
 app.use('/api/district-admin', districtAdminRoutes);
-app.use('/api/levels', courseRoutes);
+app.use('/api/courses', courseRoutes);
 app.use('/api/master-admin', masterAdminRoutes);
 app.use('/api/districts', districtRoutes);
 app.use('/api/student', studentRoutes);
