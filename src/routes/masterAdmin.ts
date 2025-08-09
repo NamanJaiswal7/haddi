@@ -23,7 +23,11 @@ import {
     updateVideo,
     updateNote,
     updateQuiz,
-    deleteCourseLevel
+    deleteCourseLevel,
+    updateCourseTitle,
+    deleteVideo,
+    deleteNote,
+    deleteQuiz
 } from '../controllers/masterAdminController';
 import { authenticateToken, isMasterAdmin } from '../middleware/authMiddleware';
 import { asyncHandler } from '../utils/asyncHandler';
@@ -189,11 +193,25 @@ router.post('/course-levels', asyncHandler(setCourseLevels));
 router.put('/courses/videos/:id', asyncHandler(updateVideo));
 
 /**
+ * @route DELETE /api/master-admin/courses/videos/:id
+ * @description Delete a course video
+ * @access Private (Master Admin)
+ */
+router.delete('/courses/videos/:id', asyncHandler(deleteVideo));
+
+/**
  * @route PUT /api/master-admin/courses/notes/:id
  * @description Update a course note
  * @access Private (Master Admin)
  */
 router.put('/courses/notes/:id', upload.single('file'), asyncHandler(updateNote));
+
+/**
+ * @route DELETE /api/master-admin/courses/notes/:id
+ * @description Delete a course note
+ * @access Private (Master Admin)
+ */
+router.delete('/courses/notes/:id', asyncHandler(deleteNote));
 
 /**
  * @route PUT /api/master-admin/courses/quiz/:id
@@ -203,10 +221,24 @@ router.put('/courses/notes/:id', upload.single('file'), asyncHandler(updateNote)
 router.put('/courses/quiz/:id', upload.single('file'), asyncHandler(updateQuiz));
 
 /**
- * @route DELETE /api/master-admin/course-levels
+ * @route DELETE /api/master-admin/courses/quiz
+ * @description Delete quizzes for a specific class and level
+ * @access Private (Master Admin)
+ */
+router.delete('/courses/quiz', asyncHandler(deleteQuiz));
+
+/**
+ * @route PUT /api/master-admin/courses/title
+ * @description Update the title of a course
+ * @access Private (Master Admin)
+ */
+router.put('/courses/title', asyncHandler(updateCourseTitle));
+
+/**
+ * @route DELETE /api/master-admin/course-levels/:classLevel/:level
  * @description Delete all courses for a class and level, and update course levels
  * @access Private (Master Admin)
  */
-router.delete('/course-levels', asyncHandler(deleteCourseLevel));
+router.delete('/course-levels/:classLevel/:level', asyncHandler(deleteCourseLevel));
 
 export default router; 

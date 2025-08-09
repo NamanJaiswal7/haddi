@@ -596,3 +596,631 @@ export const studentGoogleSignUpComplete = async (req: Request, res: Response) =
     res.status(500).json({ message: 'Google sign-up complete failed', error });
   }
 };
+
+/**
+ * Mobile app signin endpoint that returns comprehensive student data
+ * Supports both email/password and Google signin
+ */
+export const mobileStudentSignIn = async (req: Request, res: Response) => {
+  const { email, password, googleId, name, picture } = req.body;
+
+  try {
+    let user;
+    let isGoogleSignIn = false;
+
+    // Handle Google signin
+    if (googleId) {
+      isGoogleSignIn = true;
+      if (!email) {
+        return res.status(400).json({ message: 'Email is required for Google signin' });
+      }
+
+      user = await prisma.user.findFirst({
+        where: {
+          OR: [
+            { email },
+            { googleId }
+          ]
+        }
+      });
+
+      if (!user) {
+        return res.status(401).json({ message: 'User not found. Please sign up first.' });
+      }
+
+      if (user.role !== 'student') {
+        return res.status(403).json({ message: 'Access denied. Only students can use mobile signin.' });
+      }
+
+      // Update user's Google information if it has changed
+      if (user.googleId !== googleId || user.picture !== picture || user.name !== name) {
+        await prisma.user.update({
+          where: { id: user.id },
+          data: {
+            googleId,
+            picture,
+            name: name || user.name,
+            lastActiveAt: new Date()
+          }
+        });
+      } else {
+        await prisma.user.update({
+          where: { id: user.id },
+          data: { lastActiveAt: new Date() }
+        });
+      }
+    } else {
+      // Handle email/password signin
+      if (!email || !password) {
+        return res.status(400).json({ message: 'Email and password are required' });
+      }
+
+      user = await prisma.user.findUnique({ where: { email } });
+      if (!user || user.role !== 'student') {
+        return res.status(401).json({ message: 'Invalid credentials' });
+      }
+
+      const isValid = await bcrypt.compare(password, user.passwordHash);
+      if (!isValid) {
+        return res.status(401).json({ message: 'Invalid credentials' });
+      }
+
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { lastActiveAt: new Date() }
+      });
+    }
+
+    // Fetch updated user data
+    const updatedUser = await prisma.user.findUnique({
+      where: { id: user.id }
+    });
+
+    if (!updatedUser) {
+      return res.status(500).json({ message: 'Failed to fetch user data' });
+    }
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { id: updatedUser.id, role: updatedUser.role },
+      process.env.JWT_SECRET!,
+      { expiresIn: '7d' }
+    );
+
+    // Fetch comprehensive student data
+    const district = updatedUser.districtId ? await prisma.district.findUnique({ 
+      where: { id: updatedUser.districtId } 
+    }) : null;
+
+    // Progress data
+    const progress = await prisma.studentProgress.findMany({
+      where: { studentId: updatedUser.id },
+      include: { course: true }
+    });
+    const levelsCompleted = progress.filter(p => p.status === 'completed' && p.qualified).length;
+    const totalLevels = await prisma.course.count();
+    const currentLevelProgress = progress.find(p => p.status === 'in_progress');
+    const currentLevel = currentLevelProgress?.course.level || "1";
+    const spiritualProgress = totalLevels ? Math.round((levelsCompleted / totalLevels) * 100) : 0;
+
+    // Knowledge points
+    const examAttempts = await prisma.examAttempt.findMany({ 
+      where: { studentId: updatedUser.id, score: { not: null } } 
+    });
+    const knowledgePoints = examAttempts.reduce((sum, a) => sum + (a.score || 0), 0);
+
+    // Learning Path
+    const courseWhere = updatedUser.classLevel ? { classLevel: updatedUser.classLevel } : {};
+    const courses = await prisma.course.findMany({
+      where: courseWhere,
+      orderBy: { level: 'asc' },
+      include: { videos: true, pdfs: true, quizzes: true }
+    });
+    const learningPath = courses.map(course => {
+      const prog = progress.find(p => p.courseId === course.id);
+      return {
+        id: course.id,
+        title: course.title,
+        level: course.level,
+        description: course.description,
+        videosCount: course.videos.length,
+        notesCount: course.pdfs.length,
+        questionsCount: course.quizzes.reduce((sum, q) => sum + (q.numQuestions || 0), 0),
+        status: prog?.status === 'completed' && prog.qualified ? 'completed' : 
+                prog?.status === 'in_progress' ? 'in_progress' : 'locked',
+      };
+    });
+
+    // Recent notifications
+    const notifications = await prisma.notificationRecipient.findMany({
+      where: { userId: updatedUser.id },
+      include: { notification: true },
+      orderBy: { notification: { createdAt: 'desc' } },
+      take: 5
+    });
+    const messages = notifications.map(n => ({
+      id: n.notification.id,
+      title: n.notification.title,
+      content: n.notification.content,
+      type: n.notification.type,
+      createdAt: n.notification.createdAt,
+      isRead: n.isRead,
+    }));
+
+    // Recent Activity (simplified for now)
+    const recentActivities = [
+      {
+        id: 'activity_1',
+        type: 'lesson_completed',
+        title: 'Completed Lesson 3',
+        subtitle: 'Bhagavad Gita Chapter 1',
+        icon: 'play',
+        color: 'green',
+        timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000) // 2 hours ago
+      },
+      {
+        id: 'activity_2',
+        type: 'quiz_scored',
+        title: 'Scored 85% in Quiz',
+        subtitle: 'Level 1 Assessment',
+        icon: 'quiz',
+        color: 'orange',
+        timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000) // 1 day ago
+      },
+      {
+        id: 'activity_3',
+        type: 'certificate_earned',
+        title: 'Earned Certificate',
+        subtitle: 'Level 1 Completion',
+        icon: 'trophy',
+        color: 'orange',
+        timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000) // 3 days ago
+      }
+    ];
+
+    // Quick Actions
+    const quickActions = [
+      {
+        id: 'take_quiz',
+        title: 'Take Quiz',
+        subtitle: 'Test your knowledge',
+        icon: 'quiz',
+        color: 'orange',
+        action: 'navigate_to_quiz'
+      },
+      {
+        id: 'download',
+        title: 'Download',
+        subtitle: 'Study materials',
+        icon: 'download',
+        color: 'orange',
+        action: 'download_materials'
+      },
+      {
+        id: 'certificates',
+        title: 'Certificates',
+        subtitle: 'View achievements',
+        icon: 'trophy',
+        color: 'green',
+        action: 'view_certificates'
+      },
+      {
+        id: 'support',
+        title: 'Support',
+        subtitle: 'Get help',
+        icon: 'help',
+        color: 'orange',
+        action: 'contact_support'
+      }
+    ];
+
+    // Upcoming events
+    const now = new Date();
+    const futureDate = new Date();
+    futureDate.setDate(now.getDate() + 45);
+
+    const events = await prisma.event.findMany({
+      where: {
+        OR: [
+          { districtId: updatedUser.districtId },
+          { districtId: null }
+        ],
+        date: {
+          gte: now,
+          lte: futureDate
+        }
+      },
+      include: {
+        participants: true,
+        district: true
+      },
+      orderBy: { date: 'asc' },
+      take: 10
+    });
+
+    const upcomingEvents = events.map(event => ({
+      id: event.id,
+      title: event.title,
+      type: event.type,
+      date: event.date.toISOString(),
+      participants: event.participants?.length || 0,
+      description: event.description,
+      location: event.location,
+      ctaName: event.ctaName,
+      ctaLink: event.ctaLink,
+      district: event.district?.name || 'Global',
+      isUpcoming: event.date > now
+    }));
+
+    // Current level content
+    const currentCourse = courses.find(c => c.level === currentLevel);
+    let currentLevelContent: any = null;
+    if (currentCourse) {
+      currentLevelContent = {
+        id: currentCourse.id,
+        title: currentCourse.title,
+        level: currentCourse.level,
+        description: currentCourse.description,
+        videos: currentCourse.videos.map(v => ({
+          id: v.id,
+          title: v.title,
+          youtubeId: v.youtubeId,
+          thumbnail: v.thumbnail,
+          iframeSnippet: v.iframeSnippet
+        })),
+        notes: currentCourse.pdfs.map(p => ({
+          id: p.id,
+          title: p.title,
+          url: p.url
+        })),
+        quizzes: currentCourse.quizzes.map(q => ({
+          id: q.id,
+          title: `Quiz - ${currentCourse.title}`,
+          numQuestions: q.numQuestions,
+          passPercentage: q.passPercentage
+        }))
+      };
+    }
+
+    logger.info('Mobile signin successful', { 
+      email, 
+      userId: updatedUser.id, 
+      method: isGoogleSignIn ? 'google' : 'email' 
+    });
+
+    res.json({
+      success: true,
+      token,
+      user: {
+        id: updatedUser.id,
+        email: updatedUser.email,
+        name: updatedUser.name,
+        role: updatedUser.role,
+        googleId: updatedUser.googleId,
+        picture: updatedUser.picture,
+        dob: updatedUser.dob,
+        gender: updatedUser.gender,
+        education: updatedUser.institution,
+        classLevel: updatedUser.classLevel,
+        districtId: updatedUser.districtId,
+        district: district?.name || null,
+        pincode: updatedUser.pincode,
+        lastActiveAt: updatedUser.lastActiveAt
+      },
+      dashboard: {
+        currentLevel,
+        spiritualProgress,
+        levelsCompleted,
+        totalLevels,
+        knowledgePoints,
+        learningPath,
+        messages,
+        upcomingEvents,
+        currentLevelContent,
+        recentActivities,
+        quickActions
+      }
+    });
+  } catch (error) {
+    logger.error('Mobile signin failed:', { 
+      error: error instanceof Error ? error.message : String(error), 
+      stack: error instanceof Error ? error.stack : undefined 
+    });
+    res.status(500).json({ 
+      success: false,
+      message: 'Mobile signin failed', 
+      error: error instanceof Error ? error.message : String(error) 
+    });
+  }
+};
+
+export const completeRegistration = async (req: Request, res: Response) => {
+  const { 
+    email, 
+    googleId, 
+    name, 
+    picture, 
+    dateOfBirth, 
+    gender, 
+    educationLevel, 
+    classLevel, 
+    district, 
+    mobileNumber, 
+    pincode 
+  } = req.body;
+
+  try {
+    // Validate required fields
+    if (!email || !googleId || !name) {
+      return res.status(400).json({ message: 'Email, googleId, and name are required' });
+    }
+
+    // Check if user already exists
+    const existingUser = await prisma.user.findFirst({
+      where: {
+        OR: [
+          { email },
+          { googleId }
+        ]
+      }
+    });
+
+    if (existingUser) {
+      return res.status(409).json({ message: 'A user with this email or Google ID already exists' });
+    }
+
+    // Find district by name
+    let districtId: string | null = null;
+    if (district) {
+      const districtRecord = await prisma.district.findFirst({
+        where: { name: { equals: district, mode: 'insensitive' } }
+      });
+      if (!districtRecord) {
+        return res.status(400).json({ message: 'Invalid district name' });
+      }
+      districtId = districtRecord.id;
+    }
+
+    // Validate gender enum
+    const validGenders = ['male', 'female', 'other'];
+    const normalizedGender = gender?.toLowerCase();
+    if (normalizedGender && !validGenders.includes(normalizedGender)) {
+      return res.status(400).json({ message: 'Invalid gender value. Must be one of: male, female, other' });
+    }
+
+    // Map education level to enum
+    const educationMap: { [key: string]: string } = {
+      'high school': 'high_school',
+      'senior secondary': 'senior_secondary',
+      'college': 'college',
+      'working': 'working',
+      'other': 'other'
+    };
+    const normalizedEducation = educationLevel?.toLowerCase();
+    const education = educationMap[normalizedEducation || ''] || 'high_school';
+
+    // Create new student user with complete information
+    const newUser = await prisma.user.create({
+      data: {
+        email,
+        name,
+        googleId,
+        picture,
+        passwordHash: '', // Empty password hash for Google users
+        mobile: mobileNumber || null,
+        dob: dateOfBirth ? new Date(dateOfBirth) : undefined,
+        gender: normalizedGender as any,
+        institution: education as any,
+        classLevel,
+        districtId,
+        pincode,
+        role: 'student',
+        lastActiveAt: new Date()
+      }
+    });
+
+    // Fetch the user from database to ensure we have the latest data
+    const userFromDb = await prisma.user.findUnique({
+      where: { id: newUser.id },
+      include: { district: true }
+    });
+
+    if (!userFromDb) {
+      return res.status(500).json({ message: 'Failed to fetch created user data' });
+    }
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { id: userFromDb.id, role: userFromDb.role },
+      process.env.JWT_SECRET!,
+      { expiresIn: '7d' }
+    );
+
+    // Fetch comprehensive student data for dashboard
+    const progress = await prisma.studentProgress.findMany({
+      where: { studentId: userFromDb.id },
+      include: { course: true }
+    });
+    const levelsCompleted = progress.filter(p => p.status === 'completed' && p.qualified).length;
+    const totalLevels = await prisma.course.count();
+    const currentLevelProgress = progress.find(p => p.status === 'in_progress');
+    const currentLevel = currentLevelProgress?.course.level || "1";
+    const spiritualProgress = totalLevels ? Math.round((levelsCompleted / totalLevels) * 100) : 0;
+
+    // Knowledge points
+    const examAttempts = await prisma.examAttempt.findMany({ 
+      where: { studentId: userFromDb.id, score: { not: null } } 
+    });
+    const knowledgePoints = examAttempts.reduce((sum, a) => sum + (a.score || 0), 0);
+
+    // Learning Path
+    const courseWhere = userFromDb.classLevel ? { classLevel: userFromDb.classLevel } : {};
+    const courses = await prisma.course.findMany({
+      where: courseWhere,
+      orderBy: { level: 'asc' },
+      include: { videos: true, pdfs: true, quizzes: true }
+    });
+    const learningPath = courses.map(course => {
+      const prog = progress.find(p => p.courseId === course.id);
+      return {
+        id: course.id,
+        title: course.title,
+        level: course.level,
+        description: course.description,
+        videosCount: course.videos.length,
+        notesCount: course.pdfs.length,
+        questionsCount: course.quizzes.reduce((sum, q) => sum + (q.numQuestions || 0), 0),
+        status: prog?.status === 'completed' && prog.qualified ? 'completed' : 
+                prog?.status === 'in_progress' ? 'in_progress' : 'locked',
+      };
+    });
+
+    // Recent notifications
+    const notifications = await prisma.notificationRecipient.findMany({
+      where: { userId: userFromDb.id },
+      include: { notification: true },
+      orderBy: { notification: { createdAt: 'desc' } },
+      take: 5
+    });
+    const messages = notifications.map(n => ({
+      id: n.notification.id,
+      title: n.notification.title,
+      content: n.notification.content,
+      type: n.notification.type,
+      createdAt: n.notification.createdAt,
+      isRead: n.isRead,
+    }));
+
+    // Recent Activity (simplified for new users)
+    const recentActivities = [
+      {
+        id: 'welcome_activity',
+        type: 'welcome',
+        title: 'Welcome to Haddi!',
+        subtitle: 'Start your spiritual journey',
+        icon: 'star',
+        color: 'orange',
+        timestamp: new Date()
+      }
+    ];
+
+    // Quick Actions
+    const quickActions = [
+      {
+        id: 'take_quiz',
+        title: 'Take Quiz',
+        subtitle: 'Test your knowledge',
+        icon: 'quiz',
+        color: 'orange',
+        action: 'navigate_to_quiz'
+      },
+      {
+        id: 'download',
+        title: 'Download',
+        subtitle: 'Study materials',
+        icon: 'download',
+        color: 'orange',
+        action: 'download_materials'
+      },
+      {
+        id: 'certificates',
+        title: 'Certificates',
+        subtitle: 'View achievements',
+        icon: 'trophy',
+        color: 'green',
+        action: 'view_certificates'
+      },
+      {
+        id: 'support',
+        title: 'Support',
+        subtitle: 'Get help',
+        icon: 'help',
+        color: 'orange',
+        action: 'contact_support'
+      }
+    ];
+
+    // Upcoming events
+    const now = new Date();
+    const futureDate = new Date();
+    futureDate.setDate(now.getDate() + 45);
+
+    const events = await prisma.event.findMany({
+      where: {
+        OR: [
+          { districtId: userFromDb.districtId },
+          { districtId: null }
+        ],
+        date: {
+          gte: now,
+          lte: futureDate
+        }
+      },
+      include: {
+        participants: true,
+        district: true
+      },
+      orderBy: { date: 'asc' },
+      take: 10
+    });
+
+    const upcomingEvents = events.map(event => ({
+      id: event.id,
+      title: event.title,
+      type: event.type,
+      date: event.date.toISOString(),
+      participants: event.participants?.length || 0,
+      description: event.description,
+      location: event.location,
+      ctaName: event.ctaName,
+      ctaLink: event.ctaLink,
+      district: event.district?.name || 'Global',
+      isUpcoming: event.date > now
+    }));
+
+    logger.info('Mobile registration complete successful', { email, userId: userFromDb.id });
+
+    res.status(201).json({
+      success: true,
+      token,
+      user: {
+        id: userFromDb.id,
+        email: userFromDb.email,
+        name: userFromDb.name,
+        role: userFromDb.role,
+        googleId: userFromDb.googleId,
+        picture: userFromDb.picture,
+        dob: userFromDb.dob,
+        gender: userFromDb.gender,
+        education: userFromDb.institution,
+        classLevel: userFromDb.classLevel,
+        districtId: userFromDb.districtId,
+        district: userFromDb.district?.name || null,
+        pincode: userFromDb.pincode,
+        lastActiveAt: userFromDb.lastActiveAt
+      },
+      dashboard: {
+        currentLevel,
+        spiritualProgress,
+        levelsCompleted,
+        totalLevels,
+        knowledgePoints,
+        learningPath,
+        messages,
+        upcomingEvents,
+        recentActivities,
+        quickActions
+      }
+    });
+  } catch (error) {
+    logger.error('Mobile registration complete failed:', { 
+      error: error instanceof Error ? error.message : String(error), 
+      stack: error instanceof Error ? error.stack : undefined 
+    });
+    res.status(500).json({ 
+      success: false,
+      message: 'Mobile registration complete failed', 
+      error: error instanceof Error ? error.message : String(error) 
+    });
+  }
+};

@@ -42,4 +42,11 @@ export const isMasterAdmin = async (req: Request, res: Response, next: NextFunct
         return res.status(403).json({ message: 'Forbidden: Access is restricted to master admins.' });
     }
     next();
+};
+
+export const isStudent = async (req: Request, res: Response, next: NextFunction) => {
+    if (req.user?.role !== 'student') {
+        return res.status(403).json({ message: 'Forbidden: Access is restricted to students.' });
+    }
+    next();
 }; 

@@ -61,6 +61,9 @@ model Course {
   pdfs        CoursePDF[]
   quizzes     Quiz[]
   studentProgress StudentProgress[]
+
+  @@unique([classLevel, level])
+  @@index([classLevel, level])
 }
 
 model CourseVideo {
@@ -70,6 +73,7 @@ model CourseVideo {
   youtubeId String?
   thumbnail String?
   iframeSnippet String?
+  createdAt DateTime @default(now())
 
   course    Course @relation(fields: [courseId], references: [id])
   videoProgresses VideoProgress[]
@@ -89,6 +93,7 @@ model CoursePDF {
   courseId  String
   title     String
   url       String
+  createdAt DateTime @default(now())
 
   course    Course @relation(fields: [courseId], references: [id])
   pdfProgresses PdfProgress[]
