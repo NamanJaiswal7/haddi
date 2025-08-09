@@ -19,4 +19,6 @@ router.post('/mark-pdf-read', (0, asyncHandler_1.asyncHandler)(studentController
 // Event routes
 router.get('/events/upcoming', (0, asyncHandler_1.asyncHandler)(studentController_1.getStudentUpcomingEvents));
 router.get('/events/all', (0, asyncHandler_1.asyncHandler)(studentController_1.getStudentAllEvents));
+// Quiz submission route
+router.post('/submit-quiz', (0, asyncHandler_1.asyncHandler)(studentController_1.submitQuiz));
 exports.default = router;

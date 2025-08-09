@@ -52,17 +52,17 @@ docker-compose -f "$DOCKER_COMPOSE_FILE" up -d --build
 echo -e "${YELLOW}⏳ Waiting for database to be ready...${NC}"
 sleep 30
 
-# Run database migrations
-echo -e "${YELLOW}🗄️ Running database migrations...${NC}"
-docker-compose -f "$DOCKER_COMPOSE_FILE" exec -T app npx prisma migrate deploy
+# Sync database schema (for YugabyteDB compatibility)
+echo -e "${YELLOW}🗄️ Syncing database schema...${NC}"
+docker-compose -f "$DOCKER_COMPOSE_FILE" exec -T app npx prisma db push
 
 # Generate Prisma client
 echo -e "${YELLOW}🔧 Generating Prisma client...${NC}"
 docker-compose -f "$DOCKER_COMPOSE_FILE" exec -T app npx prisma generate
 
-# Seed database (optional - uncomment if needed)
-# echo -e "${YELLOW}🌱 Seeding database...${NC}"
-# docker-compose -f "$DOCKER_COMPOSE_FILE" exec -T app npm run seed
+# Seed database with initial data
+echo -e "${YELLOW}🌱 Seeding database...${NC}"
+docker-compose -f "$DOCKER_COMPOSE_FILE" exec -T app npm run seed
 
 # Check application health
 echo -e "${YELLOW}🏥 Checking application health...${NC}"

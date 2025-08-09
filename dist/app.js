@@ -59,7 +59,7 @@ app.get('/health', (req, res) => {
 // Define API routes here
 app.use('/api/auth', auth_1.default);
 app.use('/api/district-admin', districtAdmin_1.default);
-app.use('/api/levels', course_1.default);
+app.use('/api/courses', course_1.default);
 app.use('/api/master-admin', masterAdmin_1.default);
 app.use('/api/districts', district_1.default);
 app.use('/api/student', student_1.default);

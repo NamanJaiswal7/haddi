@@ -70,6 +70,8 @@ services:
       DATABASE_URL: postgresql://yugabyte:yugabyte@yugabytedb:5433/yugabyte
       REDIS_URL: redis://redis:6379
       JWT_SECRET: your_jwt_secret_here_change_in_production
+      EMAIL_USER: naman.patna@gmail.com
+      EMAIL_PASS: hycm xerc arfm zmdj
     ports:
       - "4545:4545"
     volumes:

@@ -36,7 +36,9 @@
     "docker:db:migrate": "docker-compose -f docker-compose.dev.yml exec app npx prisma migrate deploy",
     "docker:db:seed": "docker-compose -f docker-compose.dev.yml exec app npm run seed",
     "docker:db:studio": "docker-compose -f docker-compose.dev.yml exec app npx prisma studio",
-    "docker:db:push": "docker-compose -f docker-compose.dev.yml exec app npx prisma db push"
+    "docker:db:push": "docker-compose -f docker-compose.dev.yml exec app npx prisma db push",
+    "docker:prod:db:sync": "docker-compose exec app npx prisma db push && docker-compose exec app npx prisma generate && docker-compose exec app npm run seed",
+    "docker:prod:db:sync:script": "./scripts/sync-prod-db.sh"
   },
   "keywords": [],
   "author": "",
