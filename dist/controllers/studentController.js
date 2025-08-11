@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.submitQuiz = exports.getStudentAllEvents = exports.getStudentUpcomingEvents = exports.markPdfRead = exports.markVideoWatched = exports.getStudentLevelContent = exports.getStudentNotificationCount = exports.getStudentNotifications = exports.getStudentLearningPath = exports.getStudentProfile = exports.getStudentDashboard = void 0;
+exports.getStudentRandomQuestions = exports.getStudentQuizValidity = exports.submitQuiz = exports.getStudentAllEvents = exports.getStudentUpcomingEvents = exports.markPdfRead = exports.markVideoWatched = exports.getStudentLevelContent = exports.getStudentNotificationCount = exports.getStudentNotifications = exports.getStudentLearningPath = exports.getStudentProfile = exports.getStudentDashboard = void 0;
 const client_1 = require("../prisma/client");
 const getStudentDashboard = async (req, res) => {
     const user = req.user;
@@ -133,15 +133,50 @@ const getStudentLearningPath = async (req, res) => {
         else if (inProgressLevel) {
             maxUnlockedLevel = inProgressLevel;
         }
-        const learningPath = courses.map(course => {
+        const learningPath = await Promise.all(courses.map(async (course) => {
             const prog = progress.find(p => p.courseId === course.id);
+            // Check if all components are completed (regardless of current progress status)
+            const [videoProgress, pdfProgress, quizAttempts] = await Promise.all([
+                // Check video progress
+                course.videos.length > 0 ? client_1.prisma.videoProgress.findMany({
+                    where: {
+                        studentId: user.id,
+                        videoId: { in: course.videos.map(v => v.id) },
+                        watched: true
+                    }
+                }) : [],
+                // Check PDF progress
+                course.pdfs.length > 0 ? client_1.prisma.pdfProgress.findMany({
+                    where: {
+                        studentId: user.id,
+                        pdfId: { in: course.pdfs.map(p => p.id) },
+                        read: true
+                    }
+                }) : [],
+                // Check quiz attempts
+                course.quizzes.length > 0 ? client_1.prisma.examAttempt.findMany({
+                    where: {
+                        studentId: user.id,
+                        quizId: { in: course.quizzes.map(q => q.id) },
+                        passed: true
+                    }
+                }) : []
+            ]);
+            // Course is fully completed only if all components are done
+            const allVideosWatched = course.videos.length === 0 || videoProgress.length === course.videos.length;
+            const allPdfsRead = course.pdfs.length === 0 || pdfProgress.length === course.pdfs.length;
+            const quizPassed = course.quizzes.length === 0 || quizAttempts.length > 0;
+            const isFullyCompleted = allVideosWatched && allPdfsRead && quizPassed;
             let status = 'locked';
-            if (prog?.status === 'completed' && prog.qualified)
+            if (isFullyCompleted) {
                 status = 'completed';
-            else if (prog?.status === 'in_progress')
+            }
+            else if (prog?.status === 'in_progress') {
                 status = 'in_progress';
-            else if (course.level === maxUnlockedLevel)
+            }
+            else if (course.level === maxUnlockedLevel) {
                 status = 'in_progress';
+            }
             // Enable completed, in_progress, and next unlocked level
             let enabled = false;
             if (status === 'completed' || status === 'in_progress') {
@@ -157,6 +192,11 @@ const getStudentLearningPath = async (req, res) => {
                     enabled = course.level === maxUnlockedLevel;
                 }
             }
+            // Calculate questions count (max 25 per quiz, or total if less than 25)
+            const questionsCount = course.quizzes.reduce((sum, q) => {
+                const totalQuestions = q.numQuestions || 0;
+                return sum + Math.min(totalQuestions, 25);
+            }, 0);
             return {
                 id: course.id,
                 title: course.title,
@@ -164,11 +204,11 @@ const getStudentLearningPath = async (req, res) => {
                 description: course.description,
                 videosCount: course.videos.length,
                 notesCount: course.pdfs.length,
-                questionsCount: course.quizzes.reduce((sum, q) => sum + (q.numQuestions || 0), 0),
+                questionsCount,
                 status,
                 enabled
             };
-        });
+        }));
         res.json({ learningPath });
     }
     catch (error) {
@@ -344,15 +384,25 @@ const getStudentLevelContent = async (req, res) => {
                 // Quiz metadata
                 totalQuestions: quiz.numQuestions,
                 requiredPassPercentage: quiz.passPercentage,
-                // Questions (always included)
-                questions: quiz.questionBank?.questions?.map(q => ({
-                    id: q.id,
-                    question: q.question,
-                    optionA: q.optionA,
-                    optionB: q.optionB,
-                    optionC: q.optionC,
-                    optionD: q.optionD,
-                })) || [],
+                // Questions (randomly select 25 or all if less than 25)
+                questions: (() => {
+                    const allQuestions = quiz.questionBank?.questions || [];
+                    if (allQuestions.length === 0)
+                        return [];
+                    // Shuffle and take 25 questions (or all if less than 25)
+                    const shuffledQuestions = allQuestions
+                        .sort(() => Math.random() - 0.5)
+                        .slice(0, 25)
+                        .map(q => ({
+                        id: q.id,
+                        question: q.question,
+                        optionA: q.optionA,
+                        optionB: q.optionB,
+                        optionC: q.optionC,
+                        optionD: q.optionD,
+                    }));
+                    return shuffledQuestions;
+                })(),
             };
         });
         // Section completion status
@@ -403,12 +453,12 @@ const markVideoWatched = async (req, res) => {
             where: { studentId: user.id, videoId: { in: allVideos.map(v => v.id) }, watched: true },
         });
         const allWatched = allVideos.length > 0 && watchedVideos.length === allVideos.length;
-        // If all videos are watched, update student progress for this course
+        // If all videos are watched, update student progress to in_progress (not completed yet)
         if (allWatched) {
             await client_1.prisma.studentProgress.upsert({
                 where: { studentId_courseId: { studentId: user.id, courseId: video.courseId } },
-                update: { status: 'completed', qualified: true },
-                create: { studentId: user.id, courseId: video.courseId, status: 'completed', qualified: true },
+                update: { status: 'in_progress' },
+                create: { studentId: user.id, courseId: video.courseId, status: 'in_progress' },
             });
         }
         res.json({ message: 'Video marked as watched.', videoId, watchedAt });
@@ -445,12 +495,12 @@ const markPdfRead = async (req, res) => {
             where: { studentId: user.id, pdfId: { in: allPdfs.map(p => p.id) }, read: true },
         });
         const allRead = allPdfs.length > 0 && readPdfs.length === allPdfs.length;
-        // If all PDFs are read, update student progress for this course
+        // If all PDFs are read, update student progress to in_progress (not completed yet)
         if (allRead) {
             await client_1.prisma.studentProgress.upsert({
                 where: { studentId_courseId: { studentId: user.id, courseId: pdf.courseId } },
-                update: { status: 'completed', qualified: true },
-                create: { studentId: user.id, courseId: pdf.courseId, status: 'completed', qualified: true },
+                update: { status: 'in_progress' },
+                create: { studentId: user.id, courseId: pdf.courseId, status: 'in_progress' },
             });
         }
         res.json({ message: 'PDF marked as read.', pdfId, readAt });
@@ -585,6 +635,8 @@ const submitQuiz = async (req, res) => {
                 level: levelId
             },
             include: {
+                videos: true,
+                pdfs: true,
                 quizzes: {
                     include: {
                         questionBank: {
@@ -655,6 +707,30 @@ const submitQuiz = async (req, res) => {
         });
         // Update student progress if passed
         if (isPassed) {
+            // Check if all components (videos, PDFs, and quiz) are completed
+            const [videoProgress, pdfProgress] = await Promise.all([
+                // Check video progress
+                course.videos.length > 0 ? client_1.prisma.videoProgress.findMany({
+                    where: {
+                        studentId: user.id,
+                        videoId: { in: course.videos.map(v => v.id) },
+                        watched: true
+                    }
+                }) : [],
+                // Check PDF progress
+                course.pdfs.length > 0 ? client_1.prisma.pdfProgress.findMany({
+                    where: {
+                        studentId: user.id,
+                        pdfId: { in: course.pdfs.map(p => p.id) },
+                        read: true
+                    }
+                }) : []
+            ]);
+            // Course is fully completed only if all components are done
+            const allVideosWatched = course.videos.length === 0 || videoProgress.length === course.videos.length;
+            const allPdfsRead = course.pdfs.length === 0 || pdfProgress.length === course.pdfs.length;
+            const quizPassed = isPassed;
+            const isFullyCompleted = allVideosWatched && allPdfsRead && quizPassed;
             await client_1.prisma.studentProgress.upsert({
                 where: {
                     studentId_courseId: {
@@ -663,15 +739,15 @@ const submitQuiz = async (req, res) => {
                     }
                 },
                 update: {
-                    status: 'completed',
-                    qualified: true,
+                    status: isFullyCompleted ? 'completed' : 'in_progress',
+                    qualified: isFullyCompleted,
                     attemptId: examAttempt.id
                 },
                 create: {
                     studentId: user.id,
                     courseId: course.id,
-                    status: 'completed',
-                    qualified: true,
+                    status: isFullyCompleted ? 'completed' : 'in_progress',
+                    qualified: isFullyCompleted,
                     attemptId: examAttempt.id
                 }
             });
@@ -700,3 +776,109 @@ const submitQuiz = async (req, res) => {
     }
 };
 exports.submitQuiz = submitQuiz;
+const getStudentQuizValidity = async (req, res) => {
+    const user = req.user;
+    if (!user || user.role !== 'student') {
+        return res.status(403).json({ message: 'Forbidden: Not a student.' });
+    }
+    try {
+        // Get quiz validity periods for the student's class
+        const validityPeriods = await client_1.prisma.quizValidity.findMany({
+            where: {
+                classId: user.classLevel || undefined
+            },
+            orderBy: [
+                { level: 'asc' }
+            ]
+        });
+        res.status(200).json({
+            success: true,
+            data: validityPeriods
+        });
+    }
+    catch (error) {
+        console.error('Error fetching quiz validity periods:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Internal server error'
+        });
+    }
+};
+exports.getStudentQuizValidity = getStudentQuizValidity;
+const getStudentRandomQuestions = async (req, res) => {
+    const user = req.user;
+    if (!user || user.role !== 'student') {
+        return res.status(403).json({ message: 'Forbidden: Not a student.' });
+    }
+    const classLevel = req.query.classLevel || user.classLevel;
+    const level = req.query.level;
+    if (!classLevel || !level) {
+        return res.status(400).json({
+            message: 'classLevel and level are required query parameters. If not provided, classLevel will be taken from user profile.'
+        });
+    }
+    try {
+        // Find the course for the specified classLevel and level
+        const course = await client_1.prisma.course.findFirst({
+            where: {
+                classLevel: classLevel,
+                level: level
+            },
+            include: {
+                quizzes: {
+                    include: {
+                        questionBank: {
+                            include: {
+                                questions: true
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        if (!course) {
+            return res.status(404).json({
+                message: `No course found for classLevel: ${classLevel} and level: ${level}`
+            });
+        }
+        // Collect all questions from all quizzes in this course
+        const allQuestions = course.quizzes.flatMap(quiz => quiz.questionBank.questions.map(question => ({
+            id: question.id,
+            question: question.question,
+            optionA: question.optionA,
+            optionB: question.optionB,
+            optionC: question.optionC,
+            optionD: question.optionD,
+            // Don't include correctOption for students to prevent cheating
+        })));
+        if (allQuestions.length === 0) {
+            return res.status(404).json({
+                message: `No questions found for classLevel: ${classLevel} and level: ${level}`
+            });
+        }
+        // Shuffle the questions and take 25 (or all if less than 25)
+        const shuffledQuestions = allQuestions
+            .sort(() => Math.random() - 0.5)
+            .slice(0, 25);
+        res.status(200).json({
+            success: true,
+            data: {
+                classLevel,
+                level,
+                courseId: course.id,
+                courseTitle: course.title,
+                totalQuestionsAvailable: allQuestions.length,
+                questionsReturned: shuffledQuestions.length,
+                questions: shuffledQuestions
+            }
+        });
+    }
+    catch (error) {
+        console.error('Error fetching random level questions for student:', error);
+        res.status(500).json({
+            message: 'Internal server error while fetching random questions',
+            error: error instanceof Error ? error.message : 'Unknown error'
+        });
+    }
+};
+exports.getStudentRandomQuestions = getStudentRandomQuestions;

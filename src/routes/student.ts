@@ -12,8 +12,11 @@ import {
   markPdfRead,
   getStudentUpcomingEvents,
   getStudentAllEvents,
-  submitQuiz
+  submitQuiz,
+  getStudentQuizValidity,
+  getStudentRandomQuestions
 } from '../controllers/studentController';
+import { getLevelSchedules } from '../controllers/masterAdminController';
 
 const router = Router();
 
@@ -36,5 +39,14 @@ router.get('/events/all', asyncHandler(getStudentAllEvents));
 
 // Quiz submission route
 router.post('/submit-quiz', asyncHandler(submitQuiz));
+
+// Level schedules route (accessible to all authenticated users)
+router.get('/level-schedules', asyncHandler(getLevelSchedules));
+
+// Quiz validity route (for student's class)
+router.get('/quiz-validity', asyncHandler(getStudentQuizValidity));
+
+// Random questions route (for student's level)
+router.get('/level-content/random-questions', asyncHandler(getStudentRandomQuestions));
 
 export default router; 

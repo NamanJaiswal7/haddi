@@ -310,3 +310,31 @@ model CourseLevel {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model LevelSchedule {
+  id             String   @id @default(cuid())
+  classId        String
+  level          String
+  unlockDate     DateTime
+  unlockTime     String
+  unlockDateTime String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@unique([classId, level])
+  @@index([classId, level])
+}
+
+model QuizValidity {
+  id                 String   @id @default(cuid())
+  classId            String
+  level              String
+  validUntilDate     DateTime
+  validUntilTime     String
+  validUntilDateTime String
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@unique([classId, level])
+  @@index([classId, level])
+}

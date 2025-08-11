@@ -908,17 +908,34 @@ const completeRegistration = async (req, res) => {
         if (!email || !googleId || !name) {
             return res.status(400).json({ message: 'Email, googleId, and name are required' });
         }
+        // Validate mobile number format if provided
+        if (mobileNumber) {
+            const mobileRegex = /^[6-9]\d{9}$/;
+            if (!mobileRegex.test(mobileNumber)) {
+                return res.status(400).json({ message: 'Invalid mobile number format. Must be a 10-digit Indian mobile number starting with 6, 7, 8, or 9' });
+            }
+        }
         // Check if user already exists
         const existingUser = await client_1.prisma.user.findFirst({
             where: {
                 OR: [
                     { email },
-                    { googleId }
+                    { googleId },
+                    ...(mobileNumber ? [{ mobile: mobileNumber }] : [])
                 ]
             }
         });
         if (existingUser) {
-            return res.status(409).json({ message: 'A user with this email or Google ID already exists' });
+            if (existingUser.email === email) {
+                return res.status(409).json({ message: 'A user with this email already exists' });
+            }
+            if (existingUser.googleId === googleId) {
+                return res.status(409).json({ message: 'A user with this Google ID already exists' });
+            }
+            if (mobileNumber && existingUser.mobile === mobileNumber) {
+                return res.status(409).json({ message: 'A user with this mobile number already exists' });
+            }
+            return res.status(409).json({ message: 'A user with this information already exists' });
         }
         // Find district by name
         let districtId = null;
@@ -927,7 +944,10 @@ const completeRegistration = async (req, res) => {
                 where: { name: { equals: district, mode: 'insensitive' } }
             });
             if (!districtRecord) {
-                return res.status(400).json({ message: 'Invalid district name' });
+                return res.status(400).json({
+                    message: 'Invalid district name',
+                    suggestion: 'Please check the district name or contact support for available districts'
+                });
             }
             districtId = districtRecord.id;
         }
@@ -936,6 +956,18 @@ const completeRegistration = async (req, res) => {
         const normalizedGender = gender?.toLowerCase();
         if (normalizedGender && !validGenders.includes(normalizedGender)) {
             return res.status(400).json({ message: 'Invalid gender value. Must be one of: male, female, other' });
+        }
+        // Validate date of birth
+        if (dateOfBirth) {
+            const dob = new Date(dateOfBirth);
+            if (isNaN(dob.getTime())) {
+                return res.status(400).json({ message: 'Invalid date of birth format' });
+            }
+            const today = new Date();
+            const age = today.getFullYear() - dob.getFullYear();
+            if (age < 5 || age > 100) {
+                return res.status(400).json({ message: 'Invalid date of birth. Age must be between 5 and 100 years' });
+            }
         }
         // Map education level to enum
         const educationMap = {
@@ -947,25 +979,63 @@ const completeRegistration = async (req, res) => {
         };
         const normalizedEducation = educationLevel?.toLowerCase();
         const education = educationMap[normalizedEducation || ''] || 'high_school';
-        // Create new student user with complete information
-        const newUser = await client_1.prisma.user.create({
-            data: {
-                email,
-                name,
-                googleId,
-                picture,
-                passwordHash: '', // Empty password hash for Google users
-                mobile: mobileNumber || null,
-                dob: dateOfBirth ? new Date(dateOfBirth) : undefined,
-                gender: normalizedGender,
-                institution: education,
-                classLevel,
-                districtId,
-                pincode,
-                role: 'student',
-                lastActiveAt: new Date()
+        // Validate class level
+        if (classLevel) {
+            const validClassLevels = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'];
+            if (!validClassLevels.includes(classLevel)) {
+                return res.status(400).json({
+                    message: 'Invalid class level. Must be between 1 and 12',
+                    suggestion: 'Please provide a valid class level from 1 to 12'
+                });
             }
-        });
+        }
+        // Validate pincode if provided
+        if (pincode) {
+            const pincodeRegex = /^[1-9][0-9]{5}$/;
+            if (!pincodeRegex.test(pincode)) {
+                return res.status(400).json({
+                    message: 'Invalid pincode format. Must be a 6-digit number starting with 1-9'
+                });
+            }
+        }
+        // Create new student user with complete information
+        let newUser;
+        try {
+            newUser = await client_1.prisma.user.create({
+                data: {
+                    email,
+                    name,
+                    googleId,
+                    picture,
+                    passwordHash: '', // Empty password hash for Google users
+                    mobile: mobileNumber || null,
+                    dob: dateOfBirth ? new Date(dateOfBirth) : undefined,
+                    gender: normalizedGender,
+                    institution: education,
+                    classLevel,
+                    districtId,
+                    pincode,
+                    role: 'student',
+                    lastActiveAt: new Date()
+                }
+            });
+        }
+        catch (dbError) {
+            if (dbError.code === 'P2002') {
+                // Unique constraint violation
+                if (dbError.meta?.target?.includes('email')) {
+                    return res.status(409).json({ message: 'A user with this email already exists' });
+                }
+                if (dbError.meta?.target?.includes('googleId')) {
+                    return res.status(409).json({ message: 'A user with this Google ID already exists' });
+                }
+                if (dbError.meta?.target?.includes('mobile')) {
+                    return res.status(409).json({ message: 'A user with this mobile number already exists' });
+                }
+                return res.status(409).json({ message: 'A user with this information already exists' });
+            }
+            throw dbError;
+        }
         // Fetch the user from database to ensure we have the latest data
         const userFromDb = await client_1.prisma.user.findUnique({
             where: { id: newUser.id },
@@ -1109,7 +1179,13 @@ const completeRegistration = async (req, res) => {
             district: event.district?.name || 'Global',
             isUpcoming: event.date > now
         }));
-        logger_1.default.info('Mobile registration complete successful', { email, userId: userFromDb.id });
+        logger_1.default.info('Mobile registration complete successful', {
+            email,
+            userId: userFromDb.id,
+            mobileNumber: userFromDb.mobile,
+            district: userFromDb.district?.name,
+            classLevel: userFromDb.classLevel
+        });
         res.status(201).json({
             success: true,
             token,
@@ -1146,7 +1222,8 @@ const completeRegistration = async (req, res) => {
     catch (error) {
         logger_1.default.error('Mobile registration complete failed:', {
             error: error instanceof Error ? error.message : String(error),
-            stack: error instanceof Error ? error.stack : undefined
+            stack: error instanceof Error ? error.stack : undefined,
+            requestData: { email, googleId, name, mobileNumber, district, classLevel }
         });
         res.status(500).json({
             success: false,

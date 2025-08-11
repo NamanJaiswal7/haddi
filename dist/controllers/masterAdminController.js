@@ -36,7 +36,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteCourseLevel = exports.updateCourseTitle = exports.deleteQuiz = exports.updateQuiz = exports.deleteNote = exports.updateNote = exports.deleteVideo = exports.updateVideo = exports.setCourseLevels = exports.getCourseLevels = exports.getPassingMarks = exports.setPassingMarks = exports.getAllCourses = exports.addQuiz = exports.addNote = exports.addVideo = exports.getAnalyticsData = exports.sendGlobalNotification = exports.updateEvent = exports.getAllEvents = exports.createGlobalEvent = exports.deleteDistrictAdmin = exports.updateDistrictAdmin = exports.createDistrictAdmin = exports.getDistrictAdmins = exports.getAllStudents = exports.getDistrictPerformance = exports.getDashboardStats = void 0;
+exports.getRandomLevelQuestions = exports.deleteQuizValidity = exports.updateQuizValidity = exports.createQuizValidity = exports.getQuizValidity = exports.deleteLevelSchedule = exports.updateLevelSchedule = exports.createLevelSchedule = exports.getLevelSchedules = exports.deleteCourseLevel = exports.updateCourseTitle = exports.deleteQuiz = exports.updateQuiz = exports.deleteNote = exports.updateNote = exports.deleteVideo = exports.updateVideo = exports.setCourseLevels = exports.getCourseLevels = exports.getPassingMarks = exports.setPassingMarks = exports.getAllCourses = exports.addQuiz = exports.addNote = exports.addVideo = exports.getAnalyticsData = exports.sendGlobalNotification = exports.updateEvent = exports.getAllEvents = exports.createGlobalEvent = exports.deleteDistrictAdmin = exports.updateDistrictAdmin = exports.createDistrictAdmin = exports.getDistrictAdmins = exports.getAllStudents = exports.getDistrictPerformance = exports.getDashboardStats = void 0;
 const client_1 = require("../prisma/client");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const xlsx = __importStar(require("xlsx"));
@@ -1643,3 +1643,535 @@ const deleteCourseLevel = async (req, res) => {
     }
 };
 exports.deleteCourseLevel = deleteCourseLevel;
+// =================================================================
+//                  LEVEL SCHEDULES MANAGEMENT
+// =================================================================
+const getLevelSchedules = async (req, res) => {
+    try {
+        const schedules = await client_1.prisma.levelSchedule.findMany({
+            orderBy: [
+                { classId: 'asc' },
+                { level: 'asc' }
+            ]
+        });
+        res.status(200).json({
+            success: true,
+            data: schedules
+        });
+    }
+    catch (error) {
+        logger_1.default.error('Error fetching level schedules:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Internal server error'
+        });
+    }
+};
+exports.getLevelSchedules = getLevelSchedules;
+const createLevelSchedule = async (req, res) => {
+    try {
+        const { classId, level, unlockDate, unlockTime } = req.body;
+        // Validate required fields
+        if (!classId || !level || !unlockDate || !unlockTime) {
+            return res.status(400).json({
+                success: false,
+                message: 'classId, level, unlockDate, and unlockTime are required'
+            });
+        }
+        // Validate date format
+        const parsedDate = new Date(unlockDate);
+        if (isNaN(parsedDate.getTime())) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid unlockDate format. Use YYYY-MM-DD'
+            });
+        }
+        // Validate time format (HH:MM)
+        const timeRegex = /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/;
+        if (!timeRegex.test(unlockTime)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid unlockTime format. Use HH:MM (24-hour format)'
+            });
+        }
+        // Create unlockDateTime by combining date and time (local time)
+        const [hours, minutes] = unlockTime.split(':');
+        const unlockDateTime = new Date(parsedDate);
+        unlockDateTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+        // Store as local time string to preserve timezone
+        const localDateTimeString = unlockDateTime.toLocaleString('en-CA', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false
+        }).replace(',', '');
+        // Check if schedule already exists for this class and level
+        const existingSchedule = await client_1.prisma.levelSchedule.findUnique({
+            where: {
+                classId_level: {
+                    classId: classId,
+                    level: level
+                }
+            }
+        });
+        if (existingSchedule) {
+            return res.status(409).json({
+                success: false,
+                message: `Schedule already exists for ${classId} - ${level}`
+            });
+        }
+        // Create new schedule
+        const schedule = await client_1.prisma.levelSchedule.create({
+            data: {
+                classId,
+                level,
+                unlockDate: parsedDate,
+                unlockTime,
+                unlockDateTime: localDateTimeString
+            }
+        });
+        logger_1.default.info(`Created level schedule: ${classId} - ${level}`);
+        res.status(201).json({
+            success: true,
+            data: schedule,
+            message: 'Level schedule created successfully'
+        });
+    }
+    catch (error) {
+        logger_1.default.error('Error creating level schedule:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Internal server error'
+        });
+    }
+};
+exports.createLevelSchedule = createLevelSchedule;
+const updateLevelSchedule = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { classId, level, unlockDate, unlockTime } = req.body;
+        // Validate required fields
+        if (!classId || !level || !unlockDate || !unlockTime) {
+            return res.status(400).json({
+                success: false,
+                message: 'classId, level, unlockDate, and unlockTime are required'
+            });
+        }
+        // Validate date format
+        const parsedDate = new Date(unlockDate);
+        if (isNaN(parsedDate.getTime())) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid unlockDate format. Use YYYY-MM-DD'
+            });
+        }
+        // Validate time format (HH:MM)
+        const timeRegex = /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/;
+        if (!timeRegex.test(unlockTime)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid unlockTime format. Use HH:MM (24-hour format)'
+            });
+        }
+        // Create unlockDateTime by combining date and time (local time)
+        const [hours, minutes] = unlockTime.split(':');
+        const unlockDateTime = new Date(parsedDate);
+        unlockDateTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+        // Store as local time string to preserve timezone
+        const localDateTimeString = unlockDateTime.toLocaleString('en-CA', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false
+        }).replace(',', '');
+        // Check if schedule exists
+        const existingSchedule = await client_1.prisma.levelSchedule.findUnique({
+            where: { id }
+        });
+        if (!existingSchedule) {
+            return res.status(404).json({
+                success: false,
+                message: 'Level schedule not found'
+            });
+        }
+        // Check if another schedule exists with the same classId and level (excluding current)
+        const conflictingSchedule = await client_1.prisma.levelSchedule.findFirst({
+            where: {
+                classId,
+                level,
+                id: { not: id }
+            }
+        });
+        if (conflictingSchedule) {
+            return res.status(409).json({
+                success: false,
+                message: `Schedule already exists for ${classId} - ${level}`
+            });
+        }
+        // Update schedule
+        const updatedSchedule = await client_1.prisma.levelSchedule.update({
+            where: { id },
+            data: {
+                classId,
+                level,
+                unlockDate: parsedDate,
+                unlockTime,
+                unlockDateTime: localDateTimeString
+            }
+        });
+        logger_1.default.info(`Updated level schedule: ${id}`);
+        res.status(200).json({
+            success: true,
+            data: updatedSchedule,
+            message: 'Level schedule updated successfully'
+        });
+    }
+    catch (error) {
+        logger_1.default.error('Error updating level schedule:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Internal server error'
+        });
+    }
+};
+exports.updateLevelSchedule = updateLevelSchedule;
+const deleteLevelSchedule = async (req, res) => {
+    try {
+        const { id } = req.params;
+        // Check if schedule exists
+        const existingSchedule = await client_1.prisma.levelSchedule.findUnique({
+            where: { id }
+        });
+        if (!existingSchedule) {
+            return res.status(404).json({
+                success: false,
+                message: 'Level schedule not found'
+            });
+        }
+        // Delete schedule
+        await client_1.prisma.levelSchedule.delete({
+            where: { id }
+        });
+        logger_1.default.info(`Deleted level schedule: ${id}`);
+        res.status(200).json({
+            success: true,
+            message: 'Level schedule deleted successfully'
+        });
+    }
+    catch (error) {
+        logger_1.default.error('Error deleting level schedule:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Internal server error'
+        });
+    }
+};
+exports.deleteLevelSchedule = deleteLevelSchedule;
+// =================================================================
+//                  QUIZ VALIDITY MANAGEMENT
+// =================================================================
+const getQuizValidity = async (req, res) => {
+    try {
+        const validityPeriods = await client_1.prisma.quizValidity.findMany({
+            orderBy: [
+                { classId: 'asc' },
+                { level: 'asc' }
+            ]
+        });
+        res.status(200).json({
+            success: true,
+            data: validityPeriods
+        });
+    }
+    catch (error) {
+        logger_1.default.error('Error fetching quiz validity periods:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Internal server error'
+        });
+    }
+};
+exports.getQuizValidity = getQuizValidity;
+const createQuizValidity = async (req, res) => {
+    try {
+        const { classId, level, validUntilDate, validUntilTime } = req.body;
+        // Validate required fields
+        if (!classId || !level || !validUntilDate || !validUntilTime) {
+            return res.status(400).json({
+                success: false,
+                message: 'classId, level, validUntilDate, and validUntilTime are required'
+            });
+        }
+        // Validate date format
+        const parsedDate = new Date(validUntilDate);
+        if (isNaN(parsedDate.getTime())) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid validUntilDate format. Use YYYY-MM-DD'
+            });
+        }
+        // Validate time format (HH:MM)
+        const timeRegex = /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/;
+        if (!timeRegex.test(validUntilTime)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid validUntilTime format. Use HH:MM (24-hour format)'
+            });
+        }
+        // Create validUntilDateTime by combining date and time (local time)
+        const [hours, minutes] = validUntilTime.split(':');
+        const validUntilDateTime = new Date(parsedDate);
+        validUntilDateTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+        // Store as local time string to preserve timezone
+        const localDateTimeString = validUntilDateTime.toLocaleString('en-CA', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false
+        }).replace(',', '');
+        // Check if validity period already exists for this class and level
+        const existingValidity = await client_1.prisma.quizValidity.findUnique({
+            where: {
+                classId_level: {
+                    classId: classId,
+                    level: level
+                }
+            }
+        });
+        if (existingValidity) {
+            return res.status(409).json({
+                success: false,
+                message: `Quiz validity period already exists for ${classId} - ${level}`
+            });
+        }
+        // Create new validity period
+        const validityPeriod = await client_1.prisma.quizValidity.create({
+            data: {
+                classId,
+                level,
+                validUntilDate: parsedDate,
+                validUntilTime,
+                validUntilDateTime: localDateTimeString
+            }
+        });
+        logger_1.default.info(`Created quiz validity period: ${classId} - ${level}`);
+        res.status(201).json({
+            success: true,
+            data: validityPeriod,
+            message: 'Quiz validity period created successfully'
+        });
+    }
+    catch (error) {
+        logger_1.default.error('Error creating quiz validity period:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Internal server error'
+        });
+    }
+};
+exports.createQuizValidity = createQuizValidity;
+const updateQuizValidity = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { classId, level, validUntilDate, validUntilTime } = req.body;
+        // Validate required fields
+        if (!classId || !level || !validUntilDate || !validUntilTime) {
+            return res.status(400).json({
+                success: false,
+                message: 'classId, level, validUntilDate, and validUntilTime are required'
+            });
+        }
+        // Validate date format
+        const parsedDate = new Date(validUntilDate);
+        if (isNaN(parsedDate.getTime())) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid validUntilDate format. Use YYYY-MM-DD'
+            });
+        }
+        // Validate time format (HH:MM)
+        const timeRegex = /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/;
+        if (!timeRegex.test(validUntilTime)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid validUntilTime format. Use HH:MM (24-hour format)'
+            });
+        }
+        // Create validUntilDateTime by combining date and time (local time)
+        const [hours, minutes] = validUntilTime.split(':');
+        const validUntilDateTime = new Date(parsedDate);
+        validUntilDateTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+        // Store as local time string to preserve timezone
+        const localDateTimeString = validUntilDateTime.toLocaleString('en-CA', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false
+        }).replace(',', '');
+        // Check if validity period exists
+        const existingValidity = await client_1.prisma.quizValidity.findUnique({
+            where: { id }
+        });
+        if (!existingValidity) {
+            return res.status(404).json({
+                success: false,
+                message: 'Quiz validity period not found'
+            });
+        }
+        // Check if another validity period exists with the same classId and level (excluding current)
+        const conflictingValidity = await client_1.prisma.quizValidity.findFirst({
+            where: {
+                classId,
+                level,
+                id: { not: id }
+            }
+        });
+        if (conflictingValidity) {
+            return res.status(409).json({
+                success: false,
+                message: `Quiz validity period already exists for ${classId} - ${level}`
+            });
+        }
+        // Update validity period
+        const updatedValidity = await client_1.prisma.quizValidity.update({
+            where: { id },
+            data: {
+                classId,
+                level,
+                validUntilDate: parsedDate,
+                validUntilTime,
+                validUntilDateTime: localDateTimeString
+            }
+        });
+        logger_1.default.info(`Updated quiz validity period: ${id}`);
+        res.status(200).json({
+            success: true,
+            data: updatedValidity,
+            message: 'Quiz validity period updated successfully'
+        });
+    }
+    catch (error) {
+        logger_1.default.error('Error updating quiz validity period:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Internal server error'
+        });
+    }
+};
+exports.updateQuizValidity = updateQuizValidity;
+const deleteQuizValidity = async (req, res) => {
+    try {
+        const { id } = req.params;
+        // Check if validity period exists
+        const existingValidity = await client_1.prisma.quizValidity.findUnique({
+            where: { id }
+        });
+        if (!existingValidity) {
+            return res.status(404).json({
+                success: false,
+                message: 'Quiz validity period not found'
+            });
+        }
+        // Delete validity period
+        await client_1.prisma.quizValidity.delete({
+            where: { id }
+        });
+        logger_1.default.info(`Deleted quiz validity period: ${id}`);
+        res.status(200).json({
+            success: true,
+            message: 'Quiz validity period deleted successfully'
+        });
+    }
+    catch (error) {
+        logger_1.default.error('Error deleting quiz validity period:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Internal server error'
+        });
+    }
+};
+exports.deleteQuizValidity = deleteQuizValidity;
+const getRandomLevelQuestions = async (req, res) => {
+    try {
+        const { classLevel, level } = req.query;
+        if (!classLevel || !level) {
+            return res.status(400).json({
+                message: 'classLevel and level are required query parameters'
+            });
+        }
+        // Find the course for the specified classLevel and level
+        const course = await client_1.prisma.course.findFirst({
+            where: {
+                classLevel: classLevel,
+                level: level
+            },
+            include: {
+                quizzes: {
+                    include: {
+                        questionBank: {
+                            include: {
+                                questions: true
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        if (!course) {
+            return res.status(404).json({
+                message: `No course found for classLevel: ${classLevel} and level: ${level}`
+            });
+        }
+        // Collect all questions from all quizzes in this course
+        const allQuestions = course.quizzes.flatMap(quiz => quiz.questionBank.questions.map(question => ({
+            id: question.id,
+            question: question.question,
+            optionA: question.optionA,
+            optionB: question.optionB,
+            optionC: question.optionC,
+            optionD: question.optionD,
+            correctOption: question.correctOption
+        })));
+        if (allQuestions.length === 0) {
+            return res.status(404).json({
+                message: `No questions found for classLevel: ${classLevel} and level: ${level}`
+            });
+        }
+        // Shuffle the questions and take 25 (or all if less than 25)
+        const shuffledQuestions = allQuestions
+            .sort(() => Math.random() - 0.5)
+            .slice(0, 25);
+        res.status(200).json({
+            success: true,
+            data: {
+                classLevel,
+                level,
+                courseId: course.id,
+                courseTitle: course.title,
+                totalQuestionsAvailable: allQuestions.length,
+                questionsReturned: shuffledQuestions.length,
+                questions: shuffledQuestions
+            }
+        });
+    }
+    catch (error) {
+        logger_1.default.error('Error fetching random level questions:', error);
+        res.status(500).json({
+            message: 'Internal server error while fetching random questions',
+            error: error instanceof Error ? error.message : 'Unknown error'
+        });
+    }
+};
+exports.getRandomLevelQuestions = getRandomLevelQuestions;

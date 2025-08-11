@@ -27,7 +27,16 @@ import {
     updateCourseTitle,
     deleteVideo,
     deleteNote,
-    deleteQuiz
+    deleteQuiz,
+    getLevelSchedules,
+    createLevelSchedule,
+    updateLevelSchedule,
+    deleteLevelSchedule,
+    getQuizValidity,
+    createQuizValidity,
+    updateQuizValidity,
+    deleteQuizValidity,
+    getRandomLevelQuestions
 } from '../controllers/masterAdminController';
 import { authenticateToken, isMasterAdmin } from '../middleware/authMiddleware';
 import { asyncHandler } from '../utils/asyncHandler';
@@ -240,5 +249,86 @@ router.put('/courses/title', asyncHandler(updateCourseTitle));
  * @access Private (Master Admin)
  */
 router.delete('/course-levels/:classLevel/:level', asyncHandler(deleteCourseLevel));
+
+/**
+ * =================================================================
+ *                  LEVEL SCHEDULES MANAGEMENT
+ * =================================================================
+ */
+
+/**
+ * @route GET /api/master-admin/level-schedules
+ * @description Get all level schedules
+ * @access Private (All authenticated users)
+ */
+router.get('/level-schedules', asyncHandler(authenticateToken), asyncHandler(getLevelSchedules));
+
+/**
+ * @route POST /api/master-admin/level-schedules
+ * @description Create a new level schedule
+ * @access Private (Master Admin)
+ */
+router.post('/level-schedules', asyncHandler(createLevelSchedule));
+
+/**
+ * @route PUT /api/master-admin/level-schedules/:id
+ * @description Update an existing level schedule
+ * @access Private (Master Admin)
+ */
+router.put('/level-schedules/:id', asyncHandler(updateLevelSchedule));
+
+/**
+ * @route DELETE /api/master-admin/level-schedules/:id
+ * @description Delete a level schedule
+ * @access Private (Master Admin)
+ */
+router.delete('/level-schedules/:id', asyncHandler(deleteLevelSchedule));
+
+/**
+ * =================================================================
+ *                  QUIZ VALIDITY MANAGEMENT
+ * =================================================================
+ */
+
+/**
+ * @route GET /api/master-admin/quiz-validity
+ * @description Get all quiz validity periods
+ * @access Private (Master Admin)
+ */
+router.get('/quiz-validity', asyncHandler(getQuizValidity));
+
+/**
+ * @route POST /api/master-admin/quiz-validity
+ * @description Create a new quiz validity period
+ * @access Private (Master Admin)
+ */
+router.post('/quiz-validity', asyncHandler(createQuizValidity));
+
+/**
+ * @route PUT /api/master-admin/quiz-validity/:id
+ * @description Update an existing quiz validity period
+ * @access Private (Master Admin)
+ */
+router.put('/quiz-validity/:id', asyncHandler(updateQuizValidity));
+
+/**
+ * @route DELETE /api/master-admin/quiz-validity/:id
+ * @description Delete a quiz validity period
+ * @access Private (Master Admin)
+ */
+router.delete('/quiz-validity/:id', asyncHandler(deleteQuizValidity));
+
+/**
+ * =================================================================
+ *                  LEVEL CONTENT MANAGEMENT
+ * =================================================================
+ */
+
+/**
+ * @route GET /api/master-admin/level-content/questions
+ * @description Get random 25 questions for a specific level of a class
+ * @access Private (Master Admin)
+ */
+router.get('/level-content/questions', asyncHandler(getRandomLevelQuestions));
 
 export default router; 
