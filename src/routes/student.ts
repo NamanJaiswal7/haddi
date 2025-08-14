@@ -14,7 +14,8 @@ import {
   getStudentAllEvents,
   submitQuiz,
   getStudentQuizValidity,
-  getStudentRandomQuestions
+  getStudentRandomQuestions,
+  getStudentNotes
 } from '../controllers/studentController';
 import { getLevelSchedules } from '../controllers/masterAdminController';
 
@@ -48,5 +49,8 @@ router.get('/quiz-validity', asyncHandler(getStudentQuizValidity));
 
 // Random questions route (for student's level)
 router.get('/level-content/random-questions', asyncHandler(getStudentRandomQuestions));
+
+// Notes route (for student's level)
+router.get('/notes', asyncHandler(getStudentNotes));
 
 export default router; 

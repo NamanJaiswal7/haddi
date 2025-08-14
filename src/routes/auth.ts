@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { loginAdmin, logout, studentSignUp, studentVerifyOtp, studentRegister, getStudentDashboard, studentSignIn, studentGoogleSignIn, studentGoogleSignUp, studentGoogleSignUpComplete, mobileStudentSignIn, completeRegistration } from '../controllers/authController';
+import { loginAdmin, logout, studentSignUp, studentVerifyOtp, studentRegister, getStudentDashboard, studentSignIn, studentGoogleSignIn, studentGoogleSignUp, studentGoogleSignUpComplete, mobileStudentSignIn, completeRegistration, googleOAuthExchange } from '../controllers/authController';
 import { authenticateToken } from '../middleware/authMiddleware';
 import { asyncHandler } from '../utils/asyncHandler';
 
@@ -26,6 +26,8 @@ router.post('/student-google-signup-complete', asyncHandler(studentGoogleSignUpC
 router.post('/mobile-student-signin', asyncHandler(mobileStudentSignIn));
 
 router.post('/complete-registration', asyncHandler(completeRegistration));
+
+router.post('/google/exchange', asyncHandler(googleOAuthExchange));
 
 router.get('/student-dashboard', asyncHandler(authenticateToken), asyncHandler(getStudentDashboard));
 

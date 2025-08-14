@@ -72,6 +72,8 @@ services:
       JWT_SECRET: your_jwt_secret_here_change_in_production
       EMAIL_USER: naman.patna@gmail.com
       EMAIL_PASS: hycm xerc arfm zmdj
+      GOOGLE_CLIENT_ID: your_google_client_id_here
+      GOOGLE_CLIENT_SECRET: your_google_client_secret_here
     ports:
       - "4545:4545"
     volumes:

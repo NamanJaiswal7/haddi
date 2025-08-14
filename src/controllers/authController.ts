@@ -6,6 +6,7 @@ import { sendEmail } from '../utils/sendEmail';
 import { setOtp, verifyOtp, isEmailVerified, clearEmailVerification } from '../utils/otpStore';
 import crypto from 'crypto';
 import logger from '../utils/logger';
+import { OAuth2Client } from 'google-auth-library';
 
 export const loginAdmin = async (req: Request, res: Response): Promise<void> => {
   const { email, password, role, districtId } = req.body;
@@ -1357,6 +1358,158 @@ export const completeRegistration = async (req: Request, res: Response) => {
     res.status(500).json({ 
       success: false,
       message: 'Mobile registration complete failed', 
+      error: error instanceof Error ? error.message : String(error) 
+    });
+  }
+};
+
+export const googleOAuthExchange = async (req: Request, res: Response) => {
+  const { code, redirectUri } = req.body;
+
+  try {
+    // Validate required fields
+    if (!code || !redirectUri) {
+      return res.status(400).json({ 
+        success: false,
+        message: 'Authorization code and redirect URI are required' 
+      });
+    }
+
+    // Initialize Google OAuth2 client
+    const oauth2Client = new OAuth2Client(
+      process.env.GOOGLE_CLIENT_ID,
+      process.env.GOOGLE_CLIENT_SECRET,
+      redirectUri
+    );
+
+    // Exchange authorization code for access token
+    const { tokens } = await oauth2Client.getToken(code);
+    
+    if (!tokens.access_token) {
+      return res.status(400).json({ 
+        success: false,
+        message: 'Failed to obtain access token from Google' 
+      });
+    }
+
+    // Get user info from Google using the access token
+    oauth2Client.setCredentials(tokens);
+    const oauth2 = new OAuth2Client();
+    oauth2.setCredentials({ access_token: tokens.access_token });
+    
+    const userInfoResponse = await oauth2.request({
+      url: 'https://www.googleapis.com/oauth2/v2/userinfo'
+    });
+
+    const userInfo = userInfoResponse.data as any;
+    
+    if (!userInfo.id || !userInfo.email) {
+      return res.status(400).json({ 
+        success: false,
+        message: 'Failed to retrieve user information from Google' 
+      });
+    }
+
+    // Find or create user
+    let user = await prisma.user.findFirst({
+      where: {
+        OR: [
+          { email: userInfo.email },
+          { googleId: userInfo.id }
+        ]
+      }
+    });
+
+    if (!user) {
+      // Create new student user
+      user = await prisma.user.create({
+        data: {
+          email: userInfo.email,
+          name: userInfo.name || userInfo.email.split('@')[0],
+          googleId: userInfo.id,
+          picture: userInfo.picture,
+          role: 'student',
+          passwordHash: '', // Empty password hash for Google users
+          lastActiveAt: new Date()
+        }
+      });
+
+      logger.info('New user created via Google OAuth', { 
+        email: userInfo.email, 
+        userId: user.id,
+        googleId: userInfo.id 
+      });
+    } else {
+      // Update existing user's Google information if needed
+      if (user.googleId !== userInfo.id || user.picture !== userInfo.picture || user.name !== userInfo.name) {
+        await prisma.user.update({
+          where: { id: user.id },
+          data: {
+            googleId: userInfo.id,
+            picture: userInfo.picture,
+            name: userInfo.name || user.name,
+            lastActiveAt: new Date()
+          }
+        });
+      } else {
+        // Just update lastActiveAt
+        await prisma.user.update({
+          where: { id: user.id },
+          data: { lastActiveAt: new Date() }
+        });
+      }
+
+      // Fetch updated user data
+      user = await prisma.user.findUnique({
+        where: { id: user.id }
+      });
+
+      if (!user) {
+        return res.status(500).json({ 
+          success: false,
+          message: 'Failed to fetch updated user data' 
+        });
+      }
+    }
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { id: user.id, role: user.role },
+      process.env.JWT_SECRET!,
+      { expiresIn: '7d' }
+    );
+
+    logger.info('Google OAuth exchange successful', { 
+      email: user.email, 
+      userId: user.id,
+      googleId: user.googleId 
+    });
+
+    res.json({
+      success: true,
+      access_token: tokens.access_token,
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+        googleId: user.googleId,
+        picture: user.picture,
+        createdAt: user.createdAt.toISOString(),
+        updatedAt: user.updatedAt.toISOString()
+      }
+    });
+
+  } catch (error) {
+    logger.error('Google OAuth exchange failed:', { 
+      error: error instanceof Error ? error.message : String(error), 
+      stack: error instanceof Error ? error.stack : undefined,
+      requestData: { code: code ? 'present' : 'missing', redirectUri }
+    });
+    
+    res.status(500).json({ 
+      success: false,
+      message: 'Google OAuth exchange failed', 
       error: error instanceof Error ? error.message : String(error) 
     });
   }

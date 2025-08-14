@@ -1120,3 +1120,51 @@ export const getStudentRandomQuestions = async (req: Request, res: Response) => 
         });
     }
 };
+
+export const getStudentNotes = async (req: Request, res: Response) => {
+    const user = req.user;
+    if (!user || user.role !== 'student') {
+        return res.status(403).json({ message: 'Forbidden: Not a student.' });
+    }
+
+    const { level } = req.query;
+
+    try {
+        // Find the course for the student's class level and specified level (or current level)
+        const courseLevel = level || '1'; // Default to level 1 if not specified
+        const course = await prisma.course.findFirst({
+            where: {
+                classLevel: user.classLevel || '',
+                level: String(courseLevel)
+            },
+            include: {
+                notes: {
+                    orderBy: {
+                        createdAt: 'desc'
+                    }
+                }
+            }
+        });
+
+        if (!course) {
+            return res.status(404).json({ message: 'Course not found for the specified level.' });
+        }
+
+        res.status(200).json({
+            success: true,
+            level: courseLevel,
+            courseTitle: course.title,
+            notes: course.notes.map(note => ({
+                id: note.id,
+                title: note.title,
+                content: note.content,
+                createdAt: note.createdAt,
+                updatedAt: note.updatedAt
+            }))
+        });
+
+    } catch (error) {
+        console.error("Error fetching student notes:", error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};

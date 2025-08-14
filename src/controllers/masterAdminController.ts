@@ -1016,23 +1016,105 @@ export const addVideo = async (req: Request, res: Response) => {
  * Adds a PDF note to a course by uploading it to AWS S3.
  */
 export const addNote = async (req: Request, res: Response) => {
-    const { class: classLevel, level, title, url } = req.body;
+    const { class: classLevel, level, title, content } = req.body;
+    const file = req.file;
 
-    if (!classLevel || !level || !title || !url) {
-        return res.status(400).json({ message: 'Class, level, title, and url are required.' });
+    if (!classLevel || !level) {
+        return res.status(400).json({ message: 'Class and level are required.' });
     }
+
     try {
         const course = await findOrCreateCourse(classLevel, level);
 
-        const newNote = await prisma.coursePDF.create({
-            data: {
-                courseId: course.id,
-                title,
-                url,
-            },
-        });
+        // If file is uploaded, parse Excel data
+        if (file) {
+            // --- Excel Parsing Logic for Notes ---
+            const workbook = xlsx.read(file.buffer, { type: 'buffer' });
+            const sheetName = workbook.SheetNames[0];
 
-        res.status(201).json(newNote);
+            if (!sheetName) {
+                return res.status(400).json({ message: 'Excel file contains no sheets.' });
+            }
+
+            const worksheet = workbook.Sheets[sheetName];
+            if (!worksheet) {
+                return res.status(400).json({ message: `Sheet '${sheetName}' not found in the Excel file.` });
+            }
+            
+            const noteData: (string | number)[][] = xlsx.utils.sheet_to_json(worksheet, { header: 1 });
+
+            if (noteData.length < 1) {
+                return res.status(400).json({ message: 'Excel file must contain at least one note entry.' });
+            }
+
+            interface NoteInput {
+                title: string;
+                content: string;
+            }
+            const notesToCreate: NoteInput[] = [];
+            
+            // Process all rows, assuming first row might be header
+            for (let i = 0; i < noteData.length; i++) {
+                const row = noteData[i];
+
+                if (!row || row.length < 2 || row.slice(0, 2).some(cell => cell === null || cell === undefined)) {
+                    // Skip incomplete or empty rows
+                    continue;
+                }
+                
+                const [title, content] = row;
+
+                const noteTitle = String(title).trim();
+                const noteContent = String(content).trim();
+
+                if (!noteTitle || !noteContent) {
+                    // Skip rows where essential data is empty after trimming
+                    continue;
+                }
+                
+                notesToCreate.push({ title: noteTitle, content: noteContent });
+            }
+
+            if (notesToCreate.length === 0) {
+                return res.status(400).json({ message: 'No valid notes could be parsed from the file. Please check the format.' });
+            }
+
+            // Create multiple notes from Excel data
+            const createdNotes: any[] = [];
+            for (const noteData of notesToCreate) {
+                const note = await prisma.courseNote.create({
+                    data: {
+                        courseId: course.id,
+                        title: noteData.title,
+                        content: noteData.content,
+                    },
+                });
+                createdNotes.push(note);
+            }
+
+            res.status(201).json({
+                message: `${createdNotes.length} notes created successfully from Excel file.`,
+                notes: createdNotes,
+            });
+        } else {
+            // Single note creation from form data
+            if (!title || !content) {
+                return res.status(400).json({ message: 'Title and content are required when not uploading a file.' });
+            }
+
+            const newNote = await prisma.courseNote.create({
+                data: {
+                    courseId: course.id,
+                    title,
+                    content,
+                },
+            });
+
+            res.status(201).json({
+                message: 'Note created successfully.',
+                note: newNote,
+            });
+        }
     } catch (error) {
         console.error("Error adding note:", error);
         res.status(500).json({ message: 'Internal server error' });
@@ -1425,30 +1507,26 @@ export const deleteVideo = async (req: Request, res: Response) => {
 
 export const updateNote = async (req: Request, res: Response) => {
     const { id } = req.params;
-    // Accept title and url (from file upload or direct url)
-    const title = req.body.title;
-    let url = req.body.url;
-    
-    // If a file is uploaded, use its location (assuming upload middleware sets req.file)
-    if (req.file && 'location' in req.file && req.file.location) {
-        url = req.file.location;
-    }
+    const { title, content } = req.body;
     
     if (!id) {
         return res.status(400).json({ message: 'Note ID is required.' });
     }
-    if (!title && !url) {
-        return res.status(400).json({ message: 'At least one of title or url is required.' });
+    if (!title && !content) {
+        return res.status(400).json({ message: 'At least one of title or content is required.' });
     }
     try {
-        const data: { title?: string; url?: string } = {};
+        const data: { title?: string; content?: string } = {};
         if (title) data.title = title;
-        if (url) data.url = url;
-        const updated = await prisma.coursePDF.update({
+        if (content) data.content = content;
+        const updated = await prisma.courseNote.update({
             where: { id },
             data
         });
-        res.status(200).json(updated);
+        res.status(200).json({
+            message: 'Note updated successfully.',
+            note: updated
+        });
     } catch (error) {
         console.error("Error updating note:", error);
         res.status(500).json({ message: 'Failed to update note' });
@@ -1456,7 +1534,7 @@ export const updateNote = async (req: Request, res: Response) => {
 };
 
 /**
- * Deletes a specific note (PDF) from a course.
+ * Deletes a specific note from a course.
  */
 export const deleteNote = async (req: Request, res: Response) => {
     const { id } = req.params;
@@ -1467,30 +1545,17 @@ export const deleteNote = async (req: Request, res: Response) => {
 
     try {
         // Check if note exists
-        const note = await prisma.coursePDF.findUnique({
-            where: { id },
-            include: {
-                pdfProgresses: true
-            }
+        const note = await prisma.courseNote.findUnique({
+            where: { id }
         });
 
         if (!note) {
             return res.status(404).json({ message: 'Note not found.' });
         }
 
-        // Begin a transaction to ensure all related data is deleted properly
-        await prisma.$transaction(async (prismaClient) => {
-            // Delete PDF progress records if they exist
-            if (note.pdfProgresses.length > 0) {
-                await prismaClient.pdfProgress.deleteMany({
-                    where: { pdfId: id }
-                });
-            }
-
-            // Delete the note
-            await prismaClient.coursePDF.delete({
-                where: { id }
-            });
+        // Delete the note
+        await prisma.courseNote.delete({
+            where: { id }
         });
 
         res.status(200).json({
