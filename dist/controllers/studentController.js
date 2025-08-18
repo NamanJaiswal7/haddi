@@ -1,7 +1,78 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getStudentRandomQuestions = exports.getStudentQuizValidity = exports.submitQuiz = exports.getStudentAllEvents = exports.getStudentUpcomingEvents = exports.markPdfRead = exports.markVideoWatched = exports.getStudentLevelContent = exports.getStudentNotificationCount = exports.getStudentNotifications = exports.getStudentLearningPath = exports.getStudentProfile = exports.getStudentDashboard = void 0;
+exports.getCompletionMessage = exports.getStudentNotes = exports.getStudentRandomQuestions = exports.getStudentQuizValidity = exports.submitQuiz = exports.getStudentAllEvents = exports.getStudentUpcomingEvents = exports.markPdfRead = exports.markVideoWatched = exports.getStudentLevelContent = exports.getStudentNotificationCount = exports.getStudentNotifications = exports.getStudentLearningPath = exports.getStudentProfile = exports.getStudentDashboard = exports.getQuizWithFormatting = void 0;
 const client_1 = require("../prisma/client");
+// Function to get quiz questions with preserved formatting
+const getQuizWithFormatting = async (req, res) => {
+    try {
+        const { quizId } = req.params;
+        const user = req.user;
+        if (!user || user.role !== 'student') {
+            return res.status(403).json({ message: 'Forbidden: Not a student.' });
+        }
+        // Get quiz with questions and formatting
+        const quiz = await client_1.prisma.quiz.findUnique({
+            where: { id: quizId },
+            include: {
+                questionBank: {
+                    include: {
+                        questions: true
+                    }
+                },
+                course: true
+            }
+        });
+        if (!quiz) {
+            return res.status(404).json({ message: 'Quiz not found.' });
+        }
+        // Transform questions to include formatted content
+        const formattedQuestions = quiz.questionBank.questions.map(q => {
+            const questionFormatted = q.questionFormatted ? JSON.parse(q.questionFormatted) : null;
+            const optionAFormatted = q.optionAFormatted ? JSON.parse(q.optionAFormatted) : null;
+            const optionBFormatted = q.optionBFormatted ? JSON.parse(q.optionBFormatted) : null;
+            const optionCFormatted = q.optionCFormatted ? JSON.parse(q.optionCFormatted) : null;
+            const optionDFormatted = q.optionDFormatted ? JSON.parse(q.optionDFormatted) : null;
+            const explanationFormatted = q.explanationFormatted ? JSON.parse(q.explanationFormatted) : null;
+            return {
+                id: q.id,
+                question: q.question,
+                questionFormatted,
+                options: [
+                    { text: q.optionA, formatted: optionAFormatted },
+                    { text: q.optionB, formatted: optionBFormatted },
+                    { text: q.optionC, formatted: optionCFormatted },
+                    { text: q.optionD, formatted: optionDFormatted }
+                ],
+                correctOption: q.correctOption,
+                explanation: q.explanationFormatted ? explanationFormatted : null,
+                difficulty: q.difficulty || 'medium',
+                points: q.points || 1,
+                timeLimit: q.timeLimit || 60
+            };
+        });
+        const formattedQuiz = {
+            id: quiz.id,
+            courseId: quiz.courseId,
+            courseTitle: quiz.course.title,
+            classLevel: quiz.classLevel,
+            numQuestions: quiz.numQuestions,
+            passPercentage: quiz.passPercentage,
+            questions: formattedQuestions,
+            hasFormatting: formattedQuestions.some(q => q.questionFormatted ||
+                q.options.some(opt => opt.formatted) ||
+                q.explanation)
+        };
+        res.json({
+            success: true,
+            quiz: formattedQuiz
+        });
+    }
+    catch (error) {
+        console.error('Error fetching quiz with formatting:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+exports.getQuizWithFormatting = getQuizWithFormatting;
 const getStudentDashboard = async (req, res) => {
     const user = req.user;
     if (!user || user.role !== 'student') {
@@ -10,16 +81,60 @@ const getStudentDashboard = async (req, res) => {
     try {
         // Profile & district
         const district = user.districtId ? await client_1.prisma.district.findUnique({ where: { id: user.districtId } }) : null;
-        // Progress
+        // Progress - Use real-time completion check instead of stored status
         const progress = await client_1.prisma.studentProgress.findMany({
             where: { studentId: user.id },
             include: { course: true }
         });
-        const levelsCompleted = progress.filter(p => p.status === 'completed' && p.qualified).length;
-        const totalLevels = await client_1.prisma.course.count();
-        const currentLevelProgress = progress.find(p => p.status === 'in_progress');
-        const currentLevel = currentLevelProgress?.course.level || "1";
-        const spiritualProgress = Math.round((levelsCompleted / totalLevels) * 100);
+        // Get courses for student's class level
+        const dashboardCourseWhere = user.classLevel ? { classLevel: user.classLevel } : {};
+        const dashboardCourses = await client_1.prisma.course.findMany({
+            where: dashboardCourseWhere,
+            orderBy: { level: 'asc' },
+            include: { videos: true, pdfs: true, quizzes: true }
+        });
+        // Check real-time completion for each course
+        const completionStatus = await Promise.all(dashboardCourses.map(async (course) => {
+            const [videoProgress, pdfProgress, quizAttempts] = await Promise.all([
+                // Check video progress
+                course.videos.length > 0 ? client_1.prisma.videoProgress.findMany({
+                    where: {
+                        studentId: user.id,
+                        videoId: { in: course.videos.map(v => v.id) },
+                        watched: true
+                    }
+                }) : [],
+                // Check PDF progress
+                course.pdfs.length > 0 ? client_1.prisma.pdfProgress.findMany({
+                    where: {
+                        studentId: user.id,
+                        pdfId: { in: course.pdfs.map(p => p.id) },
+                        read: true
+                    }
+                }) : [],
+                // Check quiz attempts (any attempt, not necessarily passed)
+                course.quizzes.length > 0 ? client_1.prisma.examAttempt.findMany({
+                    where: {
+                        studentId: user.id,
+                        quizId: { in: course.quizzes.map(q => q.id) }
+                    }
+                }) : []
+            ]);
+            // Course is fully completed only if all components are done
+            const allVideosWatched = course.videos.length === 0 || videoProgress.length === course.videos.length;
+            const allPdfsRead = course.pdfs.length === 0 || pdfProgress.length === course.pdfs.length;
+            const quizAttempted = course.quizzes.length === 0 || quizAttempts.length > 0;
+            return {
+                courseId: course.id,
+                level: course.level,
+                isCompleted: allVideosWatched && allPdfsRead && quizAttempted
+            };
+        }));
+        const levelsCompleted = completionStatus.filter(c => c.isCompleted).length;
+        const totalLevels = dashboardCourses.length;
+        const currentLevelProgress = completionStatus.find(c => !c.isCompleted);
+        const currentLevel = currentLevelProgress?.level || "1";
+        const spiritualProgress = totalLevels > 0 ? Math.round((levelsCompleted / totalLevels) * 100) : 0;
         // Knowledge points (sum of scores from exam attempts)
         const examAttempts = await client_1.prisma.examAttempt.findMany({ where: { studentId: user.id, score: { not: null } } });
         const knowledgePoints = examAttempts.reduce((sum, a) => sum + (a.score || 0), 0);
@@ -81,15 +196,55 @@ const getStudentProfile = async (req, res) => {
     }
     try {
         const district = user.districtId ? await client_1.prisma.district.findUnique({ where: { id: user.districtId }, select: { name: true } }) : null;
-        const progress = await client_1.prisma.studentProgress.findMany({
-            where: { studentId: user.id },
-            include: { course: { select: { level: true } } }
+        // Get courses for student's class level and check real-time completion
+        const profileCourseWhere = user.classLevel ? { classLevel: user.classLevel } : {};
+        const profileCourses = await client_1.prisma.course.findMany({
+            where: profileCourseWhere,
+            orderBy: { level: 'asc' },
+            include: { videos: true, pdfs: true, quizzes: true }
         });
-        const levelsCompleted = progress.filter(p => p.status === 'completed' && p.qualified).length;
-        const totalLevels = await client_1.prisma.course.count();
-        const currentLevelProgress = progress.find(p => p.status === 'in_progress');
-        const currentLevel = currentLevelProgress?.course.level || "1";
-        const spiritualProgress = totalLevels ? Math.round((levelsCompleted / totalLevels) * 100) : 0;
+        // Check real-time completion for each course
+        const profileCompletionStatus = await Promise.all(profileCourses.map(async (course) => {
+            const [videoProgress, pdfProgress, quizAttempts] = await Promise.all([
+                // Check video progress
+                course.videos.length > 0 ? client_1.prisma.videoProgress.findMany({
+                    where: {
+                        studentId: user.id,
+                        videoId: { in: course.videos.map(v => v.id) },
+                        watched: true
+                    }
+                }) : [],
+                // Check PDF progress
+                course.pdfs.length > 0 ? client_1.prisma.pdfProgress.findMany({
+                    where: {
+                        studentId: user.id,
+                        pdfId: { in: course.pdfs.map(p => p.id) },
+                        read: true
+                    }
+                }) : [],
+                // Check quiz attempts (any attempt, not necessarily passed)
+                course.quizzes.length > 0 ? client_1.prisma.examAttempt.findMany({
+                    where: {
+                        studentId: user.id,
+                        quizId: { in: course.quizzes.map(q => q.id) }
+                    }
+                }) : []
+            ]);
+            // Course is fully completed only if all components are done
+            const allVideosWatched = course.videos.length === 0 || videoProgress.length === course.videos.length;
+            const allPdfsRead = course.pdfs.length === 0 || pdfProgress.length === course.pdfs.length;
+            const quizAttempted = course.quizzes.length === 0 || quizAttempts.length > 0;
+            return {
+                courseId: course.id,
+                level: course.level,
+                isCompleted: allVideosWatched && allPdfsRead && quizAttempted
+            };
+        }));
+        const levelsCompleted = profileCompletionStatus.filter(c => c.isCompleted).length;
+        const totalLevels = profileCourses.length;
+        const currentLevelProgress = profileCompletionStatus.find(c => !c.isCompleted);
+        const currentLevel = currentLevelProgress?.level || "1";
+        const spiritualProgress = totalLevels > 0 ? Math.round((levelsCompleted / totalLevels) * 100) : 0;
         res.json({
             name: user.name,
             district: district?.name || null,
@@ -153,12 +308,11 @@ const getStudentLearningPath = async (req, res) => {
                         read: true
                     }
                 }) : [],
-                // Check quiz attempts
+                // Check quiz attempts (any attempt, not necessarily passed)
                 course.quizzes.length > 0 ? client_1.prisma.examAttempt.findMany({
                     where: {
                         studentId: user.id,
-                        quizId: { in: course.quizzes.map(q => q.id) },
-                        passed: true
+                        quizId: { in: course.quizzes.map(q => q.id) }
                     }
                 }) : []
             ]);
@@ -408,7 +562,7 @@ const getStudentLevelContent = async (req, res) => {
         // Section completion status
         const allVideosWatched = videos.length > 0 && videos.every(v => v.watched);
         const allPdfsRead = pdfs.length > 0 && pdfs.every(p => p.read);
-        const allQuizzesPassed = quizzes.length > 0 && quizzes.every(q => q.passed);
+        const allQuizzesAttempted = quizzes.length > 0 && quizzes.every(q => q.attempted);
         res.json({
             courses: courses.map(c => ({ id: c.id, title: c.title, level: c.level, description: c.description })),
             videos,
@@ -417,7 +571,7 @@ const getStudentLevelContent = async (req, res) => {
             sectionStatus: {
                 videos: allVideosWatched ? 'completed' : 'pending',
                 pdfs: allPdfsRead ? 'completed' : 'pending',
-                quizzes: allQuizzesPassed ? 'completed' : 'pending',
+                quizzes: allQuizzesAttempted ? 'completed' : 'pending',
             },
         });
     }
@@ -453,13 +607,49 @@ const markVideoWatched = async (req, res) => {
             where: { studentId: user.id, videoId: { in: allVideos.map(v => v.id) }, watched: true },
         });
         const allWatched = allVideos.length > 0 && watchedVideos.length === allVideos.length;
-        // If all videos are watched, update student progress to in_progress (not completed yet)
+        // If all videos are watched, check if course is fully completed
         if (allWatched) {
-            await client_1.prisma.studentProgress.upsert({
-                where: { studentId_courseId: { studentId: user.id, courseId: video.courseId } },
-                update: { status: 'in_progress' },
-                create: { studentId: user.id, courseId: video.courseId, status: 'in_progress' },
+            // Check if all components (videos, PDFs, and quiz) are completed
+            const course = await client_1.prisma.course.findUnique({
+                where: { id: video.courseId },
+                include: { videos: true, pdfs: true, quizzes: true }
             });
+            if (course) {
+                const [pdfProgress, quizAttempts] = await Promise.all([
+                    // Check PDF progress
+                    course.pdfs.length > 0 ? client_1.prisma.pdfProgress.findMany({
+                        where: {
+                            studentId: user.id,
+                            pdfId: { in: course.pdfs.map(p => p.id) },
+                            read: true
+                        }
+                    }) : [],
+                    // Check quiz attempts (any attempt, not necessarily passed)
+                    course.quizzes.length > 0 ? client_1.prisma.examAttempt.findMany({
+                        where: {
+                            studentId: user.id,
+                            quizId: { in: course.quizzes.map(q => q.id) }
+                        }
+                    }) : []
+                ]);
+                // Course is fully completed only if all components are done
+                const allPdfsRead = course.pdfs.length === 0 || pdfProgress.length === course.pdfs.length;
+                const quizPassed = course.quizzes.length === 0 || quizAttempts.length > 0;
+                const isFullyCompleted = allWatched && allPdfsRead && quizPassed;
+                await client_1.prisma.studentProgress.upsert({
+                    where: { studentId_courseId: { studentId: user.id, courseId: video.courseId } },
+                    update: {
+                        status: isFullyCompleted ? 'completed' : 'in_progress',
+                        qualified: isFullyCompleted
+                    },
+                    create: {
+                        studentId: user.id,
+                        courseId: video.courseId,
+                        status: isFullyCompleted ? 'completed' : 'in_progress',
+                        qualified: isFullyCompleted
+                    },
+                });
+            }
         }
         res.json({ message: 'Video marked as watched.', videoId, watchedAt });
     }
@@ -495,13 +685,49 @@ const markPdfRead = async (req, res) => {
             where: { studentId: user.id, pdfId: { in: allPdfs.map(p => p.id) }, read: true },
         });
         const allRead = allPdfs.length > 0 && readPdfs.length === allPdfs.length;
-        // If all PDFs are read, update student progress to in_progress (not completed yet)
+        // If all PDFs are read, check if course is fully completed
         if (allRead) {
-            await client_1.prisma.studentProgress.upsert({
-                where: { studentId_courseId: { studentId: user.id, courseId: pdf.courseId } },
-                update: { status: 'in_progress' },
-                create: { studentId: user.id, courseId: pdf.courseId, status: 'in_progress' },
+            // Check if all components (videos, PDFs, and quiz) are completed
+            const course = await client_1.prisma.course.findUnique({
+                where: { id: pdf.courseId },
+                include: { videos: true, pdfs: true, quizzes: true }
             });
+            if (course) {
+                const [videoProgress, quizAttempts] = await Promise.all([
+                    // Check video progress
+                    course.videos.length > 0 ? client_1.prisma.videoProgress.findMany({
+                        where: {
+                            studentId: user.id,
+                            videoId: { in: course.videos.map(v => v.id) },
+                            watched: true
+                        }
+                    }) : [],
+                    // Check quiz attempts (any attempt, not necessarily passed)
+                    course.quizzes.length > 0 ? client_1.prisma.examAttempt.findMany({
+                        where: {
+                            studentId: user.id,
+                            quizId: { in: course.quizzes.map(q => q.id) }
+                        }
+                    }) : []
+                ]);
+                // Course is fully completed only if all components are done
+                const allVideosWatched = course.videos.length === 0 || videoProgress.length === course.videos.length;
+                const quizPassed = course.quizzes.length === 0 || quizAttempts.length > 0;
+                const isFullyCompleted = allVideosWatched && allRead && quizPassed;
+                await client_1.prisma.studentProgress.upsert({
+                    where: { studentId_courseId: { studentId: user.id, courseId: pdf.courseId } },
+                    update: {
+                        status: isFullyCompleted ? 'completed' : 'in_progress',
+                        qualified: isFullyCompleted
+                    },
+                    create: {
+                        studentId: user.id,
+                        courseId: pdf.courseId,
+                        status: isFullyCompleted ? 'completed' : 'in_progress',
+                        qualified: isFullyCompleted
+                    },
+                });
+            }
         }
         res.json({ message: 'PDF marked as read.', pdfId, readAt });
     }
@@ -705,53 +931,51 @@ const submitQuiz = async (req, res) => {
                 score: score
             }
         });
-        // Update student progress if passed
-        if (isPassed) {
-            // Check if all components (videos, PDFs, and quiz) are completed
-            const [videoProgress, pdfProgress] = await Promise.all([
-                // Check video progress
-                course.videos.length > 0 ? client_1.prisma.videoProgress.findMany({
-                    where: {
-                        studentId: user.id,
-                        videoId: { in: course.videos.map(v => v.id) },
-                        watched: true
-                    }
-                }) : [],
-                // Check PDF progress
-                course.pdfs.length > 0 ? client_1.prisma.pdfProgress.findMany({
-                    where: {
-                        studentId: user.id,
-                        pdfId: { in: course.pdfs.map(p => p.id) },
-                        read: true
-                    }
-                }) : []
-            ]);
-            // Course is fully completed only if all components are done
-            const allVideosWatched = course.videos.length === 0 || videoProgress.length === course.videos.length;
-            const allPdfsRead = course.pdfs.length === 0 || pdfProgress.length === course.pdfs.length;
-            const quizPassed = isPassed;
-            const isFullyCompleted = allVideosWatched && allPdfsRead && quizPassed;
-            await client_1.prisma.studentProgress.upsert({
+        // Update student progress (check completion regardless of quiz result)
+        // Check if all components (videos, PDFs, and quiz) are completed
+        const [videoProgress, pdfProgress] = await Promise.all([
+            // Check video progress
+            course.videos.length > 0 ? client_1.prisma.videoProgress.findMany({
                 where: {
-                    studentId_courseId: {
-                        studentId: user.id,
-                        courseId: course.id
-                    }
-                },
-                update: {
-                    status: isFullyCompleted ? 'completed' : 'in_progress',
-                    qualified: isFullyCompleted,
-                    attemptId: examAttempt.id
-                },
-                create: {
                     studentId: user.id,
-                    courseId: course.id,
-                    status: isFullyCompleted ? 'completed' : 'in_progress',
-                    qualified: isFullyCompleted,
-                    attemptId: examAttempt.id
+                    videoId: { in: course.videos.map(v => v.id) },
+                    watched: true
                 }
-            });
-        }
+            }) : [],
+            // Check PDF progress
+            course.pdfs.length > 0 ? client_1.prisma.pdfProgress.findMany({
+                where: {
+                    studentId: user.id,
+                    pdfId: { in: course.pdfs.map(p => p.id) },
+                    read: true
+                }
+            }) : []
+        ]);
+        // Course is fully completed only if all components are done
+        const allVideosWatched = course.videos.length === 0 || videoProgress.length === course.videos.length;
+        const allPdfsRead = course.pdfs.length === 0 || pdfProgress.length === course.pdfs.length;
+        const quizAttempted = true; // Quiz is attempted since we're in submitQuiz function
+        const isFullyCompleted = allVideosWatched && allPdfsRead && quizAttempted;
+        await client_1.prisma.studentProgress.upsert({
+            where: {
+                studentId_courseId: {
+                    studentId: user.id,
+                    courseId: course.id
+                }
+            },
+            update: {
+                status: isFullyCompleted ? 'completed' : 'in_progress',
+                qualified: isFullyCompleted,
+                attemptId: examAttempt.id
+            },
+            create: {
+                studentId: user.id,
+                courseId: course.id,
+                status: isFullyCompleted ? 'completed' : 'in_progress',
+                qualified: isFullyCompleted,
+                attemptId: examAttempt.id
+            }
+        });
         res.json({
             success: true,
             message: "Quiz submitted successfully",
@@ -882,3 +1106,89 @@ const getStudentRandomQuestions = async (req, res) => {
     }
 };
 exports.getStudentRandomQuestions = getStudentRandomQuestions;
+const getStudentNotes = async (req, res) => {
+    const user = req.user;
+    if (!user || user.role !== 'student') {
+        return res.status(403).json({ message: 'Forbidden: Not a student.' });
+    }
+    const { level } = req.query;
+    try {
+        // Find the course for the student's class level and specified level (or current level)
+        const courseLevel = level || '1'; // Default to level 1 if not specified
+        const course = await client_1.prisma.course.findFirst({
+            where: {
+                classLevel: user.classLevel || '',
+                level: String(courseLevel)
+            },
+            include: {
+                pdfs: true
+            }
+        });
+        if (!course) {
+            return res.status(404).json({ message: 'Course not found for the specified level.' });
+        }
+        res.status(200).json({
+            success: true,
+            level: courseLevel,
+            courseTitle: course.title,
+            notes: course.pdfs.map(note => ({
+                id: note.id,
+                title: note.title,
+                url: note.url
+            }))
+        });
+    }
+    catch (error) {
+        console.error("Error fetching student notes:", error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+exports.getStudentNotes = getStudentNotes;
+const getCompletionMessage = async (req, res) => {
+    const user = req.user;
+    if (!user || user.role !== 'student') {
+        return res.status(403).json({ message: 'Forbidden: Not a student.' });
+    }
+    const { classId, levelId } = req.params;
+    if (!classId || !levelId) {
+        return res.status(400).json({
+            success: false,
+            message: 'classId and levelId are required'
+        });
+    }
+    try {
+        const completionMessage = await client_1.prisma.completionMessage.findUnique({
+            where: {
+                classId_levelId: {
+                    classId,
+                    levelId
+                }
+            }
+        });
+        if (!completionMessage) {
+            return res.status(404).json({
+                success: false,
+                message: 'No completion message found for this level'
+            });
+        }
+        res.status(200).json({
+            success: true,
+            data: {
+                id: completionMessage.id,
+                classId: completionMessage.classId,
+                levelId: completionMessage.levelId,
+                message: completionMessage.message,
+                createdAt: completionMessage.createdAt,
+                updatedAt: completionMessage.updatedAt
+            }
+        });
+    }
+    catch (error) {
+        console.error('Error fetching completion message:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Internal server error'
+        });
+    }
+};
+exports.getCompletionMessage = getCompletionMessage;

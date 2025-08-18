@@ -1,6 +1,119 @@
 import { Request, Response } from 'express';
 import { prisma } from '../prisma/client';
 
+// Enhanced interface for formatted quiz content
+interface FormattedQuizContent {
+    text: string;
+    formatting?: {
+        bold?: boolean;
+        italic?: boolean;
+        underline?: boolean;
+        fontSize?: number;
+        fontFamily?: string;
+        color?: string;
+        backgroundColor?: string;
+        alignment?: 'left' | 'center' | 'right';
+        listType?: 'bullet' | 'numbered' | 'none';
+        indentation?: number;
+    };
+    images?: Array<{
+        url: string;
+        alt: string;
+        position: 'inline' | 'block';
+        width?: number;
+        height?: number;
+    }>;
+    tables?: Array<{
+        headers: string[];
+        rows: string[][];
+        styling?: {
+            headerBackground?: string;
+            borderColor?: string;
+            cellPadding?: number;
+        };
+    }>;
+}
+
+// Function to get quiz questions with preserved formatting
+export const getQuizWithFormatting = async (req: Request, res: Response) => {
+    try {
+        const { quizId } = req.params;
+        const user = req.user;
+
+        if (!user || user.role !== 'student') {
+            return res.status(403).json({ message: 'Forbidden: Not a student.' });
+        }
+
+        // Get quiz with questions and formatting
+        const quiz = await prisma.quiz.findUnique({
+            where: { id: quizId },
+            include: {
+                questionBank: {
+                    include: {
+                        questions: true
+                    }
+                },
+                course: true
+            }
+        });
+
+        if (!quiz) {
+            return res.status(404).json({ message: 'Quiz not found.' });
+        }
+
+        // Transform questions to include formatted content
+        const formattedQuestions = quiz.questionBank.questions.map(q => {
+            const questionFormatted = q.questionFormatted ? JSON.parse(q.questionFormatted) as FormattedQuizContent : null;
+            const optionAFormatted = q.optionAFormatted ? JSON.parse(q.optionAFormatted) as FormattedQuizContent : null;
+            const optionBFormatted = q.optionBFormatted ? JSON.parse(q.optionBFormatted) as FormattedQuizContent : null;
+            const optionCFormatted = q.optionCFormatted ? JSON.parse(q.optionCFormatted) as FormattedQuizContent : null;
+            const optionDFormatted = q.optionDFormatted ? JSON.parse(q.optionDFormatted) as FormattedQuizContent : null;
+            const explanationFormatted = q.explanationFormatted ? JSON.parse(q.explanationFormatted) as FormattedQuizContent : null;
+
+            return {
+                id: q.id,
+                question: q.question,
+                questionFormatted,
+                options: [
+                    { text: q.optionA, formatted: optionAFormatted },
+                    { text: q.optionB, formatted: optionBFormatted },
+                    { text: q.optionC, formatted: optionCFormatted },
+                    { text: q.optionD, formatted: optionDFormatted }
+                ],
+                correctOption: q.correctOption,
+                explanation: q.explanationFormatted ? explanationFormatted : null,
+                difficulty: q.difficulty || 'medium',
+                points: q.points || 1,
+                timeLimit: q.timeLimit || 60
+            };
+        });
+
+        const formattedQuiz = {
+            id: quiz.id,
+            courseId: quiz.courseId,
+            courseTitle: quiz.course.title,
+            classLevel: quiz.classLevel,
+            numQuestions: quiz.numQuestions,
+            passPercentage: quiz.passPercentage,
+            questions: formattedQuestions,
+            hasFormatting: formattedQuestions.some(q => 
+                q.questionFormatted || 
+                q.options.some(opt => opt.formatted) || 
+                q.explanation
+            )
+        };
+
+        res.json({
+            success: true,
+            quiz: formattedQuiz
+        });
+
+    } catch (error) {
+        console.error('Error fetching quiz with formatting:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
 export const getStudentDashboard = async (req: Request, res: Response) => {
   const user = req.user;
   if (!user || user.role !== 'student') {
@@ -1138,11 +1251,7 @@ export const getStudentNotes = async (req: Request, res: Response) => {
                 level: String(courseLevel)
             },
             include: {
-                notes: {
-                    orderBy: {
-                        createdAt: 'desc'
-                    }
-                }
+                pdfs: true
             }
         });
 
@@ -1154,17 +1263,160 @@ export const getStudentNotes = async (req: Request, res: Response) => {
             success: true,
             level: courseLevel,
             courseTitle: course.title,
-            notes: course.notes.map(note => ({
+            notes: course.pdfs.map(note => ({
                 id: note.id,
                 title: note.title,
-                content: note.content,
-                createdAt: note.createdAt,
-                updatedAt: note.updatedAt
+                url: note.url
             }))
         });
 
     } catch (error) {
         console.error("Error fetching student notes:", error);
         res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+export const getCompletionMessage = async (req: Request, res: Response) => {
+    const user = req.user;
+    if (!user || user.role !== 'student') {
+        return res.status(403).json({ message: 'Forbidden: Not a student.' });
+    }
+
+    const { classId, levelId } = req.params;
+
+    if (!classId || !levelId) {
+        return res.status(400).json({
+            success: false,
+            message: 'classId and levelId are required'
+        });
+    }
+
+    try {
+        const completionMessage = await prisma.completionMessage.findUnique({
+            where: {
+                classId_levelId: {
+                    classId,
+                    levelId
+                }
+            }
+        });
+
+        if (!completionMessage) {
+            return res.status(404).json({
+                success: false,
+                message: 'No completion message found for this level'
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            data: {
+                id: completionMessage.id,
+                classId: completionMessage.classId,
+                levelId: completionMessage.levelId,
+                message: completionMessage.message,
+                createdAt: completionMessage.createdAt,
+                updatedAt: completionMessage.updatedAt
+            }
+        });
+
+    } catch (error) {
+        console.error('Error fetching completion message:', error);
+        res.status(500).json({ 
+            success: false,
+            message: 'Internal server error' 
+        });
+    }
+};
+
+export const getStudentCompletionMessage = async (req: Request, res: Response) => {
+    const user = req.user;
+    if (!user || user.role !== 'student') {
+        return res.status(403).json({ message: 'Forbidden: Not a student.' });
+    }
+
+    const { studentId, levelId } = req.params;
+
+    if (!studentId || !levelId) {
+        return res.status(400).json({
+            success: false,
+            message: 'studentId and levelId are required'
+        });
+    }
+
+    try {
+        // First, get the student's information to find their class level
+        const student = await prisma.user.findUnique({
+            where: { id: studentId },
+            select: { 
+                id: true, 
+                name: true, 
+                classLevel: true,
+                role: true 
+            }
+        });
+
+        if (!student) {
+            return res.status(404).json({
+                success: false,
+                message: 'Student not found'
+            });
+        }
+
+        if (student.role !== 'student') {
+            return res.status(400).json({
+                success: false,
+                message: 'The specified user is not a student'
+            });
+        }
+
+        if (!student.classLevel) {
+            return res.status(400).json({
+                success: false,
+                message: 'Student does not have a class level assigned'
+            });
+        }
+
+        // Now get the completion message for the student's class level and the specified course level
+        const completionMessage = await prisma.completionMessage.findUnique({
+            where: {
+                classId_levelId: {
+                    classId: student.classLevel,
+                    levelId: levelId
+                }
+            }
+        });
+
+        if (!completionMessage) {
+            return res.status(404).json({
+                success: false,
+                message: 'No completion message found for this student\'s class level and course level'
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            data: {
+                studentId: student.id,
+                studentName: student.name,
+                studentClassLevel: student.classLevel,
+                courseLevel: levelId,
+                completionMessage: {
+                    id: completionMessage.id,
+                    classId: completionMessage.classId,
+                    levelId: completionMessage.levelId,
+                    message: completionMessage.message,
+                    createdAt: completionMessage.createdAt,
+                    updatedAt: completionMessage.updatedAt
+                }
+            }
+        });
+
+    } catch (error) {
+        console.error('Error fetching student completion message:', error);
+        res.status(500).json({ 
+            success: false,
+            message: 'Internal server error' 
+        });
     }
 };

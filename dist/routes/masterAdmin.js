@@ -103,7 +103,7 @@ router.post('/courses/videos', (0, asyncHandler_1.asyncHandler)(masterAdminContr
  * @description Add a new PDF note to a course
  * @access Private (Master Admin)
  */
-router.post('/courses/notes', uploadMiddleware_1.upload.single('file'), (0, asyncHandler_1.asyncHandler)(masterAdminController_1.addNote));
+router.post('/courses/notes', (0, asyncHandler_1.asyncHandler)(masterAdminController_1.addNote));
 /**
  * @route POST /api/master-admin/courses/quizzes
  * @description Add a new quiz to a course from an Excel file
@@ -251,4 +251,62 @@ router.delete('/quiz-validity/:id', (0, asyncHandler_1.asyncHandler)(masterAdmin
  * @access Private (Master Admin)
  */
 router.get('/level-content/questions', (0, asyncHandler_1.asyncHandler)(masterAdminController_1.getRandomLevelQuestions));
+/**
+ * =================================================================
+ *                  COMPLETION MESSAGES MANAGEMENT
+ * =================================================================
+ */
+/**
+ * @route GET /api/master-admin/completion-messages
+ * @description Fetch all completion messages for all classes and levels
+ * @access Private (Master Admin)
+ */
+router.get('/completion-messages', (0, asyncHandler_1.asyncHandler)(masterAdminController_1.getAllCompletionMessages));
+/**
+ * @route POST /api/master-admin/completion-messages
+ * @description Create a new completion message
+ * @access Private (Master Admin)
+ */
+router.post('/completion-messages', (0, asyncHandler_1.asyncHandler)(masterAdminController_1.createCompletionMessage));
+/**
+ * @route PUT /api/master-admin/completion-messages/:id
+ * @description Update an existing completion message
+ * @access Private (Master Admin)
+ */
+router.put('/completion-messages/:id', (0, asyncHandler_1.asyncHandler)(masterAdminController_1.updateCompletionMessage));
+/**
+ * @route DELETE /api/master-admin/completion-messages/:id
+ * @description Delete a completion message
+ * @access Private (Master Admin)
+ */
+router.delete('/completion-messages/:id', (0, asyncHandler_1.asyncHandler)(masterAdminController_1.deleteCompletionMessage));
+/**
+ * =================================================================
+ *                  TOP STUDENTS MANAGEMENT
+ * =================================================================
+ */
+/**
+ * @route GET /api/master-admin/top-students
+ * @description Fetch top students based on sequential filters
+ * @access Private (Master Admin)
+ */
+router.get('/top-students', (0, asyncHandler_1.asyncHandler)(masterAdminController_1.getTopStudents));
+/**
+ * @route GET /api/master-admin/top-students/by-class
+ * @description Fetch top students grouped by class
+ * @access Private (Master Admin)
+ */
+router.get('/top-students/by-class', (0, asyncHandler_1.asyncHandler)(masterAdminController_1.getTopStudentsByClass));
+/**
+ * @route GET /api/master-admin/courses
+ * @description Fetch all available course levels
+ * @access Private (Master Admin)
+ */
+router.get('/courses', (0, asyncHandler_1.asyncHandler)(masterAdminController_1.getCourses));
+/**
+ * @route GET /api/master-admin/top-students/analytics
+ * @description Get analytics for top students
+ * @access Private (Master Admin)
+ */
+router.get('/top-students/analytics', (0, asyncHandler_1.asyncHandler)(masterAdminController_1.getTopStudentsAnalytics));
 exports.default = router;

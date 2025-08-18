@@ -20,13 +20,22 @@ const getCourseData = async (req, res) => {
         if (!user) {
             return res.status(404).json({ success: false, message: 'User not found' });
         }
-        // Get all courses with their content
+        // Get courses for the student's class level
         const courses = await client_1.prisma.course.findMany({
+            where: { classLevel: user.classLevel || undefined },
             orderBy: { level: 'asc' },
             include: {
                 videos: true,
                 pdfs: true,
-                quizzes: true,
+                quizzes: {
+                    include: {
+                        questionBank: {
+                            include: {
+                                questions: true
+                            }
+                        }
+                    }
+                },
                 studentProgress: {
                     where: { studentId: userId }
                 }
@@ -50,9 +59,14 @@ const getCourseData = async (req, res) => {
             where: { studentId: userId },
             include: { quiz: true }
         });
+        // Get level schedules and quiz validity
+        const levelSchedules = await client_1.prisma.levelSchedule.findMany();
+        const quizValidity = await client_1.prisma.quizValidity.findMany();
         // Build levels data
         const levels = courses.map(course => {
             const progress = studentProgress.find(p => p.courseId === course.id);
+            const schedule = levelSchedules.find(s => s.classId === user.classLevel && s.level === course.level);
+            const validity = quizValidity.find(v => v.classId === user.classLevel && v.level === course.level);
             // Calculate completion stats
             const courseVideos = course.videos;
             const coursePDFs = course.pdfs;
@@ -62,7 +76,34 @@ const getCourseData = async (req, res) => {
             const completedQuizzes = quizAttempts.filter(qa => courseQuizzes.some(q => q.id === qa.quizId) && qa.score !== null).length;
             const isCompleted = progress?.status === 'completed' && progress.qualified;
             const isCurrent = progress?.status === 'in_progress';
-            const isLocked = !isCompleted && !isCurrent && course.level !== "1";
+            // Check if level is locked based on schedule
+            const now = new Date();
+            const unlockDateTime = schedule ? new Date(schedule.unlockDateTime) : null;
+            const validityEndDateTime = validity ? new Date(validity.validUntilDateTime) : null;
+            const isUnlocked = !schedule || (unlockDateTime && now >= unlockDateTime);
+            const isExpired = validityEndDateTime && now > validityEndDateTime;
+            const isLocked = !isCompleted && !isCurrent && course.level !== "1" && !isUnlocked;
+            // Calculate unlock and validity messages
+            let unlockMessage = "";
+            let validityMessage = "";
+            if (schedule && !isUnlocked) {
+                const timeDiff = unlockDateTime.getTime() - now.getTime();
+                const days = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+                unlockMessage = `Unlocks in ${days} days`;
+            }
+            if (validityEndDateTime) {
+                const timeDiff = validityEndDateTime.getTime() - now.getTime();
+                const days = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+                if (days > 0) {
+                    validityMessage = `Valid for ${days} days`;
+                }
+                else if (days === 0) {
+                    validityMessage = "Valid until today";
+                }
+                else {
+                    validityMessage = "Expired";
+                }
+            }
             return {
                 id: course.id,
                 title: course.title,
@@ -80,12 +121,29 @@ const getCourseData = async (req, res) => {
                 totalQuizzes: courseQuizzes.length,
                 completedQuizzes,
                 certificateUrl: isCompleted ? `https://example.com/certificates/level_${course.level}_cert.pdf` : "",
-                completedAt: isCompleted ? new Date() : null
+                completedAt: isCompleted ? new Date() : null,
+                unlockSchedule: schedule?.unlockDateTime || null,
+                validityEndDate: validity?.validUntilDateTime || null,
+                isUnlocked,
+                isExpired,
+                unlockMessage,
+                validityMessage
             };
         });
         // Build lessons data (using courses as lessons for now)
         const lessons = courses.map(course => {
             const progress = studentProgress.find(p => p.courseId === course.id);
+            const schedule = levelSchedules.find(s => s.classId === user.classLevel && s.level === course.level);
+            const validity = quizValidity.find(v => v.classId === user.classLevel && v.level === course.level);
+            const now = new Date();
+            const unlockDateTime = schedule ? new Date(schedule.unlockDateTime) : null;
+            const isUnlocked = !schedule || (unlockDateTime && now >= unlockDateTime);
+            let unlockMessage = "";
+            if (schedule && !isUnlocked) {
+                const timeDiff = unlockDateTime.getTime() - now.getTime();
+                const days = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+                unlockMessage = `Unlocks in ${days} days`;
+            }
             return {
                 id: course.id,
                 title: course.title,
@@ -96,60 +154,133 @@ const getCourseData = async (req, res) => {
                 order: parseInt(course.level),
                 duration: "45 minutes", // Default duration
                 thumbnail: "https://example.com/thumbnails/lesson_1.jpg", // Default thumbnail
-                createdAt: course.createdAt
+                createdAt: course.createdAt,
+                isUnlocked,
+                unlockMessage
             };
         });
         // Build videos data
         const videos = courses.flatMap(course => course.videos.map(video => {
             const videoProgress = videoProgressData.find(vp => vp.videoId === video.id);
+            const schedule = levelSchedules.find(s => s.classId === user.classLevel && s.level === course.level);
+            const now = new Date();
+            const unlockDateTime = schedule ? new Date(schedule.unlockDateTime) : null;
+            const isUnlocked = !schedule || (unlockDateTime && now >= unlockDateTime);
+            let unlockMessage = "";
+            if (schedule && !isUnlocked) {
+                const timeDiff = unlockDateTime.getTime() - now.getTime();
+                const days = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+                unlockMessage = `Unlocks in ${days} days`;
+            }
             return {
                 id: video.id,
                 title: video.title,
                 description: video.title, // Using title as description for now
                 url: video.youtubeId ? `https://www.youtube.com/watch?v=${video.youtubeId}` : "",
+                iframeUrl: video.iframeSnippet || (video.youtubeId ? `https://www.youtube.com/embed/${video.youtubeId}` : ""),
                 thumbnail: video.thumbnail || "https://example.com/thumbnails/video_1.jpg",
                 levelId: course.id,
                 lessonId: course.id,
                 duration: 1800, // Default 30 minutes
                 isWatched: !!videoProgress,
                 watchProgress: videoProgress ? 100 : 0,
-                createdAt: course.createdAt
+                createdAt: course.createdAt,
+                isUnlocked,
+                unlockMessage
             };
         }));
         // Build PDFs data
         const pdfs = courses.flatMap(course => course.pdfs.map(pdf => {
             const pdfProgress = pdfProgressData.find(pp => pp.pdfId === pdf.id);
+            const schedule = levelSchedules.find(s => s.classId === user.classLevel && s.level === course.level);
+            const now = new Date();
+            const unlockDateTime = schedule ? new Date(schedule.unlockDateTime) : null;
+            const isUnlocked = !schedule || (unlockDateTime && now >= unlockDateTime);
+            let unlockMessage = "";
+            if (schedule && !isUnlocked) {
+                const timeDiff = unlockDateTime.getTime() - now.getTime();
+                const days = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+                unlockMessage = `Unlocks in ${days} days`;
+            }
             return {
                 id: pdf.id,
                 title: pdf.title,
                 description: pdf.title, // Using title as description for now
                 url: pdf.url,
+                downloadUrl: pdf.url,
                 thumbnail: "https://example.com/thumbnails/pdf_1.jpg", // Default thumbnail
                 levelId: course.id,
                 lessonId: course.id,
                 pageCount: 15, // Default page count
                 isRead: !!pdfProgress,
                 readProgress: pdfProgress ? 100 : 0,
-                createdAt: course.createdAt
+                createdAt: course.createdAt,
+                isUnlocked,
+                unlockMessage
             };
         }));
         // Build quizzes data
         const quizzes = courses.flatMap(course => course.quizzes.map(quiz => {
             const quizAttempt = quizAttempts.find(qa => qa.quizId === quiz.id);
+            const schedule = levelSchedules.find(s => s.classId === user.classLevel && s.level === course.level);
+            const validity = quizValidity.find(v => v.classId === user.classLevel && v.level === course.level);
+            const now = new Date();
+            const unlockDateTime = schedule ? new Date(schedule.unlockDateTime) : null;
+            const validityEndDateTime = validity ? new Date(validity.validUntilDateTime) : null;
+            const isUnlocked = !schedule || (unlockDateTime && now >= unlockDateTime);
+            const isExpired = validityEndDateTime && now > validityEndDateTime;
+            let unlockMessage = "";
+            let validityMessage = "";
+            if (schedule && !isUnlocked) {
+                const timeDiff = unlockDateTime.getTime() - now.getTime();
+                const days = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+                unlockMessage = `Unlocks in ${days} days`;
+            }
+            if (validityEndDateTime) {
+                const timeDiff = validityEndDateTime.getTime() - now.getTime();
+                const days = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+                if (days > 0) {
+                    validityMessage = `Valid for ${days} days`;
+                }
+                else if (days === 0) {
+                    validityMessage = "Valid until today";
+                }
+                else {
+                    validityMessage = "Expired";
+                }
+            }
+            // Set result announcement date (7 days after validity ends)
+            const resultAnnouncementDate = validityEndDateTime ?
+                new Date(validityEndDateTime.getTime() + (7 * 24 * 60 * 60 * 1000)) : null;
             return {
                 id: quiz.id,
                 title: `Quiz - ${course.title}`,
                 description: `Assessment for ${course.title}`,
                 levelId: course.id,
                 lessonId: course.id,
-                totalQuestions: quiz.numQuestions || 10,
-                timeLimit: 1800, // Default 30 minutes
+                totalQuestions: quiz.numQuestions || 25,
+                timeLimit: 15, // 15 minutes in minutes
                 passingScore: quiz.passPercentage || 70,
                 isCompleted: !!quizAttempt && quizAttempt.score !== null,
                 score: quizAttempt?.score || null,
                 attempts: quizAttempt ? 1 : 0,
                 completedAt: quizAttempt?.completedAt || null,
-                createdAt: course.createdAt
+                createdAt: course.createdAt,
+                isUnlocked,
+                unlockMessage,
+                validityStartDate: unlockDateTime,
+                validityEndDate: validityEndDateTime,
+                resultAnnouncementDate,
+                isExpired,
+                validityMessage,
+                questions: quiz.questionBank.questions.map(q => ({
+                    id: q.id,
+                    question: q.question,
+                    options: [q.optionA, q.optionB, q.optionC, q.optionD],
+                    correctOption: parseInt(q.correctOption) - 1, // Convert to 0-based index
+                    explanation: `Correct answer: ${q.correctOption}`,
+                    points: 1
+                }))
             };
         }));
         // Calculate overall progress
@@ -385,6 +516,7 @@ const markVideoAsWatched = async (req, res) => {
     try {
         const userId = req.user.id;
         const { videoId } = req.params;
+        const { watchProgress } = req.body;
         if (!videoId) {
             return res.status(400).json({ success: false, message: 'Video ID is required' });
         }
@@ -404,20 +536,20 @@ const markVideoAsWatched = async (req, res) => {
                 }
             },
             update: {
-                watched: true,
-                watchedAt: new Date()
+                watched: watchProgress >= 100,
+                watchedAt: watchProgress >= 100 ? new Date() : null
             },
             create: {
                 studentId: userId,
                 videoId: videoId,
-                watched: true,
-                watchedAt: new Date()
+                watched: watchProgress >= 100,
+                watchedAt: watchProgress >= 100 ? new Date() : null
             }
         });
-        logger_1.default.info('Video marked as watched', { userId, videoId });
+        logger_1.default.info('Video marked as watched', { userId, videoId, watchProgress });
         res.json({
             success: true,
-            message: 'Video marked as watched successfully'
+            message: 'Video marked as watched'
         });
     }
     catch (error) {
@@ -439,6 +571,7 @@ const markPDFAsRead = async (req, res) => {
     try {
         const userId = req.user.id;
         const { pdfId } = req.params;
+        const { readProgress } = req.body;
         if (!pdfId) {
             return res.status(400).json({ success: false, message: 'PDF ID is required' });
         }
@@ -458,20 +591,20 @@ const markPDFAsRead = async (req, res) => {
                 }
             },
             update: {
-                read: true,
-                readAt: new Date()
+                read: readProgress >= 100,
+                readAt: readProgress >= 100 ? new Date() : null
             },
             create: {
                 studentId: userId,
                 pdfId: pdfId,
-                read: true,
-                readAt: new Date()
+                read: readProgress >= 100,
+                readAt: readProgress >= 100 ? new Date() : null
             }
         });
-        logger_1.default.info('PDF marked as read', { userId, pdfId });
+        logger_1.default.info('PDF marked as read', { userId, pdfId, readProgress });
         res.json({
             success: true,
-            message: 'PDF marked as read successfully'
+            message: 'PDF marked as read'
         });
     }
     catch (error) {
@@ -493,22 +626,36 @@ const submitQuiz = async (req, res) => {
     try {
         const userId = req.user.id;
         const { quizId } = req.params;
-        const { answers } = req.body;
+        const { answers, timeSpent } = req.body;
         if (!quizId) {
             return res.status(400).json({ success: false, message: 'Quiz ID is required' });
         }
-        // Check if quiz exists
+        // Check if quiz exists with questions
         const quiz = await client_1.prisma.quiz.findUnique({
-            where: { id: quizId }
+            where: { id: quizId },
+            include: {
+                questionBank: {
+                    include: {
+                        questions: true
+                    }
+                }
+            }
         });
         if (!quiz) {
             return res.status(404).json({ success: false, message: 'Quiz not found' });
         }
-        // For now, we'll simulate quiz scoring
-        // In a real implementation, you would validate answers against correct answers
-        const totalQuestions = quiz.numQuestions || 10;
-        const correctAnswers = Math.floor(Math.random() * totalQuestions) + Math.floor(totalQuestions * 0.6); // Simulate 60-100% score
-        const score = Math.round((correctAnswers / totalQuestions) * 100);
+        // Calculate score based on answers
+        let correctAnswers = 0;
+        const totalQuestions = quiz.questionBank.questions.length;
+        if (answers && typeof answers === 'object') {
+            quiz.questionBank.questions.forEach(question => {
+                const studentAnswer = answers[question.id];
+                if (studentAnswer !== undefined && studentAnswer.toString() === question.correctOption) {
+                    correctAnswers++;
+                }
+            });
+        }
+        const score = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
         const passingScore = quiz.passPercentage || 70;
         const passed = score >= passingScore;
         // Create quiz attempt
@@ -516,13 +663,13 @@ const submitQuiz = async (req, res) => {
             data: {
                 studentId: userId,
                 quizId: quizId,
-                startedAt: new Date(),
+                startedAt: new Date(Date.now() - (timeSpent || 0) * 1000), // Calculate start time based on time spent
                 completedAt: new Date(),
                 passed: passed,
                 score: score
             }
         });
-        logger_1.default.info('Quiz submitted successfully', { userId, quizId, score, passed });
+        logger_1.default.info('Quiz submitted successfully', { userId, quizId, score, passed, timeSpent });
         res.json({
             success: true,
             score,
@@ -530,7 +677,7 @@ const submitQuiz = async (req, res) => {
             correctAnswers,
             passingScore,
             passed,
-            message: 'Quiz completed successfully'
+            message: 'Quiz submitted successfully'
         });
     }
     catch (error) {
@@ -639,8 +786,8 @@ const markLevelAsCompleted = async (req, res) => {
         logger_1.default.info('Level marked as completed', { userId, levelId, certificateUrl });
         res.json({
             success: true,
-            message: 'Level completed successfully',
-            certificateUrl
+            certificateUrl,
+            message: 'Level completed successfully'
         });
     }
     catch (error) {

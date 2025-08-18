@@ -36,7 +36,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getRandomLevelQuestions = exports.deleteQuizValidity = exports.updateQuizValidity = exports.createQuizValidity = exports.getQuizValidity = exports.deleteLevelSchedule = exports.updateLevelSchedule = exports.createLevelSchedule = exports.getLevelSchedules = exports.deleteCourseLevel = exports.updateCourseTitle = exports.deleteQuiz = exports.updateQuiz = exports.deleteNote = exports.updateNote = exports.deleteVideo = exports.updateVideo = exports.setCourseLevels = exports.getCourseLevels = exports.getPassingMarks = exports.setPassingMarks = exports.getAllCourses = exports.addQuiz = exports.addNote = exports.addVideo = exports.getAnalyticsData = exports.sendGlobalNotification = exports.updateEvent = exports.getAllEvents = exports.createGlobalEvent = exports.deleteDistrictAdmin = exports.updateDistrictAdmin = exports.createDistrictAdmin = exports.getDistrictAdmins = exports.getAllStudents = exports.getDistrictPerformance = exports.getDashboardStats = void 0;
+exports.getTopStudentsAnalytics = exports.getCourses = exports.getTopStudentsByClass = exports.deleteCompletionMessage = exports.updateCompletionMessage = exports.createCompletionMessage = exports.getAllCompletionMessages = exports.getRandomLevelQuestions = exports.deleteQuizValidity = exports.updateQuizValidity = exports.createQuizValidity = exports.getQuizValidity = exports.deleteLevelSchedule = exports.updateLevelSchedule = exports.createLevelSchedule = exports.getLevelSchedules = exports.deleteCourseLevel = exports.updateCourseTitle = exports.deleteQuiz = exports.updateQuiz = exports.getTopStudents = exports.deleteNote = exports.updateNote = exports.deleteVideo = exports.updateVideo = exports.setCourseLevels = exports.getCourseLevels = exports.getPassingMarks = exports.setPassingMarks = exports.getAllCourses = exports.addQuiz = exports.addNote = exports.addVideo = exports.getAnalyticsData = exports.sendGlobalNotification = exports.updateEvent = exports.getAllEvents = exports.createGlobalEvent = exports.deleteDistrictAdmin = exports.updateDistrictAdmin = exports.createDistrictAdmin = exports.getDistrictAdmins = exports.getAllStudents = exports.getDistrictPerformance = exports.getDashboardStats = void 0;
 const client_1 = require("../prisma/client");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const xlsx = __importStar(require("xlsx"));
@@ -941,12 +941,18 @@ const addVideo = async (req, res) => {
 };
 exports.addVideo = addVideo;
 /**
- * Adds a PDF note to a course by uploading it to AWS S3.
+ * Adds a note to a course.
  */
 const addNote = async (req, res) => {
     const { class: classLevel, level, title, url } = req.body;
-    if (!classLevel || !level || !title || !url) {
-        return res.status(400).json({ message: 'Class, level, title, and url are required.' });
+    if (!classLevel || !level) {
+        return res.status(400).json({ message: 'Class and level are required.' });
+    }
+    if (!title) {
+        return res.status(400).json({ message: 'Title is required.' });
+    }
+    if (!url) {
+        return res.status(400).json({ message: 'URL is required.' });
     }
     try {
         const course = await findOrCreateCourse(classLevel, level);
@@ -957,7 +963,10 @@ const addNote = async (req, res) => {
                 url,
             },
         });
-        res.status(201).json(newNote);
+        res.status(201).json({
+            message: 'Note created successfully.',
+            note: newNote,
+        });
     }
     catch (error) {
         console.error("Error adding note:", error);
@@ -965,9 +974,6 @@ const addNote = async (req, res) => {
     }
 };
 exports.addNote = addNote;
-/**
- * Creates a quiz by parsing an uploaded Excel file.
- */
 const addQuiz = async (req, res) => {
     const { class: classLevel, level } = req.body;
     const file = req.file;
@@ -976,7 +982,7 @@ const addQuiz = async (req, res) => {
     }
     try {
         const course = await findOrCreateCourse(classLevel, level);
-        // --- Robust Excel Parsing Logic ---
+        // --- Enhanced Excel Parsing Logic with Formatting Preservation ---
         const workbook = xlsx.read(file.buffer, { type: 'buffer' });
         const sheetName = workbook.SheetNames[0];
         if (!sheetName) {
@@ -987,34 +993,61 @@ const addQuiz = async (req, res) => {
             return res.status(400).json({ message: `Sheet '${sheetName}' not found in the Excel file.` });
         }
         const quizData = xlsx.utils.sheet_to_json(worksheet, { header: 1 });
+        const range = xlsx.utils.decode_range(worksheet['!ref'] || 'A1');
         if (quizData.length < 1) {
             return res.status(400).json({ message: 'Excel file must contain at least one question.' });
         }
         const questionsToCreate = [];
-        // Start from 0 to process all rows, assuming no header
+        // Process each row with formatting extraction
         for (let i = 0; i < quizData.length; i++) {
             const row = quizData[i];
             if (!row || row.length < 6 || row.slice(0, 6).some(cell => cell === null || cell === undefined)) {
                 // Skip incomplete or empty rows
                 continue;
             }
-            const [q, oA, oB, oC, oD, cO] = row;
+            const [q, oA, oB, oC, oD, cO, explanation] = row;
             const question = String(q).trim();
             const optionA = String(oA).trim();
             const optionB = String(oB).trim();
             const optionC = String(oC).trim();
             const optionD = String(oD).trim();
             const correctOption = String(cO).trim();
+            const explanationText = explanation ? String(explanation).trim() : '';
             if (!question || !optionA || !optionB || !optionC || !optionD || !correctOption) {
                 // Skip rows where essential data is empty after trimming
                 continue;
             }
-            questionsToCreate.push({ question, optionA, optionB, optionC, optionD, correctOption });
+            // Extract formatted content for each field
+            const questionFormatted = extractFormattedContent(worksheet, i, 0);
+            const optionAFormatted = extractFormattedContent(worksheet, i, 1);
+            const optionBFormatted = extractFormattedContent(worksheet, i, 2);
+            const optionCFormatted = extractFormattedContent(worksheet, i, 3);
+            const optionDFormatted = extractFormattedContent(worksheet, i, 4);
+            const explanationFormatted = explanation ? extractFormattedContent(worksheet, i, 6) : null;
+            // Determine difficulty based on question content or other criteria
+            const difficulty = determineDifficulty(question, [optionA, optionB, optionC, optionD]);
+            questionsToCreate.push({
+                question,
+                optionA,
+                optionB,
+                optionC,
+                optionD,
+                correctOption,
+                questionFormatted: JSON.stringify(questionFormatted),
+                optionAFormatted: JSON.stringify(optionAFormatted),
+                optionBFormatted: JSON.stringify(optionBFormatted),
+                optionCFormatted: JSON.stringify(optionCFormatted),
+                optionDFormatted: JSON.stringify(optionDFormatted),
+                explanationFormatted: explanationFormatted ? JSON.stringify(explanationFormatted) : undefined,
+                difficulty,
+                points: 1,
+                timeLimit: 60
+            });
         }
         if (questionsToCreate.length === 0) {
             return res.status(400).json({ message: 'No valid questions could be parsed from the file. Please check the format.' });
         }
-        // --- End of Parsing Logic ---
+        // --- End of Enhanced Parsing Logic ---
         const newQuiz = await client_1.prisma.$transaction(async (tx) => {
             const questionBank = await tx.questionBank.create({
                 data: {
@@ -1032,8 +1065,13 @@ const addQuiz = async (req, res) => {
             });
         });
         res.status(201).json({
-            message: `Quiz with ${questionsToCreate.length} questions created successfully.`,
+            message: `Quiz with ${questionsToCreate.length} questions created successfully with formatting preserved.`,
             quiz: newQuiz,
+            formattingInfo: {
+                preserved: true,
+                fieldsWithFormatting: ['question', 'options', 'explanation'],
+                totalQuestions: questionsToCreate.length
+            }
         });
     }
     catch (error) {
@@ -1042,6 +1080,59 @@ const addQuiz = async (req, res) => {
     }
 };
 exports.addQuiz = addQuiz;
+// Helper function to extract formatted content from Excel cells
+function extractFormattedContent(worksheet, row, col) {
+    const cellAddress = xlsx.utils.encode_cell({ r: row, c: col });
+    const cell = worksheet[cellAddress];
+    if (!cell) {
+        return { text: '' };
+    }
+    const content = {
+        text: cell.v || '',
+        formatting: {}
+    };
+    // Extract cell formatting if available
+    if (cell.s) {
+        const style = cell.s;
+        if (style.font) {
+            content.formatting.bold = style.font.bold;
+            content.formatting.italic = style.font.italic;
+            content.formatting.underline = style.font.underline;
+            content.formatting.fontSize = style.font.sz;
+            content.formatting.fontFamily = style.font.name;
+            content.formatting.color = style.font.color?.rgb;
+        }
+        if (style.fill) {
+            content.formatting.backgroundColor = style.fill.fgColor?.rgb;
+        }
+        if (style.alignment) {
+            content.formatting.alignment = style.alignment.horizontal;
+            content.formatting.indentation = style.alignment.indent;
+        }
+    }
+    // Check for rich text formatting
+    if (cell.richText) {
+        // Handle rich text formatting
+        content.text = cell.richText.map((rt) => rt.text).join('');
+        // You can extract individual formatting for each rich text segment
+    }
+    return content;
+}
+// Helper function to determine question difficulty
+function determineDifficulty(question, options) {
+    const questionLength = question.length;
+    const avgOptionLength = options.reduce((sum, opt) => sum + opt.length, 0) / options.length;
+    // Simple heuristic based on content length and complexity
+    if (questionLength > 200 || avgOptionLength > 100) {
+        return 'hard';
+    }
+    else if (questionLength > 100 || avgOptionLength > 50) {
+        return 'medium';
+    }
+    else {
+        return 'easy';
+    }
+}
 /**
  * Retrieves a list of all courses, with optional filtering by class and level.
  * Includes counts of associated videos, notes, and quizzes for each course.
@@ -1093,10 +1184,10 @@ const getAllCourses = async (req, res) => {
                     thumbnail: v.thumbnail,
                     iframeSnippet: v.iframeSnippet
                 })),
-                pdfs: course.pdfs.map(p => ({
-                    id: p.id,
-                    title: p.title,
-                    url: p.url
+                notes: course.pdfs.map(n => ({
+                    id: n.id,
+                    title: n.title,
+                    url: n.url
                 })),
                 quizzes: course.quizzes.map(q => ({
                     id: q.id,
@@ -1315,13 +1406,7 @@ const deleteVideo = async (req, res) => {
 exports.deleteVideo = deleteVideo;
 const updateNote = async (req, res) => {
     const { id } = req.params;
-    // Accept title and url (from file upload or direct url)
-    const title = req.body.title;
-    let url = req.body.url;
-    // If a file is uploaded, use its location (assuming upload middleware sets req.file)
-    if (req.file && 'location' in req.file && req.file.location) {
-        url = req.file.location;
-    }
+    const { class: classLevel, level, title, url } = req.body;
     if (!id) {
         return res.status(400).json({ message: 'Note ID is required.' });
     }
@@ -1329,6 +1414,21 @@ const updateNote = async (req, res) => {
         return res.status(400).json({ message: 'At least one of title or url is required.' });
     }
     try {
+        // First, find the note to verify it exists
+        const existingNote = await client_1.prisma.coursePDF.findUnique({
+            where: { id },
+            include: { course: true }
+        });
+        if (!existingNote) {
+            return res.status(404).json({ message: 'Note not found.' });
+        }
+        // If class and level are provided, verify they match the note's course
+        if (classLevel && level) {
+            const course = await findOrCreateCourse(classLevel, level);
+            if (existingNote.courseId !== course.id) {
+                return res.status(400).json({ message: 'Note does not belong to the specified class and level.' });
+            }
+        }
         const data = {};
         if (title)
             data.title = title;
@@ -1338,7 +1438,10 @@ const updateNote = async (req, res) => {
             where: { id },
             data
         });
-        res.status(200).json(updated);
+        res.status(200).json({
+            message: 'Note updated successfully.',
+            note: updated
+        });
     }
     catch (error) {
         console.error("Error updating note:", error);
@@ -1347,7 +1450,7 @@ const updateNote = async (req, res) => {
 };
 exports.updateNote = updateNote;
 /**
- * Deletes a specific note (PDF) from a course.
+ * Deletes a specific note from a course.
  */
 const deleteNote = async (req, res) => {
     const { id } = req.params;
@@ -1356,43 +1459,187 @@ const deleteNote = async (req, res) => {
     }
     try {
         // Check if note exists
-        const note = await client_1.prisma.coursePDF.findUnique({
-            where: { id },
-            include: {
-                pdfProgresses: true
-            }
+        const note = await client_1.prisma.courseNote.findUnique({
+            where: { id }
         });
         if (!note) {
             return res.status(404).json({ message: 'Note not found.' });
         }
-        // Begin a transaction to ensure all related data is deleted properly
-        await client_1.prisma.$transaction(async (prismaClient) => {
-            // Delete PDF progress records if they exist
-            if (note.pdfProgresses.length > 0) {
-                await prismaClient.pdfProgress.deleteMany({
-                    where: { pdfId: id }
-                });
-            }
-            // Delete the note
-            await prismaClient.coursePDF.delete({
-                where: { id }
-            });
+        // Delete the note
+        await client_1.prisma.courseNote.delete({
+            where: { id }
         });
         res.status(200).json({
             message: 'Note deleted successfully.',
-            deletedNote: {
-                id: note.id,
-                title: note.title,
-                courseId: note.courseId
-            }
         });
     }
     catch (error) {
         console.error("Error deleting note:", error);
-        res.status(500).json({ message: 'Internal server error while deleting note' });
+        res.status(500).json({ message: 'Internal server error' });
     }
 };
 exports.deleteNote = deleteNote;
+/**
+ * =================================================================
+ *                  TOP STUDENTS MANAGEMENT
+ * =================================================================
+ */
+const getTopStudents = async (req, res) => {
+    try {
+        const { class: className, level, district, topCount } = req.query;
+        // Validate required parameters
+        if (!className || !level || !topCount) {
+            return res.status(400).json({
+                success: false,
+                message: 'class, level, and topCount are required parameters'
+            });
+        }
+        const limit = Math.min(parseInt(topCount) || 10, 100); // Max 100 students
+        // Build where conditions for students
+        const whereConditions = {
+            role: 'student',
+            classLevel: className,
+            examAttempts: {
+                some: {
+                    score: { not: null },
+                    completedAt: { not: null },
+                    quiz: {
+                        course: {
+                            classLevel: className,
+                            ...(level && { level: level })
+                        }
+                    }
+                }
+            }
+        };
+        // Add district filter if specified and not "all"
+        if (district && district !== 'all') {
+            whereConditions.districtId = district;
+        }
+        // Get students with their exam attempts and related data
+        const students = await client_1.prisma.user.findMany({
+            where: whereConditions,
+            select: {
+                id: true,
+                name: true,
+                mobile: true,
+                email: true,
+                classLevel: true,
+                institution: true,
+                district: {
+                    select: {
+                        id: true,
+                        name: true
+                    }
+                },
+                examAttempts: {
+                    where: {
+                        score: { not: null },
+                        completedAt: { not: null },
+                        quiz: {
+                            course: {
+                                classLevel: className,
+                                ...(level && { level: level })
+                            }
+                        }
+                    },
+                    select: {
+                        id: true,
+                        score: true,
+                        completedAt: true,
+                        quiz: {
+                            select: {
+                                course: {
+                                    select: {
+                                        level: true,
+                                        classLevel: true
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    orderBy: {
+                        score: 'desc'
+                    }
+                }
+            }
+        });
+        // Process and rank students
+        const processedStudents = students
+            .map(student => {
+            if (student.examAttempts.length === 0)
+                return null;
+            // Get the highest score attempt for this specific class and level
+            const highestScoreAttempt = student.examAttempts[0];
+            if (!highestScoreAttempt)
+                return null;
+            // Calculate average score across all attempts for this class and level
+            const totalScore = student.examAttempts.reduce((sum, attempt) => sum + (attempt.score || 0), 0);
+            const averageScore = totalScore / student.examAttempts.length;
+            // Determine category - UG, PG, PhD, Working/Other are considered as one category
+            let category = 'Other';
+            if (student.institution === 'high_school' || student.institution === 'senior_secondary') {
+                category = student.classLevel || 'Other';
+            }
+            else if (student.institution === 'college' || student.institution === 'working') {
+                category = 'UG/PG/PhD/Working';
+            }
+            return {
+                id: student.id,
+                name: student.name,
+                phone: student.mobile,
+                email: student.email,
+                districtName: student.district?.name || 'Unknown',
+                className: student.classLevel || 'Unknown',
+                category,
+                levelName: `Level ${level}`,
+                score: highestScoreAttempt.score,
+                rank: 0, // Will be set after sorting
+                completedAt: highestScoreAttempt.completedAt,
+                totalLevelsCompleted: student.examAttempts.length,
+                averageScore: Math.round(averageScore * 10) / 10
+            };
+        })
+            .filter(student => student !== null)
+            .sort((a, b) => (b?.score || 0) - (a?.score || 0))
+            .slice(0, limit)
+            .map((student, index) => ({
+            ...student,
+            rank: index + 1
+        }));
+        // Calculate summary statistics
+        const allScores = processedStudents.map(s => s?.score || 0);
+        const summary = {
+            totalStudents: processedStudents.length,
+            averageScore: allScores.length > 0 ? Math.round((allScores.reduce((a, b) => a + b, 0) / allScores.length) * 10) / 10 : 0,
+            districtsCount: new Set(processedStudents.map(s => s?.districtName)).size,
+            classesCount: 1, // Since we're filtering by specific class
+            topScore: allScores.length > 0 ? Math.max(...allScores) : 0,
+            lowestScore: allScores.length > 0 ? Math.min(...allScores) : 0,
+            filterApplied: {
+                class: className,
+                level: `Level ${level}`,
+                district: district === 'all' ? 'All Districts' : district,
+                topCount: parseInt(topCount)
+            }
+        };
+        res.status(200).json({
+            success: true,
+            data: {
+                students: processedStudents,
+                summary
+            }
+        });
+    }
+    catch (error) {
+        logger_1.default.error('Error fetching top students:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Internal server error'
+        });
+    }
+};
+exports.getTopStudents = getTopStudents;
 const updateQuiz = async (req, res) => {
     const { id } = req.params;
     // Accept numQuestions and passingMarks (passPercentage)
@@ -1435,7 +1682,7 @@ const deleteQuiz = async (req, res) => {
         const course = await client_1.prisma.course.findFirst({
             where: {
                 classLevel: classLevel,
-                level: level
+                ...(level && { level: level })
             },
             include: {
                 quizzes: {
@@ -2115,7 +2362,7 @@ const getRandomLevelQuestions = async (req, res) => {
         const course = await client_1.prisma.course.findFirst({
             where: {
                 classLevel: classLevel,
-                level: level
+                ...(level && { level: level })
             },
             include: {
                 quizzes: {
@@ -2175,3 +2422,576 @@ const getRandomLevelQuestions = async (req, res) => {
     }
 };
 exports.getRandomLevelQuestions = getRandomLevelQuestions;
+// =================================================================
+//                  COMPLETION MESSAGES MANAGEMENT
+// =================================================================
+const getAllCompletionMessages = async (req, res) => {
+    try {
+        const completionMessages = await client_1.prisma.completionMessage.findMany({
+            orderBy: [
+                { classId: 'asc' },
+                { levelId: 'asc' }
+            ]
+        });
+        logger_1.default.info('Fetched all completion messages');
+        res.status(200).json({
+            success: true,
+            data: completionMessages
+        });
+    }
+    catch (error) {
+        logger_1.default.error('Error fetching completion messages:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Internal server error'
+        });
+    }
+};
+exports.getAllCompletionMessages = getAllCompletionMessages;
+const createCompletionMessage = async (req, res) => {
+    try {
+        const { classId, levelId, message } = req.body;
+        const userId = req.user?.id;
+        if (!classId || !levelId || !message) {
+            return res.status(400).json({
+                success: false,
+                message: 'classId, levelId, and message are required'
+            });
+        }
+        if (!userId) {
+            return res.status(401).json({
+                success: false,
+                message: 'User not authenticated'
+            });
+        }
+        // Check if a completion message already exists for this class and level
+        const existingMessage = await client_1.prisma.completionMessage.findUnique({
+            where: {
+                classId_levelId: {
+                    classId,
+                    levelId
+                }
+            }
+        });
+        if (existingMessage) {
+            return res.status(409).json({
+                success: false,
+                message: 'A completion message already exists for this class and level'
+            });
+        }
+        const completionMessage = await client_1.prisma.completionMessage.create({
+            data: {
+                classId,
+                levelId,
+                message,
+                createdBy: userId,
+                updatedBy: userId
+            }
+        });
+        logger_1.default.info(`Created completion message for ${classId} - ${levelId}`);
+        res.status(201).json({
+            success: true,
+            data: completionMessage
+        });
+    }
+    catch (error) {
+        logger_1.default.error('Error creating completion message:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Internal server error'
+        });
+    }
+};
+exports.createCompletionMessage = createCompletionMessage;
+const updateCompletionMessage = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { classId, levelId, message } = req.body;
+        const userId = req.user?.id;
+        if (!message) {
+            return res.status(400).json({
+                success: false,
+                message: 'message is required'
+            });
+        }
+        if (!userId) {
+            return res.status(401).json({
+                success: false,
+                message: 'User not authenticated'
+            });
+        }
+        // Check if the completion message exists
+        const existingMessage = await client_1.prisma.completionMessage.findUnique({
+            where: { id }
+        });
+        if (!existingMessage) {
+            return res.status(404).json({
+                success: false,
+                message: 'Completion message not found'
+            });
+        }
+        const updatedMessage = await client_1.prisma.completionMessage.update({
+            where: { id },
+            data: {
+                message,
+                updatedBy: userId,
+                updatedAt: new Date()
+            }
+        });
+        logger_1.default.info(`Updated completion message: ${id}`);
+        res.status(200).json({
+            success: true,
+            data: updatedMessage
+        });
+    }
+    catch (error) {
+        logger_1.default.error('Error updating completion message:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Internal server error'
+        });
+    }
+};
+exports.updateCompletionMessage = updateCompletionMessage;
+const deleteCompletionMessage = async (req, res) => {
+    try {
+        const { id } = req.params;
+        // Check if the completion message exists
+        const existingMessage = await client_1.prisma.completionMessage.findUnique({
+            where: { id }
+        });
+        if (!existingMessage) {
+            return res.status(404).json({
+                success: false,
+                message: 'Completion message not found'
+            });
+        }
+        await client_1.prisma.completionMessage.delete({
+            where: { id }
+        });
+        logger_1.default.info(`Deleted completion message: ${id}`);
+        res.status(200).json({
+            success: true,
+            message: 'Completion message deleted successfully'
+        });
+    }
+    catch (error) {
+        logger_1.default.error('Error deleting completion message:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Internal server error'
+        });
+    }
+};
+exports.deleteCompletionMessage = deleteCompletionMessage;
+const getTopStudentsByClass = async (req, res) => {
+    try {
+        const { level, district, topCount = 10 } = req.query;
+        const limit = Math.min(parseInt(topCount) || 10, 100);
+        // Validate required parameters
+        if (!level) {
+            return res.status(400).json({
+                success: false,
+                message: 'level is required parameter'
+            });
+        }
+        // Type assertion after validation
+        const levelString = level;
+        // Get all classes that have students for this level
+        const classLevels = await client_1.prisma.user.groupBy({
+            by: ['classLevel'],
+            where: {
+                role: 'student',
+                classLevel: { not: null },
+                examAttempts: {
+                    some: {
+                        score: { not: null },
+                        completedAt: { not: null },
+                        quiz: {
+                            course: {
+                                level: levelString
+                            }
+                        }
+                    }
+                },
+                ...(district && district !== 'all' && { districtId: district })
+            }
+        });
+        // Get top students for each class
+        const classesWithStudents = await Promise.all(classLevels.map(async (classLevel) => {
+            const students = await client_1.prisma.user.findMany({
+                where: {
+                    role: 'student',
+                    classLevel: classLevel.classLevel,
+                    examAttempts: {
+                        some: {
+                            score: { not: null },
+                            completedAt: { not: null },
+                            quiz: {
+                                course: {
+                                    classLevel: classLevel.classLevel,
+                                    level: levelString
+                                }
+                            }
+                        }
+                    },
+                    ...(district && district !== 'all' && { districtId: district })
+                },
+                select: {
+                    id: true,
+                    name: true,
+                    mobile: true,
+                    email: true,
+                    classLevel: true,
+                    institution: true,
+                    district: {
+                        select: {
+                            name: true
+                        }
+                    },
+                    examAttempts: {
+                        where: {
+                            score: { not: null },
+                            completedAt: { not: null },
+                            quiz: {
+                                course: {
+                                    classLevel: classLevel.classLevel,
+                                    level: levelString
+                                }
+                            }
+                        },
+                        select: {
+                            id: true,
+                            score: true,
+                            completedAt: true
+                        },
+                        orderBy: {
+                            score: 'desc'
+                        }
+                    }
+                }
+            });
+            // Process students for this class
+            const processedStudents = students
+                .map(student => {
+                const examAttempts = student.examAttempts || [];
+                if (examAttempts.length === 0)
+                    return null;
+                const highestScoreAttempt = examAttempts[0];
+                if (!highestScoreAttempt)
+                    return null;
+                const totalScore = examAttempts.reduce((sum, attempt) => sum + (attempt.score || 0), 0);
+                const averageScore = totalScore / examAttempts.length;
+                // Determine category
+                let category = 'Other';
+                if (student.institution === 'high_school' || student.institution === 'senior_secondary') {
+                    category = student.classLevel || 'Other';
+                }
+                else if (student.institution === 'college' || student.institution === 'working') {
+                    category = 'UG/PG/PhD/Working';
+                }
+                return {
+                    id: student.id,
+                    name: student.name,
+                    phone: student.mobile,
+                    email: student.email,
+                    districtName: student.district?.name || 'Unknown',
+                    className: student.classLevel || 'Unknown',
+                    category,
+                    levelName: `Level ${levelString}`,
+                    score: highestScoreAttempt.score,
+                    rank: 0, // Will be set after sorting
+                    completedAt: highestScoreAttempt.completedAt,
+                    totalLevelsCompleted: examAttempts.length,
+                    averageScore: Math.round(averageScore * 10) / 10
+                };
+            })
+                .filter(student => student !== null)
+                .sort((a, b) => (b?.score || 0) - (a?.score || 0))
+                .slice(0, limit)
+                .map((student, index) => ({
+                ...student,
+                rank: index + 1
+            }));
+            // Calculate class summary
+            const classScores = processedStudents.map(s => s?.score || 0);
+            const summary = {
+                totalStudents: processedStudents.length,
+                averageScore: classScores.length > 0 ? Math.round((classScores.reduce((a, b) => a + b, 0) / classScores.length) * 10) / 10 : 0,
+                topScore: classScores.length > 0 ? Math.max(...classScores) : 0,
+                lowestScore: classScores.length > 0 ? Math.min(...classScores) : 0
+            };
+            return {
+                className: classLevel.classLevel,
+                students: processedStudents,
+                summary
+            };
+        }));
+        // Calculate overall summary
+        const allStudents = classesWithStudents.flatMap(c => c.students);
+        const allScores = allStudents.map(s => s?.score || 0);
+        const overallSummary = {
+            totalClasses: classesWithStudents.length,
+            totalStudents: allStudents.length,
+            overallAverageScore: allScores.length > 0 ? Math.round((allScores.reduce((a, b) => a + b, 0) / allScores.length) * 10) / 10 : 0,
+            filterApplied: {
+                level: `Level ${levelString}`,
+                district: district === 'all' ? 'All Districts' : district,
+                topCount: parseInt(topCount)
+            }
+        };
+        res.status(200).json({
+            success: true,
+            data: {
+                classes: classesWithStudents,
+                summary: overallSummary
+            }
+        });
+    }
+    catch (error) {
+        logger_1.default.error('Error fetching top students by class:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Internal server error'
+        });
+    }
+};
+exports.getTopStudentsByClass = getTopStudentsByClass;
+const getCourses = async (req, res) => {
+    try {
+        const courses = await client_1.prisma.course.findMany({
+            select: {
+                id: true,
+                level: true,
+                title: true,
+                description: true,
+                classLevel: true,
+                isPublished: true,
+                createdAt: true,
+                _count: {
+                    select: {
+                        studentProgress: {
+                            where: {
+                                status: 'completed'
+                            }
+                        }
+                    }
+                }
+            },
+            orderBy: [
+                { classLevel: 'asc' },
+                { level: 'asc' }
+            ]
+        });
+        // Calculate average scores for each course
+        const coursesWithStats = await Promise.all(courses.map(async (course) => {
+            const examAttempts = await client_1.prisma.examAttempt.findMany({
+                where: {
+                    quiz: {
+                        courseId: course.id
+                    },
+                    score: { not: null }
+                },
+                select: {
+                    score: true
+                }
+            });
+            const averageScore = examAttempts.length > 0
+                ? Math.round((examAttempts.reduce((sum, attempt) => sum + (attempt.score || 0), 0) / examAttempts.length) * 10) / 10
+                : 0;
+            return {
+                id: course.id,
+                name: `Level ${course.level}`,
+                description: course.title,
+                orderIndex: parseInt(course.level.replace(/\D/g, '')) || 0,
+                isActive: course.isPublished,
+                studentCount: course._count.studentProgress,
+                averageScore
+            };
+        }));
+        res.status(200).json({
+            success: true,
+            data: coursesWithStats
+        });
+    }
+    catch (error) {
+        logger_1.default.error('Error fetching courses:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Internal server error'
+        });
+    }
+};
+exports.getCourses = getCourses;
+const getTopStudentsAnalytics = async (req, res) => {
+    try {
+        const { districtId, courseLevel, timeRange = 'month' } = req.query;
+        // Build where conditions for exam attempts
+        const attemptWhereConditions = {
+            score: { not: null },
+            completedAt: { not: null }
+        };
+        if (courseLevel) {
+            attemptWhereConditions.quiz = {
+                course: {
+                    level: courseLevel
+                }
+            };
+        }
+        // Add time range filter
+        const now = new Date();
+        let startDate;
+        switch (timeRange) {
+            case 'week':
+                startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                break;
+            case 'month':
+                startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+                break;
+            case 'quarter':
+                startDate = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
+                break;
+            case 'year':
+                startDate = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
+                break;
+            default:
+                startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+        }
+        attemptWhereConditions.completedAt = { gte: startDate };
+        // Get all exam attempts with student and district info
+        const examAttempts = await client_1.prisma.examAttempt.findMany({
+            where: attemptWhereConditions,
+            select: {
+                score: true,
+                completedAt: true,
+                student: {
+                    select: {
+                        id: true,
+                        institution: true,
+                        classLevel: true,
+                        district: {
+                            select: {
+                                name: true
+                            }
+                        }
+                    }
+                },
+                quiz: {
+                    select: {
+                        course: {
+                            select: {
+                                level: true,
+                                classLevel: true
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        // Filter by district if specified
+        const filteredAttempts = districtId
+            ? examAttempts.filter(attempt => attempt.student.district?.name === districtId)
+            : examAttempts;
+        // Calculate score distribution
+        const scoreDistribution = {
+            '90-100': 0,
+            '80-89': 0,
+            '70-79': 0,
+            '60-69': 0,
+            '50-59': 0
+        };
+        filteredAttempts.forEach(attempt => {
+            const score = attempt.score || 0;
+            if (score >= 90)
+                scoreDistribution['90-100']++;
+            else if (score >= 80)
+                scoreDistribution['80-89']++;
+            else if (score >= 70)
+                scoreDistribution['70-79']++;
+            else if (score >= 60)
+                scoreDistribution['60-69']++;
+            else if (score >= 50)
+                scoreDistribution['50-59']++;
+        });
+        // Calculate category breakdown
+        const categoryBreakdown = {};
+        filteredAttempts.forEach(attempt => {
+            let category = 'Other';
+            if (attempt.student.institution === 'high_school' || attempt.student.institution === 'senior_secondary') {
+                category = attempt.student.classLevel || 'Other';
+            }
+            else if (attempt.student.institution === 'college' || attempt.student.institution === 'working') {
+                category = 'UG/PG/PhD/Working';
+            }
+            categoryBreakdown[category] = (categoryBreakdown[category] || 0) + 1;
+        });
+        // Calculate district performance
+        const districtStats = new Map();
+        filteredAttempts.forEach(attempt => {
+            const districtName = attempt.student.district?.name || 'Unknown';
+            if (!districtStats.has(districtName)) {
+                districtStats.set(districtName, { scores: [], count: 0 });
+            }
+            const stats = districtStats.get(districtName);
+            stats.scores.push(attempt.score || 0);
+            stats.count++;
+        });
+        const districtPerformance = Array.from(districtStats.entries()).map(([districtName, stats]) => ({
+            districtName,
+            averageScore: Math.round((stats.scores.reduce((a, b) => a + b, 0) / stats.scores.length) * 10) / 10,
+            topStudentsCount: stats.count
+        }));
+        // Calculate class performance
+        const classStats = new Map();
+        filteredAttempts.forEach(attempt => {
+            const className = attempt.student.classLevel || 'Unknown';
+            if (!classStats.has(className)) {
+                classStats.set(className, { scores: [], count: 0 });
+            }
+            const stats = classStats.get(className);
+            stats.scores.push(attempt.score || 0);
+            stats.count++;
+        });
+        const classPerformance = Array.from(classStats.entries()).map(([className, stats]) => ({
+            className,
+            averageScore: Math.round((stats.scores.reduce((a, b) => a + b, 0) / stats.scores.length) * 10) / 10,
+            topStudentsCount: stats.count
+        }));
+        // Calculate weekly trends (simplified - last 4 weeks)
+        const trends = {
+            weekly: []
+        };
+        for (let i = 3; i >= 0; i--) {
+            const weekStart = new Date(now.getTime() - (i * 7 * 24 * 60 * 60 * 1000));
+            const weekEnd = new Date(weekStart.getTime() + 7 * 24 * 60 * 60 * 1000);
+            const weekAttempts = filteredAttempts.filter(attempt => attempt.completedAt && attempt.completedAt >= weekStart && attempt.completedAt < weekEnd);
+            const weekScores = weekAttempts.map(attempt => attempt.score || 0);
+            const averageScore = weekScores.length > 0
+                ? Math.round((weekScores.reduce((a, b) => a + b, 0) / weekScores.length) * 10) / 10
+                : 0;
+            trends.weekly.push({
+                week: `Week ${4 - i}`,
+                averageScore,
+                topStudentsCount: weekAttempts.length
+            });
+        }
+        res.status(200).json({
+            success: true,
+            data: {
+                scoreDistribution,
+                categoryBreakdown,
+                districtPerformance,
+                classPerformance,
+                trends
+            }
+        });
+    }
+    catch (error) {
+        logger_1.default.error('Error fetching top students analytics:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Internal server error'
+        });
+    }
+};
+exports.getTopStudentsAnalytics = getTopStudentsAnalytics;

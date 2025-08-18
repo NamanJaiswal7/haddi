@@ -15,7 +15,9 @@ import {
   submitQuiz,
   getStudentQuizValidity,
   getStudentRandomQuestions,
-  getStudentNotes
+  getStudentNotes,
+  getCompletionMessage,
+  getStudentCompletionMessage
 } from '../controllers/studentController';
 import { getLevelSchedules } from '../controllers/masterAdminController';
 
@@ -52,5 +54,11 @@ router.get('/level-content/random-questions', asyncHandler(getStudentRandomQuest
 
 // Notes route (for student's level)
 router.get('/notes', asyncHandler(getStudentNotes));
+
+// Completion message route
+router.get('/completion-messages/:classId/:levelId', asyncHandler(getCompletionMessage));
+
+// Completion message route for specific student
+router.get('/completion-messages/student/:studentId/:levelId', asyncHandler(getStudentCompletionMessage));
 
 export default router; 

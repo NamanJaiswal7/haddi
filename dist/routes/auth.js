@@ -16,5 +16,6 @@ router.post('/student-google-signup', (0, asyncHandler_1.asyncHandler)(authContr
 router.post('/student-google-signup-complete', (0, asyncHandler_1.asyncHandler)(authController_1.studentGoogleSignUpComplete));
 router.post('/mobile-student-signin', (0, asyncHandler_1.asyncHandler)(authController_1.mobileStudentSignIn));
 router.post('/complete-registration', (0, asyncHandler_1.asyncHandler)(authController_1.completeRegistration));
+router.post('/google/exchange', (0, asyncHandler_1.asyncHandler)(authController_1.googleOAuthExchange));
 router.get('/student-dashboard', (0, asyncHandler_1.asyncHandler)(authMiddleware_1.authenticateToken), (0, asyncHandler_1.asyncHandler)(authController_1.getStudentDashboard));
 exports.default = router;

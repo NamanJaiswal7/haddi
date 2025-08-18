@@ -28,4 +28,8 @@ router.get('/level-schedules', (0, asyncHandler_1.asyncHandler)(masterAdminContr
 router.get('/quiz-validity', (0, asyncHandler_1.asyncHandler)(studentController_1.getStudentQuizValidity));
 // Random questions route (for student's level)
 router.get('/level-content/random-questions', (0, asyncHandler_1.asyncHandler)(studentController_1.getStudentRandomQuestions));
+// Notes route (for student's level)
+router.get('/notes', (0, asyncHandler_1.asyncHandler)(studentController_1.getStudentNotes));
+// Completion message route
+router.get('/completion-messages/:classId/:levelId', (0, asyncHandler_1.asyncHandler)(studentController_1.getCompletionMessage));
 exports.default = router;

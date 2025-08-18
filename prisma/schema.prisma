@@ -129,6 +129,17 @@ model Question {
   optionC        String
   optionD        String
   correctOption  String
+  
+  // Enhanced fields for formatted content
+  questionFormatted    String? // JSON string containing formatted question content
+  optionAFormatted     String? // JSON string containing formatted option A content
+  optionBFormatted     String? // JSON string containing formatted option B content
+  optionCFormatted     String? // JSON string containing formatted option C content
+  optionDFormatted     String? // JSON string containing formatted option D content
+  explanationFormatted String? // JSON string containing formatted explanation content
+  difficulty          String?  @default("medium") // easy, medium, hard
+  points              Int?     @default(1)
+  timeLimit           Int?     @default(60) // in seconds
 
   questionBank   QuestionBank @relation(fields: [questionBankId], references: [id])
 }
@@ -339,4 +350,18 @@ model QuizValidity {
 
   @@unique([classId, level])
   @@index([classId, level])
+}
+
+model CompletionMessage {
+  id        String   @id @default(cuid())
+  classId   String
+  levelId   String
+  message   String   @db.Text
+  createdBy String
+  updatedBy String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([classId, levelId])
+  @@index([classId, levelId])
 }
