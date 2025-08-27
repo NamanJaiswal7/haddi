@@ -30,7 +30,10 @@ export async function sendEmail(to: string, subject: string, text: string) {
     logger.info('Email sent successfully to %s', to);
     return result;
   } catch (error) {
-    logger.error('Failed to send email to %s: %o', to, error);
+    logger.error('Failed to send email to %s: %s', to, error instanceof Error ? error.message : String(error));
+    if (error instanceof Error && error.stack) {
+      logger.error('Email error stack: %s', error.stack);
+    }
     
     // Re-throw the error so calling code can handle it appropriately
     throw error;

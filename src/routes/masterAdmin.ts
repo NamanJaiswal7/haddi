@@ -47,6 +47,11 @@ import {
     getTopStudentsAnalytics,
     getLevelsByClass
 } from '../controllers/masterAdminController';
+import {
+  getAllDeletionRequests,
+  processDeletionRequest,
+  completeDeletionRequest
+} from '../controllers/deletionRequestController';
 import { authenticateToken, isMasterAdmin } from '../middleware/authMiddleware';
 import { asyncHandler } from '../utils/asyncHandler';
 import { upload } from '../middleware/uploadMiddleware';
@@ -414,5 +419,32 @@ router.get('/top-students/analytics', asyncHandler(getTopStudentsAnalytics));
  * @access Private (Master Admin)
  */
 router.get('/levels-by-class', asyncHandler(getLevelsByClass));
+
+/**
+ * =================================================================
+ *                  DELETION REQUESTS MANAGEMENT
+ * =================================================================
+ */
+
+/**
+ * @route GET /api/master-admin/deletion-requests
+ * @description Get all deletion requests with pagination and filtering
+ * @access Private (Master Admin)
+ */
+router.get('/deletion-requests', getAllDeletionRequests);
+
+/**
+ * @route PUT /api/master-admin/deletion-requests/:requestId/process
+ * @description Start processing a deletion request
+ * @access Private (Master Admin)
+ */
+router.put('/deletion-requests/:requestId/process', processDeletionRequest);
+
+/**
+ * @route PUT /api/master-admin/deletion-requests/:requestId/complete
+ * @description Mark a deletion request as completed
+ * @access Private (Master Admin)
+ */
+router.put('/deletion-requests/:requestId/complete', completeDeletionRequest);
 
 export default router; 

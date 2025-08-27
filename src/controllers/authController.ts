@@ -122,12 +122,15 @@ export const studentSignUp = async (req: Request, res: Response) => {
       res.status(200).json({ message: 'OTP sent to email successfully.' });
     } catch (emailError: any) {
       // Email failed - log error and return appropriate response
-      logger.error('Failed to send OTP email: %o', emailError);
+      logger.error('Failed to send OTP email: %s', emailError instanceof Error ? emailError.message : String(emailError));
+      if (emailError instanceof Error && emailError.stack) {
+        logger.error('Email error stack: %s', emailError.stack);
+      }
       
       if (emailError.message && emailError.message.includes('Email service not configured')) {
         res.status(500).json({ message: 'Email service not configured.', error: 'Missing email credentials' });
       } else {
-        res.status(500).json({ message: 'Failed to send OTP email.', error: 'Email service error' });
+        res.status(500).json({ message: 'Failed to send OTP email.', error: emailError instanceof Error ? emailError.message : String(emailError) });
       }
     }
   } catch (error) {

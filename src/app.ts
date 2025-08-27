@@ -7,6 +7,7 @@ import courseRoutes from './routes/course';
 import masterAdminRoutes from './routes/masterAdmin';
 import districtRoutes from './routes/district';
 import studentRoutes from './routes/student';
+import deletionRequestRoutes from './routes/deletionRequest';
 import { requestLogger } from './middleware/requestLogger';
 
 dotenv.config();
@@ -64,5 +65,6 @@ app.use('/api/courses', courseRoutes);
 app.use('/api/master-admin', masterAdminRoutes);
 app.use('/api/districts', districtRoutes);
 app.use('/api/student', studentRoutes);
+app.use('/api/deletion-requests', deletionRequestRoutes);
 
 export default app;

@@ -35,6 +35,7 @@ model User {
   eventRegistrations EventParticipant[]
   videoProgresses VideoProgress[]
   pdfProgresses   PdfProgress[]
+  deletionRequests DeletionRequest[]
 
   district       District? @relation(fields: [districtId], references: [id])
 }
@@ -364,4 +365,41 @@ model CompletionMessage {
 
   @@unique([classId, levelId])
   @@index([classId, levelId])
+}
+
+model DeletionRequest {
+  id                    String   @id @default(cuid())
+  deletionType          DeletionType
+  userInfo              Json     // Stores name, email, phone, studentId
+  dataTypes             String[] // Array of data types to delete
+  reason                String?
+  status                DeletionStatus @default(PENDING)
+  verificationCode      String?  @unique
+  verificationExpiresAt DateTime?
+  submittedAt           DateTime @default(now())
+  verifiedAt            DateTime?
+  processedAt           DateTime?
+  completedAt           DateTime?
+  cancelledAt           DateTime?
+  userId                String?  // If user is logged in
+  adminNotes            String?
+  
+  user                  User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([status])
+  @@index([submittedAt])
+  @@index([userId])
+}
+
+enum DeletionType {
+  ACCOUNT
+  DATA
+}
+
+enum DeletionStatus {
+  PENDING
+  VERIFIED
+  PROCESSING
+  COMPLETED
+  CANCELLED
 }
