@@ -9,58 +9,56 @@ datasource db {
 }
 
 model User {
-  id             String   @id @default(cuid())
-  name           String
-  email          String   @unique
-  mobile         String?  @unique
-  passwordHash   String
-  googleId       String?  @unique
-  picture        String?
-  dob            DateTime?
-  gender         Gender?
-  institution    InstitutionType?
-  classLevel     String?
-  school         String?
-  districtId     String?
-  pincode        String?
-  role           Role
-  lastActiveAt   DateTime?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  sentNotifications Notification[] @relation("SenderNotifications")
+  id                    String                  @id @default(cuid())
+  name                  String
+  email                 String                  @unique
+  mobile                String?                 @unique
+  passwordHash          String
+  googleId              String?                 @unique
+  picture               String?
+  dob                   DateTime?
+  gender                Gender?
+  institution           InstitutionType?
+  classLevel            String?
+  school                String?
+  districtId            String?
+  pincode               String?
+  role                  Role
+  lastActiveAt          DateTime?
+  createdAt             DateTime                @default(now())
+  updatedAt             DateTime                @updatedAt
+  deletionRequests      DeletionRequest[]
+  events                Event[]
+  eventRegistrations    EventParticipant[]
+  examAttempts          ExamAttempt[]
+  sentNotifications     Notification[]          @relation("SenderNotifications")
   receivedNotifications NotificationRecipient[]
-  examAttempts    ExamAttempt[]
-  studentProgress StudentProgress[]
-  events Event[]
-  eventRegistrations EventParticipant[]
-  videoProgresses VideoProgress[]
-  pdfProgresses   PdfProgress[]
-  deletionRequests DeletionRequest[]
-
-  district       District? @relation(fields: [districtId], references: [id])
+  pdfProgresses         PdfProgress[]
+  studentProgress       StudentProgress[]
+  district              District?               @relation(fields: [districtId], references: [id])
+  videoProgresses       VideoProgress[]
 }
 
 model District {
-  id        String   @id @default(cuid())
-  name      String   @unique
-  users     User[]
+  id            String         @id @default(cuid())
+  name          String         @unique
+  events        Event[]
   notifications Notification[]
-  events    Event[]
+  users         User[]
 }
 
 model Course {
-  id          String   @id @default(cuid())
-  classLevel  String
-  level       String
-  title       String
-  description String?
-  isPublished Boolean  @default(false)
-  createdAt   DateTime @default(now())
-
-  videos      CourseVideo[]
-  notes       CourseNote[]
-  pdfs        CoursePDF[]
-  quizzes     Quiz[]
+  id              String            @id @default(cuid())
+  classLevel      String
+  level           String
+  title           String
+  description     String?
+  isPublished     Boolean           @default(false)
+  createdAt       DateTime          @default(now())
+  notes           CourseNote[]
+  pdfs            CoursePDF[]
+  videos          CourseVideo[]
+  quizzes         Quiz[]
   studentProgress StudentProgress[]
 
   @@unique([classLevel, level])
@@ -68,15 +66,14 @@ model Course {
 }
 
 model CourseVideo {
-  id        String   @id @default(cuid())
-  courseId  String
-  title     String
-  youtubeId String?
-  thumbnail String?
-  iframeSnippet String?
-  createdAt DateTime @default(now())
-
-  course    Course @relation(fields: [courseId], references: [id])
+  id              String          @id @default(cuid())
+  courseId        String
+  title           String
+  youtubeId       String?
+  thumbnail       String?
+  iframeSnippet   String?
+  createdAt       DateTime        @default(now())
+  course          Course          @relation(fields: [courseId], references: [id])
   videoProgresses VideoProgress[]
 }
 
@@ -87,115 +84,249 @@ model CourseNote {
   content   String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  course    Course @relation(fields: [courseId], references: [id])
+  course    Course   @relation(fields: [courseId], references: [id])
 }
 
 model CoursePDF {
-  id        String   @id @default(cuid())
-  courseId  String
-  title     String
-  url       String
-  createdAt DateTime @default(now())
-
-  course    Course @relation(fields: [courseId], references: [id])
+  id            String        @id @default(cuid())
+  courseId      String
+  title         String
+  url           String
+  createdAt     DateTime      @default(now())
+  course        Course        @relation(fields: [courseId], references: [id])
   pdfProgresses PdfProgress[]
 }
 
 model Quiz {
-  id             String   @id @default(cuid())
+  id             String        @id @default(cuid())
   courseId       String
   classLevel     String
   numQuestions   Int
   passPercentage Float
   questionBankId String
-
-  course         Course @relation(fields: [courseId], references: [id])
-  questionBank   QuestionBank @relation(fields: [questionBankId], references: [id])
   examAttempts   ExamAttempt[]
+  course         Course        @relation(fields: [courseId], references: [id])
+  questionBank   QuestionBank  @relation(fields: [questionBankId], references: [id])
 }
 
 model QuestionBank {
-  id        String   @id @default(cuid())
+  id        String     @id @default(cuid())
   questions Question[]
   quizzes   Quiz[]
 }
 
 model Question {
-  id             String   @id @default(cuid())
-  questionBankId String
-  question       String
-  optionA        String
-  optionB        String
-  optionC        String
-  optionD        String
-  correctOption  String
-  
-  // Enhanced fields for formatted content
-  questionFormatted    String? // JSON string containing formatted question content
-  optionAFormatted     String? // JSON string containing formatted option A content
-  optionBFormatted     String? // JSON string containing formatted option B content
-  optionCFormatted     String? // JSON string containing formatted option C content
-  optionDFormatted     String? // JSON string containing formatted option D content
-  explanationFormatted String? // JSON string containing formatted explanation content
-  difficulty          String?  @default("medium") // easy, medium, hard
-  points              Int?     @default(1)
-  timeLimit           Int?     @default(60) // in seconds
-
-  questionBank   QuestionBank @relation(fields: [questionBankId], references: [id])
+  id                   String       @id @default(cuid())
+  questionBankId       String
+  question             String
+  optionA              String
+  optionB              String
+  optionC              String
+  optionD              String
+  correctOption        String
+  questionFormatted    String?
+  optionAFormatted     String?
+  optionBFormatted     String?
+  optionCFormatted     String?
+  optionDFormatted     String?
+  explanationFormatted String?
+  difficulty           String?      @default("medium")
+  points               Int?         @default(1)
+  timeLimit            Int?         @default(60)
+  questionBank         QuestionBank @relation(fields: [questionBankId], references: [id])
 }
 
 model ExamAttempt {
-  id          String   @id @default(cuid())
-  studentId   String
-  quizId      String
-  startedAt   DateTime
-  completedAt DateTime?
-  passed      Boolean?
-  score       Int?
-
-  student     User @relation(fields: [studentId], references: [id])
-  quiz        Quiz @relation(fields: [quizId], references: [id])
+  id              String            @id @default(cuid())
+  studentId       String
+  quizId          String
+  startedAt       DateTime
+  completedAt     DateTime?
+  passed          Boolean?
+  score           Int?
+  quiz            Quiz              @relation(fields: [quizId], references: [id])
+  student         User              @relation(fields: [studentId], references: [id])
   studentProgress StudentProgress[]
 }
 
 model StudentProgress {
-  id         String   @id @default(cuid())
-  studentId  String
-  courseId   String
-  status     ProgressStatus
-  qualified  Boolean?
-  attemptId  String?
-
-  student    User @relation(fields: [studentId], references: [id])
-  course     Course @relation(fields: [courseId], references: [id])
-  attempt    ExamAttempt? @relation(fields: [attemptId], references: [id])
+  id        String         @id @default(cuid())
+  studentId String
+  courseId  String
+  status    ProgressStatus
+  qualified Boolean?
+  attemptId String?
+  attempt   ExamAttempt?   @relation(fields: [attemptId], references: [id])
+  course    Course         @relation(fields: [courseId], references: [id])
+  student   User           @relation(fields: [studentId], references: [id])
 
   @@unique([studentId, courseId])
 }
 
 model Notification {
-  id          String   @id @default(cuid())
-  title       String
-  content     String
-  type        NotificationType
-  senderId    String?
-  districtId  String?
-  createdAt   DateTime @default(now())
-
-  sender      User? @relation("SenderNotifications", fields: [senderId], references: [id])
-  district    District? @relation(fields: [districtId], references: [id])
-  recipients  NotificationRecipient[]
+  id         String                  @id @default(cuid())
+  title      String
+  content    String
+  type       NotificationType
+  senderId   String?
+  districtId String?
+  createdAt  DateTime                @default(now())
+  district   District?               @relation(fields: [districtId], references: [id])
+  sender     User?                   @relation("SenderNotifications", fields: [senderId], references: [id])
+  recipients NotificationRecipient[]
 }
 
 model NotificationRecipient {
-  id             String   @id @default(cuid())
+  id             String       @id @default(cuid())
   notificationId String
   userId         String
-  isRead         Boolean  @default(false)
-
+  isRead         Boolean      @default(false)
   notification   Notification @relation(fields: [notificationId], references: [id])
-  user           User @relation(fields: [userId], references: [id])
+  user           User         @relation(fields: [userId], references: [id])
+}
+
+model Event {
+  id           Int                @id @default(autoincrement())
+  title        String
+  type         EventType
+  description  String
+  location     String
+  date         DateTime
+  ctaName      String?
+  ctaLink      String?
+  creatorId    String
+  districtId   String?
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+  creator      User               @relation(fields: [creatorId], references: [id])
+  district     District?          @relation(fields: [districtId], references: [id])
+  participants EventParticipant[]
+
+  @@index([districtId, date])
+}
+
+model EventParticipant {
+  eventId      Int
+  userId       String
+  registeredAt DateTime @default(now())
+  event        Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([eventId, userId])
+}
+
+model PassingMark {
+  id           String @id @default(cuid())
+  classId      String
+  levelId      String
+  passingMarks Int
+
+  @@unique([classId, levelId])
+}
+
+model Otp {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  otp       String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model VideoProgress {
+  id        String      @id @default(cuid())
+  studentId String
+  videoId   String
+  watched   Boolean     @default(false)
+  watchedAt DateTime?
+  student   User        @relation(fields: [studentId], references: [id])
+  video     CourseVideo @relation(fields: [videoId], references: [id])
+
+  @@unique([studentId, videoId])
+}
+
+model PdfProgress {
+  id        String    @id @default(cuid())
+  studentId String
+  pdfId     String
+  read      Boolean   @default(false)
+  readAt    DateTime?
+  pdf       CoursePDF @relation(fields: [pdfId], references: [id])
+  student   User      @relation(fields: [studentId], references: [id])
+
+  @@unique([studentId, pdfId])
+}
+
+model CourseLevel {
+  id        String   @id @default(cuid())
+  classId   String   @unique
+  levels    String[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model LevelSchedule {
+  id             String   @id @default(cuid())
+  classId        String
+  level          String
+  unlockDate     DateTime
+  unlockTime     String
+  unlockDateTime String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@unique([classId, level])
+  @@index([classId, level])
+}
+
+model QuizValidity {
+  id                 String   @id @default(cuid())
+  classId            String
+  level              String
+  validUntilDate     DateTime
+  validUntilTime     String
+  validUntilDateTime String
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@unique([classId, level])
+  @@index([classId, level])
+}
+
+model CompletionMessage {
+  id        String   @id @default(cuid())
+  classId   String
+  levelId   String
+  message   String
+  createdBy String
+  updatedBy String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([classId, levelId])
+  @@index([classId, levelId])
+}
+
+model DeletionRequest {
+  id                    String         @id @default(cuid())
+  deletionType          DeletionType
+  userInfo              Json
+  dataTypes             String[]
+  reason                String?
+  status                DeletionStatus @default(PENDING)
+  verificationCode      String?        @unique
+  verificationExpiresAt DateTime?
+  submittedAt           DateTime       @default(now())
+  verifiedAt            DateTime?
+  processedAt           DateTime?
+  completedAt           DateTime?
+  cancelledAt           DateTime?
+  userId                String?
+  adminNotes            String?
+  user                  User?          @relation(fields: [userId], references: [id])
+
+  @@index([status])
+  @@index([submittedAt])
+  @@index([userId])
 }
 
 enum Role {
@@ -240,155 +371,6 @@ enum EventType {
   workshop
   spiritual
   other
-}
-
-model Event {
-  id           Int      @id @default(autoincrement())
-  title        String
-  type         EventType
-  description  String   @db.Text
-  location     String
-  date         DateTime
-  ctaName      String?
-  ctaLink      String?
-  creatorId    String
-  districtId   String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-
-  creator      User      @relation(fields: [creatorId], references: [id])
-  district     District? @relation(fields: [districtId], references: [id])
-  participants EventParticipant[]
-
-  @@index([districtId, date])
-}
-
-model EventParticipant {
-  eventId      Int
-  userId       String
-  registeredAt DateTime @default(now())
-
-  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@id([eventId, userId])
-}
-
-model PassingMark {
-  id           String   @id @default(cuid())
-  classId      String
-  levelId      String
-  passingMarks Int
-
-  @@unique([classId, levelId])
-}
-
-model Otp {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  otp       String
-  expiresAt DateTime
-  createdAt DateTime @default(now())
-}
-
-model VideoProgress {
-  id        String   @id @default(cuid())
-  studentId String
-  videoId   String
-  watched   Boolean  @default(false)
-  watchedAt DateTime?
-
-  student   User        @relation(fields: [studentId], references: [id])
-  video     CourseVideo @relation(fields: [videoId], references: [id])
-
-  @@unique([studentId, videoId])
-}
-
-model PdfProgress {
-  id        String   @id @default(cuid())
-  studentId String
-  pdfId     String
-  read      Boolean  @default(false)
-  readAt    DateTime?
-
-  student   User      @relation(fields: [studentId], references: [id])
-  pdf       CoursePDF @relation(fields: [pdfId], references: [id])
-
-  @@unique([studentId, pdfId])
-}
-
-model CourseLevel {
-  id        String   @id @default(cuid())
-  classId   String   @unique
-  levels    String[] // Array of level strings
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model LevelSchedule {
-  id             String   @id @default(cuid())
-  classId        String
-  level          String
-  unlockDate     DateTime
-  unlockTime     String
-  unlockDateTime String
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-
-  @@unique([classId, level])
-  @@index([classId, level])
-}
-
-model QuizValidity {
-  id                 String   @id @default(cuid())
-  classId            String
-  level              String
-  validUntilDate     DateTime
-  validUntilTime     String
-  validUntilDateTime String
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
-
-  @@unique([classId, level])
-  @@index([classId, level])
-}
-
-model CompletionMessage {
-  id        String   @id @default(cuid())
-  classId   String
-  levelId   String
-  message   String   @db.Text
-  createdBy String
-  updatedBy String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@unique([classId, levelId])
-  @@index([classId, levelId])
-}
-
-model DeletionRequest {
-  id                    String   @id @default(cuid())
-  deletionType          DeletionType
-  userInfo              Json     // Stores name, email, phone, studentId
-  dataTypes             String[] // Array of data types to delete
-  reason                String?
-  status                DeletionStatus @default(PENDING)
-  verificationCode      String?  @unique
-  verificationExpiresAt DateTime?
-  submittedAt           DateTime @default(now())
-  verifiedAt            DateTime?
-  processedAt           DateTime?
-  completedAt           DateTime?
-  cancelledAt           DateTime?
-  userId                String?  // If user is logged in
-  adminNotes            String?
-  
-  user                  User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
-
-  @@index([status])
-  @@index([submittedAt])
-  @@index([userId])
 }
 
 enum DeletionType {

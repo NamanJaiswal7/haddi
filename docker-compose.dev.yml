@@ -94,6 +94,7 @@ services:
         condition: service_healthy
     networks:
       - haddi_network_dev
+      - haddi_monitoring_network_dev
     # Use nodemon for hot reloading
     command: sh -c "npx prisma generate && npm run dev"
 
@@ -105,4 +106,6 @@ volumes:
 
 networks:
   haddi_network_dev:
-    driver: bridge 
+    driver: bridge
+  haddi_monitoring_network_dev:
+    external: true 

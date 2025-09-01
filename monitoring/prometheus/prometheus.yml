@@ -1,0 +1,47 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  # - "first_rules.yml"
+  # - "second_rules.yml"
+
+scrape_configs:
+  # Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Node Exporter for system metrics
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['localhost:9100']
+
+  # Redis Exporter
+  - job_name: 'redis-exporter'
+    static_configs:
+      - targets: ['localhost:9121']
+
+  # Postgres Exporter
+  - job_name: 'postgres-exporter'
+    static_configs:
+      - targets: ['localhost:9187']
+
+  # cAdvisor for container metrics
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: ['localhost:8080']
+
+  # Your Node.js application metrics
+  - job_name: 'haddi-app'
+    static_configs:
+      - targets: ['host.docker.internal:4545']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+
+  # YugabyteDB metrics (if available)
+  - job_name: 'yugabytedb'
+    static_configs:
+      - targets: ['localhost:7005']
+    metrics_path: '/metrics'
+    scrape_interval: 30s

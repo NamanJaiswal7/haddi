@@ -16,7 +16,7 @@ if (cluster.isPrimary) {
     cluster.fork();
   });
 } else {
-  app.listen(PORT, () => {
+  app.listen(PORT, '0.0.0.0', () => {
     console.log(`Worker ${process.pid} running on port ${PORT}`);
   });
 }
