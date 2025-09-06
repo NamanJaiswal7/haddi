@@ -1,5 +1,5 @@
 import redisService from '../services/redisService';
-import { logger } from './logger';
+import logger from './logger';
 
 const OTP_TTL = 5 * 60; // 5 minutes in seconds
 const VERIFIED_EMAIL_TTL = 24 * 60 * 60; // 24 hours in seconds

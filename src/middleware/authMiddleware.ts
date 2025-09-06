@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import { PrismaClient } from '@prisma/client';
 import sessionService from '../services/sessionService';
 import cacheService from '../services/cacheService';
-import { logger } from '../utils/logger';
+import logger from '../utils/logger';
 
 const prisma = new PrismaClient();
 
