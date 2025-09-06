@@ -71,8 +71,18 @@ const initializeRedis = async () => {
 initializeRedis();
 
 // Redis middleware configuration
+const isDevelopment = process.env.NODE_ENV === 'development';
+const disableRateLimit = process.env.DISABLE_RATE_LIMIT === 'true';
+const rateLimitingEnabled = !(isDevelopment && disableRateLimit);
+
+if (isDevelopment && disableRateLimit) {
+  logger.info('Rate limiting disabled in development mode');
+} else if (isDevelopment) {
+  logger.info('Rate limiting enabled in development mode');
+}
+
 const redisMiddleware = createRedisMiddleware({
-  enableRateLimiting: true,
+  enableRateLimiting: rateLimitingEnabled,
   enableSessionManagement: true,
   enableCaching: true,
   enableHealthCheck: true
