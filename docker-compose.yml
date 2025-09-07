@@ -52,6 +52,7 @@ services:
       - redis_data:/data
     networks:
       - haddi_network
+    command: redis-server --appendonly yes --save 900 1
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
