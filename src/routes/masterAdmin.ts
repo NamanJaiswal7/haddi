@@ -3,6 +3,7 @@ import {
     getDashboardStats,
     getDistrictPerformance,
     getAllStudents,
+    deleteStudent,
     getDistrictAdmins,
     createDistrictAdmin,
     updateDistrictAdmin,
@@ -89,6 +90,13 @@ router.get('/analytics', asyncHandler(getAnalyticsData));
  * @access Private (Master Admin)
  */
 router.get('/students', asyncHandler(getAllStudents));
+
+/**
+ * @route DELETE /api/master-admin/students/:id
+ * @description Delete a student and all their related data
+ * @access Private (Master Admin)
+ */
+router.delete('/students/:id', asyncHandler(deleteStudent));
 
 /**
  * @route GET /api/master-admin/district-admins

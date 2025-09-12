@@ -3503,3 +3503,113 @@ export const getLevelsByClass = async (req: Request, res: Response) => {
     }
 };
 
+export const deleteStudent = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+
+        // Validate student ID
+        if (!id) {
+            return res.status(400).json({
+                success: false,
+                message: 'Student ID is required'
+            });
+        }
+
+        // Check if student exists and is actually a student
+        const student = await prisma.user.findUnique({
+            where: { id },
+            select: { id: true, name: true, email: true, role: true }
+        });
+
+        if (!student) {
+            return res.status(404).json({
+                success: false,
+                message: 'Student not found'
+            });
+        }
+
+        if (student.role !== 'student') {
+            return res.status(400).json({
+                success: false,
+                message: 'User is not a student'
+            });
+        }
+
+        logger.info(`Starting deletion of student: ${student.name} (${student.email})`);
+
+        // Use a transaction to ensure all deletions happen atomically
+        await prisma.$transaction(async (tx) => {
+            // Delete all student-related data in the correct order to avoid foreign key constraints
+            
+            // 1. Delete notification recipients (references user)
+            await tx.notificationRecipient.deleteMany({
+                where: { userId: id }
+            });
+
+            // 2. Delete event participants (references user)
+            await tx.eventParticipant.deleteMany({
+                where: { userId: id }
+            });
+
+            // 3. Delete video progresses (references user)
+            await tx.videoProgress.deleteMany({
+                where: { studentId: id }
+            });
+
+            // 4. Delete PDF progresses (references user)
+            await tx.pdfProgress.deleteMany({
+                where: { studentId: id }
+            });
+
+            // 5. Delete student progress (references user)
+            await tx.studentProgress.deleteMany({
+                where: { studentId: id }
+            });
+
+            // 6. Delete exam attempts (references user)
+            await tx.examAttempt.deleteMany({
+                where: { studentId: id }
+            });
+
+            // 7. Delete deletion requests (references user)
+            await tx.deletionRequest.deleteMany({
+                where: { userId: id }
+            });
+
+            // 8. Delete events created by the student (references user as creator)
+            await tx.event.deleteMany({
+                where: { creatorId: id }
+            });
+
+            // 9. Delete notifications sent by the student (references user as sender)
+            await tx.notification.deleteMany({
+                where: { senderId: id }
+            });
+
+            // 10. Finally, delete the user/student record
+            await tx.user.delete({
+                where: { id }
+            });
+        });
+
+        logger.info(`Successfully deleted student: ${student.name} (${student.email}) and all related data`);
+
+        res.status(200).json({
+            success: true,
+            message: 'Student and all related data deleted successfully',
+            deletedStudent: {
+                id: student.id,
+                name: student.name,
+                email: student.email
+            }
+        });
+
+    } catch (error) {
+        logger.error('Error deleting student:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Internal server error while deleting student'
+        });
+    }
+};
+
